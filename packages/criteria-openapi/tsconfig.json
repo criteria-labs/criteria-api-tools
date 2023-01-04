@@ -2,6 +2,7 @@
   "compilerOptions": {
     "lib": ["es2021"],
     "esModuleInterop": true,
+    "moduleResolution": "node16",
     "noEmit": false,
     "declaration": true,
     "outDir": "dist",

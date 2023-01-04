@@ -1,11 +1,11 @@
-import { JSONSchemaDraft04, JSONSchemaDraft04PrimitiveType, JSONSchemaDraft04Value } from '@criteria/json-schema'
+import { JSONSchema, JSONSchemaPrimitiveType, JSONSchemaValue } from '@criteria/json-schema/draft-04'
 import { Discriminator } from './Discriminator'
 import { ExternalDocumentation } from './ExternalDocumentation'
 import { Reference } from './Reference'
 import { XML } from './XML'
 
 export type Schema<ReferenceType extends Reference | never> = Pick<
-  JSONSchemaDraft04,
+  JSONSchema,
   | 'title'
   | 'multipleOf'
   | 'maximum'
@@ -23,7 +23,7 @@ export type Schema<ReferenceType extends Reference | never> = Pick<
   | 'required'
   | 'enum'
 > & {
-  type?: JSONSchemaDraft04PrimitiveType
+  type?: JSONSchemaPrimitiveType
 
   allOf?: [Schema<ReferenceType> | ReferenceType, ...Array<Schema<ReferenceType> | ReferenceType>]
   anyOf?: [Schema<ReferenceType>, ...Array<Schema<ReferenceType> | ReferenceType>]
@@ -37,7 +37,7 @@ export type Schema<ReferenceType extends Reference | never> = Pick<
 
   description?: string
   format?: string
-  default?: JSONSchemaDraft04Value
+  default?: JSONSchemaValue
 } & {
   nullable?: boolean
   discriminator?: Discriminator

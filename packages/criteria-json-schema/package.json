@@ -4,6 +4,11 @@
   "description": "TypeScript implementation of the JSON Schema specification.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./draft-04": "./dist/draft-04.js",
+    "./draft-2020-12": "./dist/draft-2020-12.js"
+  },
   "scripts": {
     "build": "tsc --build",
     "test": "jest ."

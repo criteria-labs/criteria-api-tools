@@ -4,6 +4,11 @@
   "description": "TypeScript implementation of the OpenAPI specification.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./v3.0": "./dist/v3.0.js",
+    "./v3.1": "./dist/v3.1.js"
+  },
   "scripts": {
     "build": "tsc --build",
     "test": "jest ."

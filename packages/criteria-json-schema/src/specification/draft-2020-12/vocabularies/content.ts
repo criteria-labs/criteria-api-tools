@@ -3,8 +3,8 @@ import { JSONSchema } from '../JSONSchema'
 /**
  * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-01#section-8
  */
-export type JSONSchemaContentVocabulary = {
+export type JSONSchemaContentVocabulary<AdditionalVocabularies> = {
   contentEncoding?: string
   contentMediaType?: string
-  contentSchema?: JSONSchema
+  contentSchema?: JSONSchema<AdditionalVocabularies>
 }

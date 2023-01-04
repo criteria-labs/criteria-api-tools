@@ -1,11 +1,11 @@
-import { JSONSchema } from '..'
+import { JSONSchema } from '../JSONSchema'
 
 /**
  * JSON Schema Draft 2012-12 Core Vocabulary
  *
  * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-8
  */
-export type JSONSchemaCoreVocabulary = {
+export type JSONSchemaCoreVocabulary<AdditionalVocabularies> = {
   $schema?: string
   $vocabulary?: { [uri: string]: boolean }
   $id?: string
@@ -13,6 +13,6 @@ export type JSONSchemaCoreVocabulary = {
   $dynamicAnchor?: string
   $ref?: string
   $dynamicRef?: string
-  $defs?: { [key: string]: JSONSchema }
+  $defs?: { [key: string]: JSONSchema<AdditionalVocabularies> }
   $comment?: string
 }

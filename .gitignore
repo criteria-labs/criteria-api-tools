@@ -1,2 +1,8 @@
+# Editors
+.vscode
+
+# Dependencies
 node_modules
+
+# Build
 dist

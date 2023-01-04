@@ -25,7 +25,7 @@ export type JSONSchemaBooleanSchema = boolean
  *
  * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-00
  */
-export type JSONSchema<AdditionalVocabularies = {}> =
+export type JSONSchema<AdditionalVocabularies extends object = {}> =
   | JSONSchemaBooleanSchema
   | (JSONSchemaCoreVocabulary<AdditionalVocabularies> &
       JSONSchemaApplicatorVocabulary<AdditionalVocabularies> &

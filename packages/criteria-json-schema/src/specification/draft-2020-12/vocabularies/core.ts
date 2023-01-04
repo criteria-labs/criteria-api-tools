@@ -5,7 +5,7 @@ import { JSONSchema } from '../JSONSchema'
  *
  * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-8
  */
-export type JSONSchemaCoreVocabulary<AdditionalVocabularies> = {
+export type JSONSchemaCoreVocabulary<AdditionalVocabularies extends object> = {
   $schema?: string
   $vocabulary?: { [uri: string]: boolean }
   $id?: string

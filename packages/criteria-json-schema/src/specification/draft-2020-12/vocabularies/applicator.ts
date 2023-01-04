@@ -3,7 +3,7 @@ import { JSONSchema } from '../JSONSchema'
 /**
  * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-10
  */
-export type JSONSchemaApplicatorVocabulary<AdditionalVocabularies> = {
+export type JSONSchemaApplicatorVocabulary<AdditionalVocabularies extends object> = {
   allOf?: [JSONSchema<AdditionalVocabularies>, ...JSONSchema<AdditionalVocabularies>[]]
   anyOf?: [JSONSchema<AdditionalVocabularies>, ...JSONSchema<AdditionalVocabularies>[]]
   oneOf?: [JSONSchema<AdditionalVocabularies>, ...JSONSchema<AdditionalVocabularies>[]]

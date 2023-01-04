@@ -35,26 +35,6 @@ export type JSONSchema =
       JSONSchemaContentVocabulary &
       JSONSchemaMetaDataVocabulary & {
         /**
-         * @deprecated "definitions" has been replaced by "$defs".
-         */
-        definitions?: { [key: string]: JSONSchema }
-
-        /**
-         * @deprecated "dependencies" has been split and replaced by "dependentSchemas" and "dependentRequired" in order to serve their differing semantics.
-         */
-        dependencies?: { [key: string]: JSONSchema | [string, ...string[]] }
-
-        /**
-         * @deprecated "$recursiveAnchor" has been replaced by "$dynamicAnchor".
-         */
-        $recursiveAnchor?: string
-
-        /**
-         * @deprecated "$recursiveRef" has been replaced by "$dynamicRef".
-         */
-        $recursiveRef?: string
-
-        /**
          * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-6.5
          */
         [key: string]: any

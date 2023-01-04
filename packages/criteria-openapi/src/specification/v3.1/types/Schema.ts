@@ -4,10 +4,7 @@ import { ExternalDocumentation } from './ExternalDocumentation'
 import { Reference } from './Reference'
 import { XML } from './XML'
 
-export type Schema<ReferenceType = Reference | never> = Omit<JSONSchemaDraft2020_12, 'description' | 'format'> & {
-  description?: string
-  format?: string
-} & {
+export type Schema<ReferenceType = Reference | never> = JSONSchemaDraft2020_12 & {
   discriminator?: Discriminator
   xml?: XML
   externalDocs?: ExternalDocumentation

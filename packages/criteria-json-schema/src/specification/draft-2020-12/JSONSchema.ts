@@ -37,22 +37,22 @@ export type JSONSchema =
         /**
          * @deprecated "definitions" has been replaced by "$defs".
          */
-        definitions: { [key: string]: JSONSchema }
+        definitions?: { [key: string]: JSONSchema }
 
         /**
          * @deprecated "dependencies" has been split and replaced by "dependentSchemas" and "dependentRequired" in order to serve their differing semantics.
          */
-        dependencies: { [key: string]: JSONSchema | [string, ...string[]] }
+        dependencies?: { [key: string]: JSONSchema | [string, ...string[]] }
 
         /**
          * @deprecated "$recursiveAnchor" has been replaced by "$dynamicAnchor".
          */
-        $recursiveAnchor: string
+        $recursiveAnchor?: string
 
         /**
          * @deprecated "$recursiveRef" has been replaced by "$dynamicRef".
          */
-        $recursiveRef: string
+        $recursiveRef?: string
 
         /**
          * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-6.5

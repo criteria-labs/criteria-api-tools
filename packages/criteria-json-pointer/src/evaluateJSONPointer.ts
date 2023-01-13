@@ -1,8 +1,5 @@
+import { unescapeReferenceToken } from './escaping'
 import { validateJSONPointer } from './validateJSONPointer'
-
-function unescapeReferenceToken(value: string): string {
-  return value.replaceAll('~1', '/').replaceAll('~0', '~')
-}
 
 export function evaluateJSONPointer(jsonPointer: string, document: any): any {
   validateJSONPointer(jsonPointer)

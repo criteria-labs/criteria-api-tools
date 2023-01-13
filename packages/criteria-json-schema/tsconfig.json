@@ -4,6 +4,8 @@
     "esModuleInterop": true,
     "noEmit": false,
     "declaration": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
     "outDir": "dist",
     "rootDir": "src"
   },

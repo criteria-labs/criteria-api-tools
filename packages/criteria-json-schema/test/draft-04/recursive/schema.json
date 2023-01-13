@@ -1,0 +1,12 @@
+{
+  "definitions": {
+    "alice": {
+      "id": "#alice",
+      "allOf": [{ "$ref": "#bob" }]
+    },
+    "bob": {
+      "id": "#bob",
+      "allOf": [{ "$ref": "#alice" }]
+    }
+  }
+}

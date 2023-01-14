@@ -7,7 +7,8 @@ export interface Placeholder {
 }
 
 interface PlaceholderInfo {
-  uris: URI[]
+  uris?: URI[]
+  indirect?: any
 }
 
 export const isPlaceholder = (value: any): value is Placeholder => {

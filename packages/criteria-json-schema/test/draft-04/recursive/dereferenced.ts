@@ -1,19 +1,17 @@
-import { JSONSchema } from '../../../src/draft-04'
-
-const alice: JSONSchema = {
-  id: '#alice'
-}
-
-const bob: JSONSchema = {
-  id: '#bob'
-}
-
-alice.allOf = [bob]
-bob.allOf = [alice]
-
-export default {
+const schema: any = {
   definitions: {
-    alice: alice,
-    bob: bob
+    alice: {
+      id: '#alice',
+      allOf: []
+    },
+    bob: {
+      id: '#bob',
+      allOf: []
+    }
   }
 }
+
+schema.definitions.alice.allOf.push(schema.definitions.bob)
+schema.definitions.bob.allOf.push(schema.definitions.alice)
+
+export default schema

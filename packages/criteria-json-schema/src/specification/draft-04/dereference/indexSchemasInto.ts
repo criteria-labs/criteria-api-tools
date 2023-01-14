@@ -1,5 +1,5 @@
 import { JSONSchema, Reference } from '../JSONSchema'
-import { resolveURIReference, splitFragment, URI } from '../uri'
+import { hasFragment, resolveURIReference, splitFragment, URI } from '../uri'
 import { Context } from './visitors/context'
 import { visitValues } from './visitors/visitValues'
 
@@ -9,12 +9,25 @@ export function indexSchemasInto(
   baseURI: URI,
   retrieve: (uri: URI) => JSONSchema
 ) {
+  // Also index the root schema by the base URI (retrieval URI) if it contains an id
+  if ('id' in rootSchema) {
+    schemasByURI[baseURI] = {
+      value: rootSchema,
+      context: { baseURI: baseURI, jsonPointer: '', resolvedURIs: [baseURI] }
+    }
+  }
+
   // Collect external URIs to retrieve
   var unretrievedURIs = new Set<URI>()
   visitValues(rootSchema, { baseURI, jsonPointer: '', resolvedURIs: [] }, (value, kind, context) => {
     if (kind === 'schema') {
       context.resolvedURIs.forEach((uri) => (schemasByURI[uri] = { value, context: { ...context } }))
     } else if (kind === 'reference') {
+      if (!hasFragment(context.baseURI) && context.jsonPointer === '') {
+        // root is a reference
+        context.resolvedURIs.forEach((uri) => (schemasByURI[uri] = { value, context: { ...context } }))
+      }
+
       let uri = resolveURIReference((value as Reference).$ref, context.baseURI)
 
       const { absoluteURI } = splitFragment(uri)

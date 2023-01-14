@@ -1,0 +1,4 @@
+{
+  "title": "Extending a root $ref",
+  "$ref": "name.json"
+}

@@ -2,7 +2,7 @@ import { unescapeReferenceToken } from '@criteria/json-pointer'
 import { evaluateFragment } from './evaluateFragment'
 import { JSONSchema, Reference } from '../JSONSchema'
 import { memoize } from '../retrievers/memoize'
-import { normalizeURI, resolveURIReference, splitFragment, URI } from '../uri'
+import { hasFragment, normalizeURI, resolveURIReference, splitFragment, URI } from '../uri'
 import { cloneValues, ContextWithCloneInto } from './visitors/cloneValues'
 import { Context } from './visitors/context'
 import { indexSchemasInto } from './indexSchemasInto'
@@ -37,11 +37,19 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
   // Multiple URIs may refer to the same value
   const dereferencedByURI: { [uri: URI]: any } = {}
 
+  // Maintains reference equality from the source schema
+  // Important when the passed in schema is already dereferenced instead of JSON
+  const dereferencedBySource = new Map()
+
   // Objects inserted into the dereferenced object graph
   // prior to being dereferenced to maintain reference equality
   const placeholders = new Set<Placeholder>()
 
   const dereferenceSubschema = (schema: JSONSchema, context: ContextWithCloneInto<'schema'>) => {
+    if (dereferencedBySource.has(schema)) {
+      return dereferencedBySource.get(schema)
+    }
+
     let result
     for (const uri of context.resolvedURIs) {
       result = dereferencedByURI[uri]
@@ -58,6 +66,7 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
     }
 
     result = result ?? {} // create new object if no placeholder found
+    dereferencedBySource.set(schema, result)
     context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
     context.cloneInto(result)
     return result
@@ -76,15 +85,27 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
     ) {
       uri = resolveURIReference(target.value.$ref, target.context.baseURI)
       target = sourceSchemasByURI[uri]
+      if (target) {
+        resolvedURIs.push(...target.context.resolvedURIs)
+      }
       if (!target) {
         const { absoluteURI, fragment } = splitFragment(uri)
         const parentSchema = sourceSchemasByURI[absoluteURI]
         if (parentSchema) {
-          target = { value: evaluateFragment(fragment, parentSchema), context: null }
+          const evaluatedValue = evaluateFragment(fragment, parentSchema)
+          if (evaluatedValue) {
+            target = {
+              value: evaluatedValue,
+              context: {
+                baseURI: absoluteURI,
+                jsonPointer: null,
+                resolvedURIs: null
+              }
+            }
+          }
         }
         break
       }
-      resolvedURIs.push(...target.context.resolvedURIs)
     }
 
     let result = dereferencedByURI[uri]
@@ -113,40 +134,92 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
   }
 
   const dereferenceReferenceWithSiblings = (reference: Reference, context: Context) => {
-    const { $ref, ...siblings } = reference
-    const dereferenced = dereferenceReference({ $ref }, context)
-
     // Merging $ref and siblings creates a new unique object,
     // otherwise sibling properties will be applied everywhere the same $ref is used
     // Assume that siblings does not need to be further dereferenced
-    const merged = Object.assign({}, dereferenced, siblings)
-    if (isPlaceholder(merged)) {
-      placeholders.add(merged)
+
+    let result
+    for (const uri of context.resolvedURIs) {
+      result = dereferencedByURI[uri]
+      if (result) {
+        if (!isPlaceholder(result)) {
+          return result
+        }
+        break
+      }
+    }
+    result = result ?? {}
+
+    const { $ref, ...siblings } = reference
+    const dereferenced = dereferenceReference(
+      { $ref },
+      {
+        baseURI: context.baseURI,
+        jsonPointer: context.jsonPointer,
+        resolvedURIs: [] // do not pass through since these point to a new unique merge object, not the referenced object
+      }
+    )
+
+    if (isPlaceholder(dereferenced)) {
+      result[placeholderSymbol] = { ...result[placeholderSymbol], indirect: dereferenced }
+      result = Object.assign(result, siblings)
+      placeholders.add(result as Placeholder)
+    } else {
+      result = Object.assign(result, dereferenced, siblings)
     }
 
-    context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = merged))
-    return merged
+    context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
+    return result
   }
 
   // Actually clone the schema
-  const result = cloneValues(schema, { baseURI, jsonPointer: '', resolvedURIs: [] }, (value, kind, context) => {
-    if (kind === 'schema') {
-      return dereferenceSubschema(value, context as ContextWithCloneInto<'schema'>)
-    } else if (kind === 'reference') {
-      if (Object.keys(value).length == 1) {
-        return dereferenceReference(value, context)
-      } else {
-        return dereferenceReferenceWithSiblings(value, context)
-      }
-    } else {
-      return value
+  const allResults = {}
+  for (const [uri, sourceSchema] of Object.entries(sourceSchemasByURI)) {
+    if (hasFragment(uri) || sourceSchema.context.jsonPointer !== '') {
+      continue
     }
-  })
+    allResults[uri] = cloneValues(
+      sourceSchema.value,
+      { baseURI: sourceSchema.context.baseURI, jsonPointer: '', resolvedURIs: [] },
+      (value, kind, context) => {
+        if (kind === 'schema') {
+          return dereferenceSubschema(value, context as ContextWithCloneInto<'schema'>)
+        } else if (kind === 'reference') {
+          if (Object.keys(value).length == 1) {
+            return dereferenceReference(value, context)
+          } else {
+            return dereferenceReferenceWithSiblings(value, context)
+          }
+        } else {
+          return value
+        }
+      }
+    )
+  }
 
   // Fix up any remaining placeholder objects
-  placeholders.forEach((placeholder) => {
-    const { uris } = placeholder[placeholderSymbol]
+  while (placeholders.size > 0) {
+    const placeholder = placeholders.values().next().value
+    const { uris, indirect } = placeholder[placeholderSymbol]
+
+    if (indirect && isPlaceholder(indirect)) {
+      continue // TODO: guard for circular references here?
+    }
+
+    if (indirect) {
+      // sibling properties that were already dereferenced take precedence
+      const { ...siblings } = placeholder
+      Object.assign(placeholder, indirect, siblings)
+
+      if (!uris) {
+        delete placeholder[placeholderSymbol]
+        placeholders.delete(placeholder)
+        continue
+      }
+    }
+
     delete placeholder[placeholderSymbol]
+    placeholders.delete(placeholder)
 
     const uri = uris[0]
     let realValue = dereferencedByURI[uri]
@@ -182,7 +255,7 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
         }
       })
     }
-  })
+  }
 
-  return result
+  return allResults[baseURI]
 }

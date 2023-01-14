@@ -1,7 +1,14 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { Options } from 'prettier'
 import { JSONSchema, Reference } from '../../JSONSchema'
-import { Context, contextAppendingIndex, contextAppendingKey, resolveSchemaInContext } from './context'
+import { hasFragment, resolveURIReference } from '../../uri'
+import {
+  Context,
+  contextAppendingIndex,
+  contextAppendingKey,
+  resolveSchemaContext,
+  resolveReferenceContext
+} from './context'
 
 type JSONPointer = '' | `/${string}`
 type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
@@ -105,7 +112,7 @@ export function visitValues(
   }
 
   const visitSchema = (schema: JSONSchema, jsonPointerWithinSchema: JSONPointer, context: Context) => {
-    const { context: resolvedContext } = resolveSchemaInContext(schema, context)
+    const resolvedContext = resolveSchemaContext(context, schema)
     stop = Boolean(visitor(schema, 'schema', resolvedContext))
     if (!stop) {
       for (const key in schema) {
@@ -126,9 +133,10 @@ export function visitValues(
   }
 
   const visitReference = (reference: Reference, jsonPointerWithinSchema: JSONPointer, context: Context) => {
-    stop = Boolean(visitor(reference, 'reference', context))
+    const resolvedContext = resolveReferenceContext(context, reference)
+    stop = Boolean(visitor(reference, 'reference', resolvedContext))
     if (!stop) {
-      stop = leaver && Boolean(leaver(reference, 'reference', context))
+      stop = leaver && Boolean(leaver(reference, 'reference', resolvedContext))
     }
     return stop
   }

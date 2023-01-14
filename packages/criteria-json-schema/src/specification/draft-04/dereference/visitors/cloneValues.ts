@@ -1,6 +1,12 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { JSONSchema, Reference } from '../../JSONSchema'
-import { Context, contextAppendingIndex, contextAppendingKey, resolveSchemaInContext } from './context'
+import {
+  Context,
+  contextAppendingIndex,
+  contextAppendingKey,
+  resolveReferenceContext,
+  resolveSchemaContext
+} from './context'
 import { jsonPointerIsSubschema } from './visitValues'
 
 type JSONPointer = '' | `/${string}`
@@ -65,7 +71,7 @@ export function cloneValues(
   }
 
   const cloneSubschema = (schema: JSONSchema, jsonPointerWithinSchema: JSONPointer, context: Context) => {
-    const { context: resolvedContext } = resolveSchemaInContext(schema, context)
+    const resolvedContext = resolveSchemaContext(context, schema)
 
     // TODO: only need this if placeholders exist
     const cloneInto = (clonedSchema: JSONSchema) => {
@@ -82,7 +88,8 @@ export function cloneValues(
   }
 
   const cloneReference = (reference: Reference, jsonPointerWithinSchema: JSONPointer, context: Context) => {
-    return cloner(reference, 'reference', context)
+    const resolvedContext = resolveReferenceContext(context, reference)
+    return cloner(reference, 'reference', resolvedContext)
   }
 
   return cloneValue(root, '', rootContext)

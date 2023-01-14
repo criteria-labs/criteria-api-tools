@@ -1,0 +1,51 @@
+{
+  "definitions": {
+    "parent": {
+      "title": "parent",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/child"
+          }
+        }
+      }
+    },
+    "child": {
+      "title": "child",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "pet": {
+          "$ref": "#/definitions/pet"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/parent"
+          }
+        }
+      }
+    },
+    "pet": {
+      "title": "pet",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "age": {
+          "type": "number"
+        },
+        "species": {
+          "type": "string",
+          "enum": ["cat", "dog", "bird", "fish"]
+        }
+      }
+    }
+  }
+}

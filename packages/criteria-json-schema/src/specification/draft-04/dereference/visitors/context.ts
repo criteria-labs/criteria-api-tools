@@ -1,5 +1,5 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
-import { JSONSchema } from '../../JSONSchema'
+import { JSONSchema, Reference } from '../../JSONSchema'
 import { hasFragment, resolveURIReference, splitFragment, URI } from '../../uri'
 
 type JSONPointer = '' | `/${string}`
@@ -43,8 +43,8 @@ export function contextAppendingIndex(context: Context, index: number): Context 
   }
 }
 
-// Returns the resolved ID and the resolved schema context
-export function resolveSchemaInContext(schema: JSONSchema, context): { id: string; context: Context } {
+// Returns the context resolved to the current schema
+export function resolveSchemaContext(context: Context, schema: JSONSchema): Context {
   let id: string | undefined
   if ('id' in schema && typeof schema.id === 'string') {
     id = resolveURIReference(schema.id, context.baseURI)
@@ -68,11 +68,26 @@ export function resolveSchemaInContext(schema: JSONSchema, context): { id: strin
   }
 
   return {
-    id,
-    context: {
-      baseURI,
-      jsonPointer,
-      resolvedURIs
+    baseURI,
+    jsonPointer,
+    resolvedURIs
+  }
+}
+
+// Returns the resolved ID and the resolved schema context
+export function resolveReferenceContext(context: Context, reference: Reference): Context {
+  const resolvedURIs = context.resolvedURIs
+  if (context.jsonPointer === '') {
+    // Use the base URI if this is the root schema of the document
+    resolvedURIs.push(context.baseURI)
+    if (!hasFragment(context.baseURI)) {
+      resolvedURIs.push(resolveURIReference('#', context.baseURI))
     }
+  }
+
+  return {
+    baseURI: context.baseURI,
+    jsonPointer: context.jsonPointer,
+    resolvedURIs: resolvedURIs
   }
 }

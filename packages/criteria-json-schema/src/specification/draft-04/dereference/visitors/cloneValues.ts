@@ -1,6 +1,5 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { JSONSchema, Reference } from '../../JSONSchema'
-import { URI } from '../../uri'
 import {
   Context,
   contextAppendingIndex,
@@ -13,8 +12,13 @@ import { jsonPointerIsSubschema } from './visitValues'
 type JSONPointer = '' | `/${string}`
 
 export type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
-export type ContextWithCloneInto<K extends Kind> = Context &
-  (K extends 'schema' ? { cloneInto: (instance: JSONSchema, context: { resolvedURIs: URI[] }) => void } : {})
+export type SchemaContext = Context & { cloneInto: (instance: JSONSchema) => void }
+export type ReferenceContext = Context & { clone: (value: any, context: Context) => any }
+export type ContextForKind<K extends Kind> = K extends 'schema'
+  ? SchemaContext
+  : K extends 'reference'
+  ? ReferenceContext
+  : Context
 
 /**
  * Calls visitor once for each object in the schema, starting with the document root schema.
@@ -28,7 +32,7 @@ export function cloneValues(
   cloner: <Kind extends 'object' | 'array' | 'primitive' | 'schema' | 'reference'>(
     value: any,
     kind: Kind,
-    context: ContextWithCloneInto<Kind>
+    context: ContextForKind<Kind>
   ) => any
 ) {
   const cloneValue = (value: any, jsonPointerWithinSchema: JSONPointer, context: Context) => {
@@ -74,28 +78,24 @@ export function cloneValues(
   const cloneSubschema = (schema: JSONSchema, jsonPointerWithinSchema: JSONPointer, context: Context) => {
     const resolvedContext = resolveSchemaContext(context, schema)
 
-    // TODO: only need this if placeholders exist
-    const cloneInto = (clonedSchema: JSONSchema, { resolvedURIs }) => {
-      const cloneIntoContext = {
-        ...resolvedContext,
-        resolvedURIs: [...resolvedContext.resolvedURIs, ...resolvedURIs]
-      }
+    const cloneInto = (clonedSchema: JSONSchema) => {
       for (const key in schema) {
-        const keyContext = contextAppendingKey(resolvedContext, key)
         clonedSchema[key] = cloneValue(
           schema[key],
           `${jsonPointerWithinSchema}/${escapeReferenceToken(key)}`,
-          contextAppendingKey(cloneIntoContext, key)
+          contextAppendingKey(resolvedContext, key)
         )
       }
     }
-
     return cloner(schema, 'schema', { ...resolvedContext, cloneInto })
   }
 
   const cloneReference = (reference: Reference, jsonPointerWithinSchema: JSONPointer, context: Context) => {
     const resolvedContext = resolveReferenceContext(context, reference)
-    return cloner(reference, 'reference', resolvedContext)
+    const clone = (value: any, valueContext: Context) => {
+      return cloneValue(value, '', valueContext) // TODO: json pointer might not be schema root
+    }
+    return cloner(reference, 'reference', { ...resolvedContext, clone })
   }
 
   return cloneValue(root, '', rootContext)

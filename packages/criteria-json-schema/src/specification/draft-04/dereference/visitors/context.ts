@@ -18,7 +18,7 @@ export interface Context {
 
 // when appending a key or index to a resolved uri,
 // filter out uris that are a local identifier example.json#schema
-function uriFragmentIsJSONPointer(uri: URI): boolean {
+export function uriFragmentIsJSONPointer(uri: URI): boolean {
   const { fragment } = splitFragment(uri)
   return typeof fragment === 'string' && (fragment === '' || fragment.startsWith('/'))
 }
@@ -40,6 +40,17 @@ export function contextAppendingIndex(context: Context, index: number): Context 
     resolvedURIs: context.resolvedURIs.filter(uriFragmentIsJSONPointer).map((uri) => {
       return `${uri}/${index}`
     })
+  }
+}
+
+export function contextAppendingJSONPointer(context: Context, jsonPointer: JSONPointer): Context {
+  return {
+    baseURI: context.baseURI,
+    jsonPointer: `${context.jsonPointer}${jsonPointer}`,
+    resolvedURIs: context.resolvedURIs.filter(uriFragmentIsJSONPointer).map((uri) => {
+      return `${uri}${jsonPointer}` // TODO: URI encode, but not slashes
+    })
+    // TODO: need noURIFragment and add #?
   }
 }
 

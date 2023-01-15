@@ -1,5 +1,6 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { JSONSchema, Reference } from '../../JSONSchema'
+import { URI } from '../../uri'
 import {
   Context,
   contextAppendingIndex,
@@ -13,7 +14,7 @@ type JSONPointer = '' | `/${string}`
 
 export type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 export type ContextWithCloneInto<K extends Kind> = Context &
-  (K extends 'schema' ? { cloneInto: (instance: JSONSchema) => void } : {})
+  (K extends 'schema' ? { cloneInto: (instance: JSONSchema, context: { resolvedURIs: URI[] }) => void } : {})
 
 /**
  * Calls visitor once for each object in the schema, starting with the document root schema.
@@ -74,12 +75,17 @@ export function cloneValues(
     const resolvedContext = resolveSchemaContext(context, schema)
 
     // TODO: only need this if placeholders exist
-    const cloneInto = (clonedSchema: JSONSchema) => {
+    const cloneInto = (clonedSchema: JSONSchema, { resolvedURIs }) => {
+      const cloneIntoContext = {
+        ...resolvedContext,
+        resolvedURIs: [...resolvedContext.resolvedURIs, ...resolvedURIs]
+      }
       for (const key in schema) {
+        const keyContext = contextAppendingKey(resolvedContext, key)
         clonedSchema[key] = cloneValue(
           schema[key],
           `${jsonPointerWithinSchema}/${escapeReferenceToken(key)}`,
-          contextAppendingKey(resolvedContext, key)
+          contextAppendingKey(cloneIntoContext, key)
         )
       }
     }

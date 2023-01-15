@@ -18,9 +18,8 @@ const defaultRetrieve = (uri: URI): JSONSchema => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
 
+// TODO: warn on violations of SHOULD directives
 export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
-  // TODO: warn on violations of SHOULD directives
-
   const baseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
   const retrieve = memoize((uri: string) => {
     const document = uri === baseURI ? schema : options?.retrieve(uri) ?? defaultRetrieve(uri)
@@ -51,12 +50,15 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
     }
 
     let result
+    let resolvedURIs = [...context.resolvedURIs]
     for (const uri of context.resolvedURIs) {
       result = dereferencedByURI[uri]
       if (result) {
         if (!isPlaceholder(result)) {
           return result
         }
+
+        resolvedURIs = [...resolvedURIs, ...result[placeholderSymbol].uris]
 
         // no longer a placeholder but still need to dereference children
         delete result[placeholderSymbol]
@@ -68,68 +70,62 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
     result = result ?? {} // create new object if no placeholder found
     dereferencedBySource.set(schema, result)
     context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
-    context.cloneInto(result)
+    context.cloneInto(result, { resolvedURIs })
+
     return result
   }
 
   const dereferenceReference = (reference: Reference, context: Context) => {
     // Keep following references until we find a concrete value
     // It was important to index all known schemas first so that we can follow all references to their conclusion
-    const resolvedURIs = context.resolvedURIs
-    let target: typeof sourceSchemasByURI[URI] = { value: reference, context }
-    let uri
-    while (
-      '$ref' in target.value &&
-      typeof target.value.$ref === 'string' &&
-      Object.keys(target.value).length === 1 // don't follow $ref with siblings since they get dereferenced as unique objects
-    ) {
-      uri = resolveURIReference(target.value.$ref, target.context.baseURI)
-      target = sourceSchemasByURI[uri]
-      if (target) {
-        resolvedURIs.push(...target.context.resolvedURIs)
-      }
-      if (!target) {
-        const { absoluteURI, fragment } = splitFragment(uri)
-        const parentSchema = sourceSchemasByURI[absoluteURI]
-        if (parentSchema) {
-          const evaluatedValue = evaluateFragment(fragment, parentSchema)
-          if (evaluatedValue) {
-            target = {
-              value: evaluatedValue,
-              context: {
-                baseURI: absoluteURI,
-                jsonPointer: null,
-                resolvedURIs: null
-              }
-            }
-          }
+    const uri = resolveURIReference(reference.$ref, context.baseURI)
+    let target = sourceSchemasByURI[uri]
+    let resolvedURIs = context.resolvedURIs
+
+    if (target) {
+      resolvedURIs = [...resolvedURIs, ...target.context.resolvedURIs]
+      if (target && '$ref' in target.value && typeof target.value.$ref === 'string') {
+        if (Object.keys(target.value).length === 1) {
+          return dereferenceReference(target.value as Reference, {
+            baseURI: target.context.baseURI,
+            jsonPointer: target.context.jsonPointer,
+            resolvedURIs: resolvedURIs
+          })
+        } else {
+          return dereferenceReferenceWithSiblings(target.value as Reference, {
+            baseURI: target.context.baseURI,
+            jsonPointer: target.context.jsonPointer,
+            resolvedURIs: resolvedURIs
+          })
         }
-        break
       }
     }
 
-    let result = dereferencedByURI[uri]
-
-    // It may be the child of an already dereferenced schema
-    if (!result) {
-      const { absoluteURI, fragment } = splitFragment(uri)
-      const parentSchema = dereferencedByURI[absoluteURI]
-      if (parentSchema) {
-        result = evaluateFragment(fragment, parentSchema)
+    let result
+    for (const tryURI of [uri, ...resolvedURIs]) {
+      result = dereferencedByURI[tryURI]
+      if (result) {
+        break
       }
     }
 
     // We haven't dereferenced the target yet, store a placeholder
     if (!result) {
       result = {
-        [placeholderSymbol]: { uris: [uri, ...resolvedURIs] }
+        [placeholderSymbol]: { uris: [uri, ...resolvedURIs] } // I don't understand why, but uri must be added to uris here, but not on line 114
       }
       placeholders.add(result as Placeholder)
     }
 
     // If we end up setting a primitive property of this schema,
     // we need to key the dereferenced schema by every uri that points to it
-    resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
+    // XXXXXXXXXXXXXX
+    // removing uri from this array fixes internal tests but breaks substring tests
+    if (uri.endsWith('minLength')) {
+      console.log(`setting result ${uri} ${JSON.stringify(result)}`)
+      // console.log(result)?
+    }
+    ;[uri, ...resolvedURIs].forEach((uri) => (dereferencedByURI[uri] = result))
     return result
   }
 

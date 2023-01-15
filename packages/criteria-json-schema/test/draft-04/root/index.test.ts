@@ -1,9 +1,9 @@
 /* eslint-env jest */
+import { resolve } from 'path'
 import { dereferenceJSONSchema } from '../../../src/draft-04'
 import retrieveFromFilesystem from '../../util/retrieveFromFilesystem'
-import schema from './schema.json'
 import dereferenced from './dereferenced'
-import { resolve } from 'path'
+import schema from './schema.json'
 
 describe('Schema with a top-level (root) $ref', () => {
   it('dereferenceJSONSchema()', async () => {

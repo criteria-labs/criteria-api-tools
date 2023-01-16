@@ -1,0 +1,13 @@
+{
+  "definitions": {
+    "parent": {
+      "$ref": "../definitions/parent-with-children.json"
+    },
+    "child": {
+      "$ref": "../definitions/child-with-parents.json"
+    },
+    "pet": {
+      "$ref": "../definitions/pet.json"
+    }
+  }
+}

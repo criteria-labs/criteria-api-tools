@@ -36,6 +36,9 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
   // Important when the passed in schema is already dereferenced instead of JSON
   const dereferencedBySource = new Map()
 
+  // tasks to execute once all values have been dereferenced
+  const deferredTasks: Array<() => void> = []
+
   const dereferenceSubschema = (schema: JSONSchema, context: SchemaContext) => {
     if (dereferencedBySource.has(schema)) {
       return dereferencedBySource.get(schema)
@@ -93,7 +96,6 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
     // If we detect a cycle, we still have to apply sibling properties
     if (dereferencedBySource.has(reference)) {
       const result = dereferencedBySource.get(reference)
-      Object.assign(result, siblings)
       context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
       return result
     }
@@ -110,9 +112,14 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
       }
     )
 
+    // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
+    // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
+    deferredTasks.push(() => {
+      Object.assign(result, dereferenced, siblings)
+    })
+
     // TODO: can we dereference siblings now?
 
-    Object.assign(result, dereferenced, siblings)
     dereferencedBySource.set(reference, result)
     context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
     return result
@@ -135,6 +142,9 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
       }
     })
   }
+
+  // Now that the object graph has been fully cloned, perform any post-processing
+  deferredTasks.forEach((task) => task())
 
   return dereferencedDocuments[baseURI]
 }

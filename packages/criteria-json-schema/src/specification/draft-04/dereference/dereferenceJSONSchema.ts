@@ -88,6 +88,19 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
     }
 
     const { $ref, ...siblings } = reference
+
+    // Since references with siblings are treated as unique merged objects, we may still get cycles here
+    // If we detect a cycle, we still have to apply sibling properties
+    if (dereferencedBySource.has(reference)) {
+      const result = dereferencedBySource.get(reference)
+      Object.assign(result, siblings)
+      context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
+      return result
+    }
+
+    const result = {}
+    dereferencedBySource.set(reference, result)
+
     const dereferenced = context.clone(
       { $ref },
       {
@@ -99,8 +112,8 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
 
     // TODO: can we dereference siblings now?
 
-    const result = Object.assign({}, dereferenced, siblings)
-    dereferencedBySource.set(schema, result)
+    Object.assign(result, dereferenced, siblings)
+    dereferencedBySource.set(reference, result)
     context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
     return result
   }

@@ -147,15 +147,40 @@ export class Index {
       // Then if that fails, then evaluate the JSON pointer from the parent JSON structure,
       // treating it as plain JSON.
       const evaluatedValue = evaluateJSONPointer(remainingPointer, parentValue.value)
-      if (!evaluatedValue) {
-        throw new Error(`Invalid JSON pointer ${remainingPointer} at ${parentURI}`)
+      if (evaluatedValue) {
+        return {
+          value: evaluatedValue,
+          context: {
+            baseURI: parentURI,
+            jsonPointer: remainingPointer,
+            resolvedURIs: contextAppendingJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+          }
+        }
       }
-      return {
-        value: evaluatedValue,
-        context: {
-          baseURI: parentURI,
-          jsonPointer: remainingPointer,
-          resolvedURIs: contextAppendingJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+
+      // Parent is a reference with sibling properties, but not the sibling we are looking for
+      if ('$ref' in parentValue.value) {
+        const followedParentValue = this.findValue(
+          resolveURIReference(parentValue.value.$ref, parentValue.context.baseURI)
+        )
+        if (!followedParentValue) {
+          throw new Error(`Invalid uri ${uri}`)
+        }
+
+        const evaluatedValue = evaluateJSONPointer(remainingPointer, followedParentValue.value)
+        if (!evaluatedValue) {
+          throw new Error(
+            `Invalid JSON pointer ${remainingPointer} at ${parentURI} ${JSON.stringify(parentValue.value)}`
+          )
+        }
+
+        return {
+          value: evaluatedValue,
+          context: {
+            baseURI: parentURI,
+            jsonPointer: remainingPointer,
+            resolvedURIs: contextAppendingJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+          }
         }
       }
     }

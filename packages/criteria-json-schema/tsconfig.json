@@ -4,8 +4,10 @@
     "esModuleInterop": true,
     "noEmit": false,
     "declaration": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
     "outDir": "dist",
     "rootDir": "src"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "test/util/jest.d.ts"]
 }

@@ -1,0 +1,19 @@
+{
+  "definitions": {
+    "pet": {
+      "$ref": "definitions/pet.json"
+    },
+    "thing": {
+      "$ref": "schema.json#/definitions/thing"
+    },
+    "person": {
+      "$ref": "definitions/person.json"
+    },
+    "parent": {
+      "$ref": "definitions/parent.json"
+    },
+    "child": {
+      "$ref": "definitions/child.json"
+    }
+  }
+}

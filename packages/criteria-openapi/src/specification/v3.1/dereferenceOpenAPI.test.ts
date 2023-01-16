@@ -70,10 +70,6 @@ describe('dereferenceOpenAPI()', () => {
 
     const dereferencedDocument = dereferenceOpenAPI(document)
 
-    console.log(dereferencedDocument.components.schemas.Object)
-    console.log(dereferencedDocument.components.schemas.Reference)
-    console.log(dereferencedDocument.components.schemas.Reference2)
-
     expect(dereferencedDocument.components.schemas.Object).toBeDefined()
     expect(dereferencedDocument.components.schemas.Object).toBe(dereferencedDocument.components.schemas.Reference)
     expect(dereferencedDocument.components.schemas.Object).toBe(dereferencedDocument.components.schemas.Reference2)

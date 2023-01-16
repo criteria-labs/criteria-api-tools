@@ -9,6 +9,7 @@ type JSONPointer = '' | `/${string}`
 export interface IndexEntry<T> {
   value: T
   context: Context
+  circular?: boolean
 }
 
 export class Index {
@@ -41,9 +42,10 @@ export class Index {
       // Note this is not circular JavaScript objects
       if (seenReferences.has(reference.value)) {
         // Throw an error?
+        reference.circular = true
         return {
-          value: {},
-          context: reference.context
+          ...reference,
+          value: {} // erase $ref so that we don't recurse infinitely
         }
       }
       seenReferences.add(reference.value)
@@ -75,14 +77,15 @@ export class Index {
       if (typeof document.value === 'object' && '$ref' in document.value && Object.keys(document.value).length === 1) {
         // Detect circular $refs
         // Note this is not circular JavaScript objects
-        if (seenReferences.has(reference.value)) {
+        if (seenReferences.has(document.value)) {
           // Throw an error?
+          document.circular = true
           return {
-            value: {},
-            context: reference.context
+            ...document,
+            value: {} // erase $ref so that we don't recurse infinitely
           }
         }
-        seenReferences.add(reference.value)
+        seenReferences.add(document as any)
 
         const referencedValue = this.findValue(
           resolveURIReference(document.value.$ref, document.context.baseURI),
@@ -108,7 +111,7 @@ export class Index {
       let index = uri.lastIndexOf('/')
       let parentURI = uri.slice(0, index)
       let remainingPointer = uri.slice(index) as JSONPointer // TODO: decode URI encoding but not slashes
-      const parentValue = this.findValue(parentURI, seenReferences)
+      const parentValue = this.findValue(parentURI, new Set([...seenReferences])) // parent starts it's own chain of "seen" references
       if (!parentValue) {
         throw new Error(`Invalid uri '${parentURI}'`)
       }
@@ -131,6 +134,13 @@ export class Index {
               ...transferredValue.context.resolvedURIs
             ]
           }
+        }
+      }
+
+      if (parentValue.circular) {
+        return {
+          ...parentValue,
+          value: {} // erase $ref so that we don't recurse infinitely
         }
       }
 

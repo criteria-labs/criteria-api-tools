@@ -1,0 +1,6 @@
+{
+  "definitions": {
+    "person": { "$ref": "../definitions/person-with-spouse.json" },
+    "pet": { "$ref": "../definitions/pet.json" }
+  }
+}

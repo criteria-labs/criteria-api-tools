@@ -75,6 +75,6 @@ export interface JSONSchema<ReferenceType extends Reference | never = Reference>
 /**
  * @see https://datatracker.ietf.org/doc/html/draft-wright-json-schema-00#section-7
  */
-export type JSONSchemaSubschema<ReferenceType extends Reference | never> = JSONSchema | ReferenceType
+export type JSONSchemaSubschema<ReferenceType extends Reference | never> = JSONSchema<ReferenceType> | ReferenceType
 
 export type DereferencedJSONSchema = JSONSchema<never>

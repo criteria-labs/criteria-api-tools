@@ -1,5 +1,5 @@
 import { Index, indexDocumentInto } from './indexDocumentInto'
-import { JSONSchema, Reference } from '../JSONSchema'
+import { DereferencedJSONSchema, JSONSchema, Reference } from '../JSONSchema'
 import { memoize } from '../retrievers/memoize'
 import { normalizeURI, resolveURIReference, URI } from '../uri'
 import { cloneValues, SchemaContext, ReferenceContext } from './visitors/cloneValues'
@@ -15,7 +15,7 @@ const defaultRetrieve = (uri: URI): JSONSchema => {
 }
 
 // TODO: warn on violations of SHOULD directives
-export function dereferenceJSONSchema(schema: JSONSchema, options?: Options) {
+export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): DereferencedJSONSchema {
   const baseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
   const retrieve = memoize((uri: string) => {
     const document = uri === baseURI ? schema : options?.retrieve(uri) ?? defaultRetrieve(uri)

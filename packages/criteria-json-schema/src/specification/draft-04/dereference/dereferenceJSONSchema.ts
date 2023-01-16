@@ -1,4 +1,4 @@
-import { Index, indexDocumentInto } from '.'
+import { Index, indexDocumentInto } from './indexDocumentInto'
 import { JSONSchema, Reference } from '../JSONSchema'
 import { memoize } from '../retrievers/memoize'
 import { normalizeURI, resolveURIReference, URI } from '../uri'

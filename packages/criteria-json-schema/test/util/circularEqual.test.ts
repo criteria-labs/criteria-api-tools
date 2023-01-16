@@ -1,8 +1,8 @@
 /* eslint-env jest */
-import cyclicEqual from './cyclicEqual'
+import circularEqual from './circularEqual'
 
-describe('cyclicEqual()', () => {
-  test('handles cyclic values', () => {
+describe('circularEqual()', () => {
+  test('handles circular values', () => {
     const lhs: any = {
       self: null,
       child: {
@@ -24,6 +24,6 @@ describe('cyclicEqual()', () => {
     rhs.self = rhs
     rhs.child.parent = rhs
     rhs.children.push(rhs)
-    expect(cyclicEqual(lhs, rhs)).toBe(true)
+    expect(circularEqual(lhs, rhs)).toBe(true)
   })
 })

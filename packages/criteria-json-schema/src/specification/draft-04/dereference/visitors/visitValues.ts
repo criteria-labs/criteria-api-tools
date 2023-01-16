@@ -54,6 +54,8 @@ export function visitValues(
       seen.add(value)
 
       if ('$ref' in value && typeof value.$ref === 'string') {
+        // NOTE: this will detect a $ref anywhere in a document,
+        // not just where a schema is expected, which may be against the specification.
         return visitReference(value, jsonPointerWithinSchema, context)
       } else if (Array.isArray(value)) {
         return visitArray(value, jsonPointerWithinSchema, context)

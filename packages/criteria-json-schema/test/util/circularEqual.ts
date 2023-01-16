@@ -1,7 +1,7 @@
 /**
- * Compares two values for equality where either value may contain cyclic references.
+ * Compares two values for equality where either value may contain circular references.
  */
-export default function cyclicEqual(lhs: any, rhs: any): boolean {
+export default function circularEqual(lhs: any, rhs: any): boolean {
   var seen = new Set()
 
   const compareValues = (lhs: any, rhs: any) => {

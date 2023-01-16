@@ -1,14 +1,13 @@
 /* eslint-env jest */
 import { dereferenceJSONSchema } from '../../../src/draft-04'
-import selfSchema from './self/schema.json'
-import selfDereferenced from './self/dereferenced'
-import ancestorSchema from './ancestor/schema.json'
 import ancestorDereferenced from './ancestor/dereferenced'
-import indirectSchema from './indirect/schema.json'
-import indirectDereferenced from './indirect/dereferenced'
-import indirectAncestorSchema from './indirect-ancestor/schema.json'
+import ancestorSchema from './ancestor/schema.json'
 import indirectAncestorDereferenced from './indirect-ancestor/dereferenced'
-import cyclicEqual from '../../util/cyclicEqual'
+import indirectAncestorSchema from './indirect-ancestor/schema.json'
+import indirectDereferenced from './indirect/dereferenced'
+import indirectSchema from './indirect/schema.json'
+import selfDereferenced from './self/dereferenced'
+import selfSchema from './self/schema.json'
 
 describe('Schema with circular (recursive) $refs', () => {
   describe('$ref to self', () => {
@@ -35,7 +34,7 @@ describe('Schema with circular (recursive) $refs', () => {
     describe('dereferenceJSONSchema()', () => {
       test('should dereference', () => {
         const output = dereferenceJSONSchema(ancestorSchema as any)
-        expect(cyclicEqual(output, ancestorDereferenced)).toBe(true)
+        expect(output).toCircularEqual(ancestorDereferenced)
 
         // Reference equality
         expect(output.definitions.person.properties.spouse).toBe(output.definitions.person)
@@ -44,7 +43,7 @@ describe('Schema with circular (recursive) $refs', () => {
       test('should double dereference', () => {
         const output1 = dereferenceJSONSchema(ancestorSchema as any)
         const output2 = dereferenceJSONSchema(output1)
-        expect(cyclicEqual(output2, ancestorDereferenced)).toBe(true)
+        expect(output2).toCircularEqual(ancestorDereferenced)
 
         // Reference equality
         expect(output2.definitions.person.properties.spouse).toBe(output2.definitions.person)

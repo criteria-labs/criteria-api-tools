@@ -1,0 +1,288 @@
+{
+  "title": "Deep Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "#/definitions/name"
+    },
+    "level1": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "definitions/name.json"
+        },
+        "level2": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "$ref": "definitions/name.json"
+            },
+            "level3": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "$ref": "#/definitions/name"
+                },
+                "level4": {
+                  "type": "object",
+                  "required": ["name"],
+                  "properties": {
+                    "name": {
+                      "$ref": "definitions/name.json"
+                    },
+                    "level5": {
+                      "type": "object",
+                      "required": ["name"],
+                      "properties": {
+                        "name": {
+                          "$ref": "definitions/name.json"
+                        },
+                        "level6": {
+                          "type": "object",
+                          "required": ["name"],
+                          "properties": {
+                            "name": {
+                              "$ref": "#/definitions/name"
+                            },
+                            "level7": {
+                              "type": "object",
+                              "required": ["name"],
+                              "properties": {
+                                "name": {
+                                  "$ref": "definitions/name.json"
+                                },
+                                "level8": {
+                                  "type": "object",
+                                  "required": ["name"],
+                                  "properties": {
+                                    "name": {
+                                      "$ref": "definitions/name.json"
+                                    },
+                                    "level9": {
+                                      "type": "object",
+                                      "required": ["name"],
+                                      "properties": {
+                                        "name": {
+                                          "$ref": "definitions/name.json"
+                                        },
+                                        "level10": {
+                                          "type": "object",
+                                          "required": ["name"],
+                                          "properties": {
+                                            "name": {
+                                              "$ref": "definitions/name.json"
+                                            },
+                                            "level11": {
+                                              "type": "object",
+                                              "required": ["name"],
+                                              "properties": {
+                                                "name": {
+                                                  "$ref": "definitions/name.json"
+                                                },
+                                                "level12": {
+                                                  "type": "object",
+                                                  "required": ["name"],
+                                                  "properties": {
+                                                    "name": {
+                                                      "$ref": "#/definitions/name"
+                                                    },
+                                                    "level13": {
+                                                      "type": "object",
+                                                      "required": ["name"],
+                                                      "properties": {
+                                                        "name": {
+                                                          "$ref": "#/definitions/name"
+                                                        },
+                                                        "level14": {
+                                                          "type": "object",
+                                                          "required": ["name"],
+                                                          "properties": {
+                                                            "name": {
+                                                              "$ref": "definitions/name.json"
+                                                            },
+                                                            "level15": {
+                                                              "type": "object",
+                                                              "required": ["name"],
+                                                              "properties": {
+                                                                "name": {
+                                                                  "$ref": "definitions/name.json"
+                                                                },
+                                                                "level16": {
+                                                                  "type": "object",
+                                                                  "required": ["name"],
+                                                                  "properties": {
+                                                                    "name": {
+                                                                      "$ref": "definitions/name.json"
+                                                                    },
+                                                                    "level17": {
+                                                                      "type": "object",
+                                                                      "required": ["name"],
+                                                                      "properties": {
+                                                                        "name": {
+                                                                          "$ref": "definitions/name.json"
+                                                                        },
+                                                                        "level18": {
+                                                                          "type": "object",
+                                                                          "required": ["name"],
+                                                                          "properties": {
+                                                                            "name": {
+                                                                              "$ref": "definitions/name.json"
+                                                                            },
+                                                                            "level19": {
+                                                                              "type": "object",
+                                                                              "required": ["name"],
+                                                                              "properties": {
+                                                                                "name": {
+                                                                                  "$ref": "definitions/name.json"
+                                                                                },
+                                                                                "level20": {
+                                                                                  "type": "object",
+                                                                                  "required": ["name"],
+                                                                                  "properties": {
+                                                                                    "name": {
+                                                                                      "$ref": "definitions/name.json"
+                                                                                    },
+                                                                                    "level21": {
+                                                                                      "type": "object",
+                                                                                      "required": ["name"],
+                                                                                      "properties": {
+                                                                                        "name": {
+                                                                                          "$ref": "definitions/name.json"
+                                                                                        },
+                                                                                        "level22": {
+                                                                                          "type": "object",
+                                                                                          "required": ["name"],
+                                                                                          "properties": {
+                                                                                            "name": {
+                                                                                              "$ref": "definitions/name.json"
+                                                                                            },
+                                                                                            "level23": {
+                                                                                              "type": "object",
+                                                                                              "required": ["name"],
+                                                                                              "properties": {
+                                                                                                "name": {
+                                                                                                  "$ref": "definitions/name.json"
+                                                                                                },
+                                                                                                "level24": {
+                                                                                                  "type": "object",
+                                                                                                  "required": ["name"],
+                                                                                                  "properties": {
+                                                                                                    "name": {
+                                                                                                      "$ref": "definitions/name.json"
+                                                                                                    },
+                                                                                                    "level25": {
+                                                                                                      "type": "object",
+                                                                                                      "required": [
+                                                                                                        "name"
+                                                                                                      ],
+                                                                                                      "properties": {
+                                                                                                        "name": {
+                                                                                                          "$ref": "definitions/name.json"
+                                                                                                        },
+                                                                                                        "level26": {
+                                                                                                          "type": "object",
+                                                                                                          "required": [
+                                                                                                            "name"
+                                                                                                          ],
+                                                                                                          "properties": {
+                                                                                                            "name": {
+                                                                                                              "$ref": "#/definitions/name"
+                                                                                                            },
+                                                                                                            "level27": {
+                                                                                                              "type": "object",
+                                                                                                              "required": [
+                                                                                                                "name"
+                                                                                                              ],
+                                                                                                              "properties": {
+                                                                                                                "name": {
+                                                                                                                  "$ref": "definitions/name.json"
+                                                                                                                },
+                                                                                                                "level28": {
+                                                                                                                  "type": "object",
+                                                                                                                  "required": [
+                                                                                                                    "name"
+                                                                                                                  ],
+                                                                                                                  "properties": {
+                                                                                                                    "name": {
+                                                                                                                      "$ref": "definitions/name.json"
+                                                                                                                    },
+                                                                                                                    "level29": {
+                                                                                                                      "type": "object",
+                                                                                                                      "required": [
+                                                                                                                        "name"
+                                                                                                                      ],
+                                                                                                                      "properties": {
+                                                                                                                        "name": {
+                                                                                                                          "$ref": "definitions/name.json"
+                                                                                                                        },
+                                                                                                                        "level30": {
+                                                                                                                          "$ref": "#"
+                                                                                                                        }
+                                                                                                                      }
+                                                                                                                    }
+                                                                                                                  }
+                                                                                                                }
+                                                                                                              }
+                                                                                                            }
+                                                                                                          }
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "name": {
+      "$ref": "definitions/name.json"
+    }
+  }
+}

@@ -1,14 +1,8 @@
-import { JSONPointer } from '../../../util/JSONPointer'
-import { hasFragment, resolveURIReference, splitFragment, URI } from '../../../util/uri'
-import { Context } from '../../../visitors/Context'
-import { VisitorConfiguration } from '../../../visitors/visitValues'
-
-// when appending a key or index to a resolved uri,
-// filter out URIs that are a local identifier example.json#schema
-export function uriFragmentIsJSONPointer(uri: URI): boolean {
-  const { fragment } = splitFragment(uri)
-  return typeof fragment === 'string' && (fragment === '' || fragment.startsWith('/'))
-}
+import { JSONPointer } from '../../util/JSONPointer'
+import { hasFragment, resolveURIReference, splitFragment, URI } from '../../util/uri'
+import { uriFragmentIsJSONPointer } from '../../util/uriFragmentIsJSONPointer'
+import { Context } from '../../visitors/Context'
+import { VisitorConfiguration } from '../../visitors/visitValues'
 
 export default {
   isSubschema: (context: Context): boolean => {

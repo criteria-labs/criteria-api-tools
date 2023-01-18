@@ -1,9 +1,8 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
-import { resolveURIReference, splitFragment, URI } from '../../../util/uri'
-import { Context } from '../../../visitors/Context'
-import { visitValues } from '../../../visitors/visitValues'
-import { JSONSchema } from '../JSONSchema'
-import visitorConfiguration, { uriFragmentIsJSONPointer } from './visitorConfiguration'
+import { resolveURIReference, splitFragment, URI } from '../util/uri'
+import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
+import { Context } from '../visitors/Context'
+import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
 
 type JSONPointer = '' | `/${string}`
 
@@ -14,10 +13,12 @@ export interface IndexEntry<T> {
 }
 
 export class Index {
+  configuration: VisitorConfiguration
   documentsByURI: { [uri: URI]: IndexEntry<any> }
-  schemasByURI: { [uri: URI]: IndexEntry<JSONSchema> }
+  schemasByURI: { [uri: URI]: IndexEntry<any> }
   referencesByURI: { [uri: URI]: IndexEntry<{ $ref: string }> }
-  constructor() {
+  constructor(configuration: VisitorConfiguration) {
+    this.configuration = configuration
     this.documentsByURI = {}
     this.schemasByURI = {}
     this.referencesByURI = {}
@@ -131,7 +132,7 @@ export class Index {
           context: {
             ...transferredValue.context,
             resolvedURIs: [
-              ...visitorConfiguration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs,
+              ...this.configuration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs,
               ...transferredValue.context.resolvedURIs
             ]
           }
@@ -155,7 +156,7 @@ export class Index {
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
-            resolvedURIs: visitorConfiguration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+            resolvedURIs: this.configuration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
           }
         }
       }
@@ -182,7 +183,7 @@ export class Index {
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
-            resolvedURIs: visitorConfiguration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+            resolvedURIs: this.configuration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
           }
         }
       }
@@ -193,7 +194,13 @@ export class Index {
   }
 }
 
-export function indexDocumentInto(index: Index, document: any, documentURI: URI, retrieve: (uri: URI) => JSONSchema) {
+export function indexDocumentInto(
+  index: Index,
+  document: any,
+  documentURI: URI,
+  configuration: VisitorConfiguration,
+  retrieve: (uri: URI) => any
+) {
   const documentContext: Context = {
     baseURI: documentURI,
     jsonPointerFromBaseURI: '',
@@ -208,7 +215,7 @@ export function indexDocumentInto(index: Index, document: any, documentURI: URI,
 
   // Collect external URIs to retrieve
   var unretrievedURIs = new Set<URI>()
-  visitValues(document, documentContext, visitorConfiguration, (value, kind, context) => {
+  visitValues(document, documentContext, configuration, (value, kind, context) => {
     if (kind === 'schema') {
       context.resolvedURIs.forEach(
         (uri) => (index.schemasByURI[uri] = { value, context: { ...context, _schema: true } as any })
@@ -219,7 +226,7 @@ export function indexDocumentInto(index: Index, document: any, documentURI: URI,
         (uri) => (index.referencesByURI[uri] = { value, context: { ...context, _ref: true } as any })
       )
 
-      let uri = resolveURIReference((value as { $ref: string }).$ref, context.baseURI)
+      let uri = resolveURIReference(value.$ref, context.baseURI)
       const { absoluteURI } = splitFragment(uri)
       // Don't retrieve yet, because it may resolve to a nested schema with an id
       unretrievedURIs.add(absoluteURI)
@@ -238,6 +245,6 @@ export function indexDocumentInto(index: Index, document: any, documentURI: URI,
       throw new Error(`Failed to retrieve document at uri '${uri}'`)
     }
 
-    indexDocumentInto(index, externalDocument, uri, retrieve)
+    indexDocumentInto(index, externalDocument, uri, configuration, retrieve)
   })
 }

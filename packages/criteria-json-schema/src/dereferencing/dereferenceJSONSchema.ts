@@ -1,22 +1,21 @@
-import { normalizeURI, resolveURIReference, URI } from '../../../util/uri'
-import { cloneValues, ReferenceContext, SchemaContext } from '../../../visitors/cloneValues'
-import { DereferencedJSONSchema, JSONSchema } from '../JSONSchema'
-import { memoize } from '../../../retrievers/memoize'
+import { memoize } from '../retrievers/memoize'
+import { normalizeURI, resolveURIReference, URI } from '../util/uri'
+import { cloneValues, ReferenceContext, SchemaContext } from '../visitors/cloneValues'
+import { VisitorConfiguration } from '../visitors/visitValues'
 import { Index, indexDocumentInto } from './indexDocumentInto'
-import visitorConfiguration from './visitorConfiguration'
 
 interface Options {
   baseURI?: URI
-  retrieve?: (uri: URI) => JSONSchema
+  retrieve?: (uri: URI) => any
 }
 
 const defaultBaseURI = ''
-const defaultRetrieve = (uri: URI): JSONSchema => {
+const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
 
 // TODO: warn on violations of SHOULD directives
-export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): DereferencedJSONSchema {
+export function dereferenceJSONSchema(schema: any, configuration: VisitorConfiguration, options?: Options) {
   const baseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
   const retrieve = memoize((uri: string) => {
     const document = uri === baseURI ? schema : options?.retrieve(uri) ?? defaultRetrieve(uri)
@@ -26,8 +25,8 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
     return document
   })
 
-  const index = new Index()
-  indexDocumentInto(index, schema, baseURI, retrieve)
+  const index = new Index(configuration)
+  indexDocumentInto(index, schema, baseURI, configuration, retrieve)
 
   // Cache of previously dereferenced values by uri
   // Multiple URIs may refer to the same value
@@ -40,7 +39,7 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
   // tasks to execute once all values have been dereferenced
   const deferredTasks: Array<() => void> = []
 
-  const dereferenceSubschema = (schema: JSONSchema, context: SchemaContext) => {
+  const dereferenceSubschema = (schema: any, context: SchemaContext) => {
     if (dereferencedBySource.has(schema)) {
       return dereferencedBySource.get(schema)
     }
@@ -131,7 +130,7 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
     dereferencedDocuments[uri] = cloneValues(
       sourceDocument.value,
       sourceDocument.context,
-      visitorConfiguration,
+      configuration,
       (value, kind, context) => {
         if (kind === 'schema') {
           return dereferenceSubschema(value, context as SchemaContext)

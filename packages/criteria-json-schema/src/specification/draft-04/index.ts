@@ -1,2 +1,2 @@
 export * from './JSONSchema'
-export * from './dereference/dereferenceJSONSchema'
+export * from './dereferenceJSONSchema'

@@ -1,6 +1,6 @@
 /* eslint-env jest */
-import visitorConfiguration04 from '../specification/draft-04/dereference/visitorConfiguration'
-import visitorConfiguration2020_12 from '../specification/draft-2020-12/dereference/visitorConfiguration'
+import visitorConfiguration04 from '../specification/draft-04/visitorConfiguration'
+import visitorConfiguration2020_12 from '../specification/draft-2020-12/visitorConfiguration'
 import { JSONSchema as JSONSchemaDraft04 } from '../specification/draft-04/JSONSchema'
 import { JSONSchema as JSONSchemaDraft2020_12 } from '../specification/draft-2020-12/JSONSchema'
 import { visitValues } from './visitValues'

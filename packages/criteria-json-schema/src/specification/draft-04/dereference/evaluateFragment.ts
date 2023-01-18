@@ -2,7 +2,7 @@ import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { JSONSchema } from '../JSONSchema'
 
 import { visitValues } from '../../../visitors/visitValues'
-import visitorConfiguration from './visitorConfiguration'
+import visitorConfiguration from '../visitorConfiguration'
 
 // not used, but port tests over to indexDocumentInto
 export function evaluateFragment(fragment: string, document: any): JSONSchema | undefined {

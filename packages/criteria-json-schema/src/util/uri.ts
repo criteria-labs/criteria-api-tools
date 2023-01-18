@@ -34,3 +34,11 @@ export function splitFragment(uri: URI): { absoluteURI: URI; fragment: string } 
 export function normalizeURI(uri: URI): URI {
   return normalize(uri)
 }
+
+export function encodeURIFragment(fragment: string): string {
+  return encodeURI(fragment).replaceAll('#', '%23')
+}
+
+export function decodeURIFragment(fragment: string): string {
+  return decodeURI(fragment.replaceAll('%23', '#'))
+}

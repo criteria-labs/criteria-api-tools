@@ -1,5 +1,5 @@
 import { JSONPointer } from '../../util/JSONPointer'
-import { hasFragment, resolveURIReference, splitFragment, URI } from '../../util/uri'
+import { encodeURIFragment, hasFragment, resolveURIReference, splitFragment, URI } from '../../util/uri'
 import { uriFragmentIsJSONPointer } from '../../util/uriFragmentIsJSONPointer'
 import { Context } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
@@ -73,10 +73,10 @@ export default {
   appendJSONPointer: (context: Context, jsonPointer: JSONPointer) => {
     return {
       baseURI: context.baseURI,
-      jsonPointerFromBaseURI: `${context.jsonPointerFromBaseURI}${jsonPointer}`,
-      jsonPointerFromSchema: `${context.jsonPointerFromSchema}${jsonPointer}`,
+      jsonPointerFromBaseURI: `${context.jsonPointerFromBaseURI}${encodeURIFragment(jsonPointer) as JSONPointer}`,
+      jsonPointerFromSchema: `${context.jsonPointerFromSchema}${encodeURIFragment(jsonPointer) as JSONPointer}`,
       resolvedURIs: context.resolvedURIs.filter(uriFragmentIsJSONPointer).map((uri) => {
-        return `${uri}${jsonPointer}` // TODO: URI encode, but not slashes
+        return `${uri}${encodeURIFragment(jsonPointer)}`
       })
       // TODO: need noURIFragment and add #?
     }

@@ -9,8 +9,8 @@ interface Options {
   retrieve?: (uri: URI) => any
 }
 
-const defaultBaseURI = ''
-const defaultRetrieve = (uri: URI): any => {
+export const defaultBaseURI = ''
+export const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
 

@@ -30,9 +30,8 @@ export default {
       jsonPointer === '/contentSchema' ||
       // deprecated but still supported, TODO: verify
       jsonPointer === '/additionalItems' ||
-      Boolean(jsonPointer.match(/^\/items\/[\d]+$/)) ||
-      Boolean(jsonPointer.match(/^\/dependencies\/[^/]+$/)) ||
-      Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/))
+      Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/dependencies\/[^/]+$/))
     )
   },
   resolveSchemaContext: (context: Context, schema: object) => {

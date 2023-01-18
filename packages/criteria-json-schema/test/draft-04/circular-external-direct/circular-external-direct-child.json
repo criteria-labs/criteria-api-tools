@@ -1,3 +1,0 @@
-{
-  "foo": { "$ref": "./schema.json#/foo" }
-}

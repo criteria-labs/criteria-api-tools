@@ -2,7 +2,7 @@ import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { resolveURIReference, splitFragment, URI } from '../../../util/uri'
 import { Context } from '../../../visitors/Context'
 import { visitValues } from '../../../visitors/visitValues'
-import { JSONSchema, Reference } from '../JSONSchema'
+import { JSONSchema } from '../JSONSchema'
 import visitorConfiguration, { uriFragmentIsJSONPointer } from './visitorConfiguration'
 
 type JSONPointer = '' | `/${string}`
@@ -16,7 +16,7 @@ export interface IndexEntry<T> {
 export class Index {
   documentsByURI: { [uri: URI]: IndexEntry<any> }
   schemasByURI: { [uri: URI]: IndexEntry<JSONSchema> }
-  referencesByURI: { [uri: URI]: IndexEntry<Reference> }
+  referencesByURI: { [uri: URI]: IndexEntry<{ $ref: string }> }
   constructor() {
     this.documentsByURI = {}
     this.schemasByURI = {}
@@ -31,7 +31,7 @@ export class Index {
     )
   }
 
-  findValue(uri: URI, seenReferences: Set<Reference> = new Set(), indent = ''): IndexEntry<any> {
+  findValue(uri: URI, seenReferences: Set<{ $ref: string }> = new Set()): IndexEntry<any> {
     const schema = this.schemasByURI[uri]
     if (schema) {
       return schema
@@ -57,8 +57,7 @@ export class Index {
       }
       const referencedValue = this.findValue(
         resolveURIReference(reference.value.$ref, reference.context.baseURI),
-        seenReferences,
-        indent + '    '
+        seenReferences
       )
       if (!referencedValue) {
         throw new Error(`Invalid $ref '${reference.value.$ref}' at '${uri}'`)
@@ -91,8 +90,7 @@ export class Index {
 
         const referencedValue = this.findValue(
           resolveURIReference(document.value.$ref, document.context.baseURI),
-          seenReferences,
-          indent + '    '
+          seenReferences
         )
         if (!referencedValue) {
           throw new Error(`Invalid $ref '${document.value.$ref}' at '${uri}'`)
@@ -114,7 +112,7 @@ export class Index {
       let index = uri.lastIndexOf('/')
       let parentURI = uri.slice(0, index)
       let remainingPointer = uri.slice(index) as JSONPointer // TODO: decode URI encoding but not slashes
-      const parentValue = this.findValue(parentURI, new Set([...seenReferences]), indent + '    ') // parent starts it's own chain of "seen" references
+      const parentValue = this.findValue(parentURI, new Set([...seenReferences])) // parent starts it's own chain of "seen" references
       if (!parentValue) {
         throw new Error(`Invalid uri '${parentURI}'`)
       }
@@ -124,7 +122,7 @@ export class Index {
       const parentResolvedURI = parentValue.context.resolvedURIs.filter((uri) => uriFragmentIsJSONPointer).at(-1)
       const transferredURI = parentResolvedURI ? `${parentResolvedURI}${remainingPointer}` : undefined
       if (transferredURI && transferredURI !== uri) {
-        const transferredValue = this.findValue(transferredURI, seenReferences, indent + '    ')
+        const transferredValue = this.findValue(transferredURI, seenReferences)
         if (!transferredValue) {
           throw new Error(`Invalid uri '${transferredURI}'`)
         }
@@ -165,9 +163,7 @@ export class Index {
       // Parent is a reference with sibling properties, but not the sibling we are looking for
       if ('$ref' in parentValue.value) {
         const followedParentValue = this.findValue(
-          resolveURIReference(parentValue.value.$ref, parentValue.context.baseURI),
-          new Set(seenReferences),
-          indent + '    '
+          resolveURIReference(parentValue.value.$ref, parentValue.context.baseURI)
         )
         if (!followedParentValue) {
           throw new Error(`Invalid uri ${uri}`)
@@ -223,7 +219,7 @@ export function indexDocumentInto(index: Index, document: any, documentURI: URI,
         (uri) => (index.referencesByURI[uri] = { value, context: { ...context, _ref: true } as any })
       )
 
-      let uri = resolveURIReference((value as Reference).$ref, context.baseURI)
+      let uri = resolveURIReference((value as { $ref: string }).$ref, context.baseURI)
       const { absoluteURI } = splitFragment(uri)
       // Don't retrieve yet, because it may resolve to a nested schema with an id
       unretrievedURIs.add(absoluteURI)

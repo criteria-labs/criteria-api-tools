@@ -1,0 +1,84 @@
+{
+  "title": "Person",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "$ref": "#/definitions/name"
+    },
+    "phone": {
+      "$ref": "#/definitions/phone"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["male", "female"]
+    },
+    "fragment": {
+      "$ref": "#fragment"
+    }
+  },
+  "definitions": {
+    "name": {
+      "type": "object",
+      "required": ["first", "last"],
+      "properties": {
+        "first": {
+          "$ref": "#/definitions/requiredString"
+        },
+        "last": {
+          "$ref": "#/definitions/name/properties/first"
+        },
+        "middle": {
+          "type": {
+            "$ref": "#/definitions/name/properties/first/type"
+          },
+          "minLength": {
+            "$ref": "#/definitions/name/properties/last/minLength"
+          }
+        },
+        "prefix": {
+          "$ref": "#/definitions/name/properties/last",
+          "minLength": 3
+        },
+        "suffix": {
+          "type": "string",
+          "$ref": "#/definitions/name/properties/prefix",
+          "maxLength": 3
+        }
+      }
+    },
+    "phone": {
+      "type": "object",
+      "description": "Tests similar behavior to name, but with property declaration order reversed.",
+      "required": ["home", "work"],
+      "properties": {
+        "home": {
+          "$ref": "#/definitions/phone/properties/work"
+        },
+        "work": {
+          "$ref": "#/definitions/requiredString"
+        },
+        "mobile": {
+          "type": {
+            "$ref": "#/definitions/phone/properties/home/type"
+          },
+          "minLength": {
+            "$ref": "#/definitions/phone/properties/work/minLength"
+          }
+        }
+      }
+    },
+    "requiredString": {
+      "title": "requiredString",
+      "type": "string",
+      "minLength": 1
+    },
+    "fragment": {
+      "$id": "#fragment"
+    }
+  }
+}

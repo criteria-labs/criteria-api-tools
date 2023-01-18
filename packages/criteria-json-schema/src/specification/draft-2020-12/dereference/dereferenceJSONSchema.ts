@@ -1,6 +1,6 @@
 import { normalizeURI, resolveURIReference, URI } from '../../../util/uri'
 import { cloneValues, ReferenceContext, SchemaContext } from '../../../visitors/cloneValues'
-import { DereferencedJSONSchema, JSONSchema, Reference } from '../JSONSchema'
+import { DereferencedJSONSchema, JSONSchema } from '../JSONSchema'
 import { memoize } from '../../../retrievers/memoize'
 import { Index, indexDocumentInto } from './indexDocumentInto'
 import visitorConfiguration from './visitorConfiguration'
@@ -59,7 +59,7 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
     return result
   }
 
-  const dereferenceReference = (reference: Reference, context: ReferenceContext) => {
+  const dereferenceReference = (reference: { $ref: string }, context: ReferenceContext) => {
     for (const uri of context.resolvedURIs) {
       const result = dereferencedByURI[uri]
       if (result) {
@@ -79,7 +79,7 @@ export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): De
     return context.clone(sourceValue.value, sourceValue.context)
   }
 
-  const dereferenceReferenceWithSiblings = (reference: Reference, context: ReferenceContext) => {
+  const dereferenceReferenceWithSiblings = (reference: { $ref: string }, context: ReferenceContext) => {
     // Merging $ref and siblings creates a new unique object,
     // otherwise sibling properties will be applied everywhere the same $ref is used
     // Assume that siblings does not need to be further dereferenced

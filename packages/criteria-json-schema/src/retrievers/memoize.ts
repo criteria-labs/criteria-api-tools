@@ -1,7 +1,7 @@
-import { JSONSchema } from '../JSONSchema'
-import { normalizeURI, URI } from '../uri'
+import { JSONSchema } from '../specification/draft-04/JSONSchema'
+import { normalizeURI, URI } from '../util/uri'
 
-export function memoize(retrieve: (uri: URI) => JSONSchema): (uri: URI) => JSONSchema {
+export function memoize(retrieve: (uri: URI) => any): (uri: URI) => any {
   const cache: { [uri: URI]: JSONSchema } = {}
   return (uri: URI) => {
     const normalizedURI = normalizeURI(uri)

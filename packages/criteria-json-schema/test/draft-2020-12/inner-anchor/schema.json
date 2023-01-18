@@ -1,0 +1,16 @@
+{
+  "id": "http://example.net/root.json",
+  "items": {
+    "type": "array",
+    "items": { "$ref": "inner.json#item" }
+  },
+  "definitions": {
+    "inner": {
+      "$id": "inner.json",
+      "items": {
+        "$anchor": "item",
+        "type": "integer"
+      }
+    }
+  }
+}

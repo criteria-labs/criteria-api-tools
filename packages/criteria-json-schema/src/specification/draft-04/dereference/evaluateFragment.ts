@@ -1,7 +1,10 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { JSONSchema } from '../JSONSchema'
-import { visitValues } from './visitors/visitValues'
 
+import { visitValues } from '../../../visitors/visitValues'
+import visitorConfiguration from './visitorConfiguration'
+
+// not used, but port tests over to indexDocumentInto
 export function evaluateFragment(fragment: string, document: any): JSONSchema | undefined {
   if (typeof document !== 'object') {
     throw new Error('document is not an object')
@@ -10,7 +13,7 @@ export function evaluateFragment(fragment: string, document: any): JSONSchema | 
     return evaluateJSONPointer(fragment, document)
   } else {
     let found
-    visitValues(document, null, (value, kind, context) => {
+    visitValues(document, null, visitorConfiguration, (value, kind, context) => {
       if (kind === 'schema' && (value as JSONSchema).id === `#${encodeURIComponent(fragment)}`) {
         found = value
         return true // stop

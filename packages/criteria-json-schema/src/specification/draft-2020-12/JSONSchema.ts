@@ -35,3 +35,5 @@ export type JSONSchema<AdditionalVocabularies extends object = {}> =
       JSONSchemaContentVocabulary<AdditionalVocabularies> &
       JSONSchemaMetaDataVocabulary &
       AdditionalVocabularies)
+
+export type DereferencedJSONSchema = JSONSchema

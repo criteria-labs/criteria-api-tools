@@ -1,0 +1,9 @@
+{
+  "title": "Person",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "$ref": "./definitions/always-valid.json"
+    }
+  }
+}

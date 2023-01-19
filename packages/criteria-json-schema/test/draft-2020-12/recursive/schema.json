@@ -1,0 +1,12 @@
+{
+  "definitions": {
+    "alice": {
+      "$anchor": "alice",
+      "allOf": [{ "$ref": "#bob" }]
+    },
+    "bob": {
+      "$anchor": "bob",
+      "allOf": [{ "$ref": "#alice" }]
+    }
+  }
+}

@@ -23,7 +23,7 @@ export default {
       Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/))
     )
   },
-  resolveSchemaContext: (context: Context, schema: object) => {
+  resolveContext: (context: Context, schema: object) => {
     let id: string | undefined
     if ('id' in schema && typeof schema.id === 'string') {
       id = resolveURIReference(schema.id, context.baseURI)
@@ -51,34 +51,6 @@ export default {
       jsonPointerFromBaseURI,
       jsonPointerFromSchema: '',
       resolvedURIs
-    }
-  },
-  resolveReferenceContext: (context: Context, reference: { $ref: string }) => {
-    const resolvedURIs = context.resolvedURIs
-    if (context.jsonPointerFromBaseURI === '') {
-      // Use the base URI if this is the root schema of the document
-      resolvedURIs.push(context.baseURI)
-      if (!hasFragment(context.baseURI)) {
-        resolvedURIs.push(resolveURIReference('#', context.baseURI))
-      }
-    }
-
-    return {
-      baseURI: context.baseURI,
-      jsonPointerFromBaseURI: context.jsonPointerFromBaseURI,
-      jsonPointerFromSchema: context.jsonPointerFromSchema,
-      resolvedURIs: resolvedURIs
-    }
-  },
-  appendJSONPointer: (context: Context, jsonPointer: JSONPointer) => {
-    return {
-      baseURI: context.baseURI,
-      jsonPointerFromBaseURI: `${context.jsonPointerFromBaseURI}${encodeURIFragment(jsonPointer) as JSONPointer}`,
-      jsonPointerFromSchema: `${context.jsonPointerFromSchema}${encodeURIFragment(jsonPointer) as JSONPointer}`,
-      resolvedURIs: context.resolvedURIs.filter(uriFragmentIsJSONPointer).map((uri) => {
-        return `${uri}${encodeURIFragment(jsonPointer)}`
-      })
-      // TODO: need noURIFragment and add #?
     }
   }
 } satisfies VisitorConfiguration

@@ -1,7 +1,7 @@
 import { memoize } from '../retrievers/memoize'
 import { normalizeURI, resolveURIReference, URI } from '../util/uri'
 import { cloneValues, ReferenceContext, SchemaContext } from '../visitors/cloneValues'
-import { VisitorConfiguration } from '../visitors/visitValues'
+import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
 import { Index, indexDocumentInto } from './indexDocumentInto'
 
 interface Options {
@@ -39,6 +39,9 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
   // tasks to execute once all values have been dereferenced
   const deferredTasks: Array<() => void> = []
 
+  // This is used to follow $dynamicRef references
+  const dynamicPath = []
+
   const dereferenceSubschema = (schema: any, context: SchemaContext) => {
     if (dereferencedBySource.has(schema)) {
       return dereferencedBySource.get(schema)
@@ -54,11 +57,13 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
     const result = {}
     dereferencedBySource.set(schema, result)
     context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
+    dynamicPath.push(context)
     context.cloneInto(result)
+    dynamicPath.pop()
     return result
   }
 
-  const dereferenceReference = (reference: { $ref: string }, context: ReferenceContext) => {
+  const dereferenceReference = (reference: { $ref: string } | { $dynamicRef: string }, context: ReferenceContext) => {
     for (const uri of context.resolvedURIs) {
       const result = dereferencedByURI[uri]
       if (result) {
@@ -66,16 +71,48 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
       }
     }
 
-    // Keep following references until we find a concrete value
-    // It was important to index all known schemas first so that we can follow all references to their conclusion
-    const uri = resolveURIReference(reference.$ref, context.baseURI)
-    const sourceValue = index.findValue(uri)
+    if ('$ref' in reference) {
+      // Keep following references until we find a concrete value
+      // It was important to index all known schemas first so that we can follow all references to their conclusion
+      const uri = resolveURIReference(reference.$ref, context.baseURI)
 
-    if (!sourceValue) {
-      throw new Error(`Invalid uri ${uri}`)
+      dynamicPath.push(context)
+      const sourceValue = index.findValue(uri)
+      dynamicPath.pop()
+
+      if (!sourceValue) {
+        throw new Error(`Invalid uri ${uri}`)
+      }
+      return context.clone(sourceValue.value, sourceValue.context)
     }
+    if ('$dynamicRef' in reference) {
+      // starting from outermost dynamic context, see if any lexical children have the dynamic anchor
+      let sourceValue
+      for (const dynamicContext of dynamicPath) {
+        const uri = dynamicContext.resolvedURIs[dynamicContext.resolvedURIs.length - 1]
+        let schema = index.schemasByURI[uri] ?? index.referencesByURI[uri] ?? index.dynamicReferencesByURI[uri]
+        if (!schema) {
+          throw new Error(`No schema at uri '${uri}'`) // should never get here
+        }
 
-    return context.clone(sourceValue.value, sourceValue.context)
+        visitValues(schema.value, schema.context, configuration, (value, kind, context) => {
+          if (typeof value === 'object' && '$dynamicAnchor' in value) {
+            if (`#${value.$dynamicAnchor}` === reference.$dynamicRef) {
+              sourceValue = { value, context }
+              return true // stop
+            }
+          }
+        })
+        if (sourceValue) {
+          break
+        }
+      }
+
+      if (!sourceValue) {
+        throw new Error(`Invalid dynamic ref '${reference.$dynamicRef}'`)
+      }
+      return context.clone(sourceValue.value, sourceValue.context)
+    }
   }
 
   const dereferenceReferenceWithSiblings = (reference: { $ref: string }, context: ReferenceContext) => {
@@ -103,6 +140,7 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
     const result = {}
     dereferencedBySource.set(reference, result)
 
+    dynamicPath.push(context)
     const dereferenced = context.clone(
       { $ref },
       {
@@ -110,6 +148,7 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
         resolvedURIs: [] // do not pass through since these point to a new unique merge object, not the referenced object
       }
     )
+    dynamicPath.pop()
 
     // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
     // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
@@ -125,6 +164,7 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
   }
 
   // Actually clone the schema
+  // TODO: should this only clone the root one? can ony be pne dynamic path.
   const dereferencedDocuments = {}
   for (const [uri, sourceDocument] of Object.entries(index.documentsByURI)) {
     dereferencedDocuments[uri] = cloneValues(

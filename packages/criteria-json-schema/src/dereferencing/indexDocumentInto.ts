@@ -1,7 +1,7 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { resolveURIReference, splitFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
-import { Context } from '../visitors/Context'
+import { appendJSONPointer, Context } from '../visitors/Context'
 import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
 
 type JSONPointer = '' | `/${string}`
@@ -17,11 +17,13 @@ export class Index {
   documentsByURI: { [uri: URI]: IndexEntry<any> }
   schemasByURI: { [uri: URI]: IndexEntry<any> }
   referencesByURI: { [uri: URI]: IndexEntry<{ $ref: string }> }
+  dynamicReferencesByURI: { [uri: URI]: IndexEntry<{ $dynamicRef: string }> } // used by draft 2020-12
   constructor(configuration: VisitorConfiguration) {
     this.configuration = configuration
     this.documentsByURI = {}
     this.schemasByURI = {}
     this.referencesByURI = {}
+    this.dynamicReferencesByURI = {}
   }
 
   has(uri: URI): boolean {
@@ -32,7 +34,7 @@ export class Index {
     )
   }
 
-  findValue(uri: URI, seenReferences: Set<{ $ref: string }> = new Set()): IndexEntry<any> {
+  findValue(uri: URI, seenReferences: Set<{ $ref: string } | { $dynamicRef: string }> = new Set()): IndexEntry<any> {
     const schema = this.schemasByURI[uri]
     if (schema) {
       return schema
@@ -132,7 +134,7 @@ export class Index {
           context: {
             ...transferredValue.context,
             resolvedURIs: [
-              ...this.configuration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs,
+              ...appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs,
               ...transferredValue.context.resolvedURIs
             ]
           }
@@ -156,7 +158,7 @@ export class Index {
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
-            resolvedURIs: this.configuration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+            resolvedURIs: appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
           }
         }
       }
@@ -183,7 +185,7 @@ export class Index {
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
-            resolvedURIs: this.configuration.appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+            resolvedURIs: appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
           }
         }
       }
@@ -217,19 +219,22 @@ export function indexDocumentInto(
   var unretrievedURIs = new Set<URI>()
   visitValues(document, documentContext, configuration, (value, kind, context) => {
     if (kind === 'schema') {
-      context.resolvedURIs.forEach(
-        (uri) => (index.schemasByURI[uri] = { value, context: { ...context, _schema: true } as any })
-      )
+      context.resolvedURIs.forEach((uri) => (index.schemasByURI[uri] = { value, context: { ...context } as any }))
     } else if (kind === 'reference') {
       // Includes references with sibling properties
-      context.resolvedURIs.forEach(
-        (uri) => (index.referencesByURI[uri] = { value, context: { ...context, _ref: true } as any })
-      )
+      if ('$ref' in value) {
+        context.resolvedURIs.forEach((uri) => (index.referencesByURI[uri] = { value, context: { ...context } as any }))
 
-      let uri = resolveURIReference(value.$ref, context.baseURI)
-      const { absoluteURI } = splitFragment(uri)
-      // Don't retrieve yet, because it may resolve to a nested schema with an id
-      unretrievedURIs.add(absoluteURI)
+        let uri = resolveURIReference(value.$ref, context.baseURI)
+        const { absoluteURI } = splitFragment(uri)
+        // Don't retrieve yet, because it may resolve to a nested schema with an id
+        unretrievedURIs.add(absoluteURI)
+      }
+      if ('$dynamicRef' in value) {
+        context.resolvedURIs.forEach(
+          (uri) => (index.dynamicReferencesByURI[uri] = { value, context: { ...context } as any })
+        )
+      }
     }
   })
 

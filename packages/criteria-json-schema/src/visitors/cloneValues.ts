@@ -1,8 +1,6 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
-import { Context } from './Context'
+import { appendJSONPointer, Context } from './Context'
 import { VisitorConfiguration } from './visitValues'
-
-type JSONPointer = '' | `/${string}`
 
 export type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 export type SchemaContext = Context & { cloneInto: (target: object) => void }
@@ -33,7 +31,10 @@ export function cloneValues(
     if (typeof value === 'object' && value !== null && !ArrayBuffer.isView(value)) {
       // needs a seen guard?
 
-      if ('$ref' in value && typeof value.$ref === 'string') {
+      if (
+        ('$ref' in value && typeof value.$ref === 'string') ||
+        ('$dynamicRef' in value && typeof value.$dynamicRef === 'string')
+      ) {
         return cloneReference(value, context)
       } else if (Array.isArray(value)) {
         return cloneArray(value, context)
@@ -50,14 +51,14 @@ export function cloneValues(
   const cloneObject = (object: object, context: Context) => {
     const result: any = {}
     for (const key in object) {
-      result[key] = cloneValue(object[key], configuration.appendJSONPointer(context, `/${escapeReferenceToken(key)}`))
+      result[key] = cloneValue(object[key], appendJSONPointer(context, `/${escapeReferenceToken(key)}`))
     }
     return result
   }
 
   const cloneArray = (array: any[], context: Context) => {
     return array.map((value, index) => {
-      return cloneValue(value, configuration.appendJSONPointer(context, `/${index}`))
+      return cloneValue(value, appendJSONPointer(context, `/${index}`))
     })
   }
 
@@ -66,21 +67,18 @@ export function cloneValues(
   }
 
   const cloneSubschema = (schema: object, context: Context) => {
-    const resolvedContext = configuration.resolveSchemaContext(context, schema)
+    const resolvedContext = configuration.resolveContext(context, schema)
 
     const cloneInto = (target: object) => {
       for (const key in schema) {
-        target[key] = cloneValue(
-          schema[key],
-          configuration.appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`)
-        )
+        target[key] = cloneValue(schema[key], appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`))
       }
     }
     return cloner(schema, 'schema', { ...resolvedContext, cloneInto })
   }
 
   const cloneReference = (reference: { $ref: string }, context: Context) => {
-    const resolvedContext = configuration.resolveReferenceContext(context, reference)
+    const resolvedContext = configuration.resolveContext(context, reference)
     return cloner(reference, 'reference', { ...resolvedContext, clone: cloneValue })
   }
 

@@ -1,6 +1,5 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
-import { JSONPointer } from '../util/JSONPointer'
-import { Context } from './Context'
+import { appendJSONPointer, Context } from './Context'
 
 type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 
@@ -11,14 +10,8 @@ export interface VisitorConfiguration {
   // so we won't mistake the JSON pointer for, say, an array of subschemas.
   isSubschema: (context: Context) => boolean
 
-  // Returns the context resolved to the current schema
-  resolveSchemaContext: (context: Context, schema: object) => Context
-
-  // Returns the context resolved to the current reference
-  resolveReferenceContext: (context: Context, reference: { $ref: string }) => Context
-
-  // Returns a new context by appending the given JSON pointer
-  appendJSONPointer: (context: Context, jsonPointer: JSONPointer) => Context
+  // Returns the context resolved to the current schema or reference
+  resolveContext: (context: Context, schema: object) => Context
 }
 
 export function visitValues(
@@ -40,9 +33,13 @@ export function visitValues(
       }
       seen.add(value)
 
-      if ('$ref' in value && typeof value.$ref === 'string') {
-        // NOTE: this will detect a $ref anywhere in a document,
+      if (
+        ('$ref' in value && typeof value.$ref === 'string') ||
+        ('$dynamicRef' in value && typeof value.$dynamicRef === 'string')
+      ) {
+        // NOTE: this will detect a $ref or $dynamicRef anywhere in a document,
         // not just where a schema is expected, which may be against the specification.
+        // It will also detect $dynamicRef outside of 2020-12.
         return visitReference(value, context)
       } else if (Array.isArray(value)) {
         return visitArray(value, context)
@@ -60,7 +57,7 @@ export function visitValues(
     stop = Boolean(visitor(object, 'object', context))
     if (!stop) {
       for (const key in object) {
-        stop = visitValue(object[key], configuration.appendJSONPointer(context, `/${escapeReferenceToken(key)}`))
+        stop = visitValue(object[key], appendJSONPointer(context, `/${escapeReferenceToken(key)}`))
         if (stop) {
           break
         }
@@ -76,7 +73,7 @@ export function visitValues(
     stop = Boolean(visitor(array, 'array', context))
     if (!stop) {
       for (let index = 0; index < array.length; index++) {
-        stop = visitValue(array[index], configuration.appendJSONPointer(context, `/${index}`))
+        stop = visitValue(array[index], appendJSONPointer(context, `/${index}`))
         if (stop) {
           break
         }
@@ -97,14 +94,11 @@ export function visitValues(
   }
 
   const visitSchema = (schema: object, context: Context) => {
-    const resolvedContext = configuration.resolveSchemaContext(context, schema)
+    const resolvedContext = configuration.resolveContext(context, schema)
     stop = Boolean(visitor(schema, 'schema', resolvedContext))
     if (!stop) {
       for (const key in schema) {
-        stop = visitValue(
-          schema[key],
-          configuration.appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`)
-        )
+        stop = visitValue(schema[key], appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`))
         if (stop) {
           break
         }
@@ -117,8 +111,17 @@ export function visitValues(
   }
 
   const visitReference = (reference: { $ref: string }, context: Context) => {
-    const resolvedContext = configuration.resolveReferenceContext(context, reference)
+    const resolvedContext = configuration.resolveContext(context, reference)
     stop = Boolean(visitor(reference, 'reference', resolvedContext))
+    if (!stop) {
+      // recurse into siblings if there are any, otherwise this will just call visitPrimitive with the value of $ref
+      for (const key in reference) {
+        stop = visitValue(reference[key], appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`))
+        if (stop) {
+          break
+        }
+      }
+    }
     if (!stop) {
       stop = leaver && Boolean(leaver(reference, 'reference', resolvedContext))
     }

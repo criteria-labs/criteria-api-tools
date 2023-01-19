@@ -7,3 +7,4 @@ export {
   JSONSchema as JSONSchemaDraft2020_12,
   JSONSchemaPrimitiveType as JSONSchemaDraft2020_12PrimitiveType
 } from './specification/draft-2020-12'
+export * from './retrievers'

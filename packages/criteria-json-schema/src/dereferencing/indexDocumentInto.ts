@@ -37,6 +37,7 @@ export class Index {
   findValue(uri: URI, seenReferences: Set<{ $ref: string } | { $dynamicRef: string }> = new Set()): IndexEntry<any> {
     const schema = this.schemasByURI[uri]
     if (schema) {
+      // circular now that could be sibling refs?
       return schema
     }
 
@@ -54,10 +55,6 @@ export class Index {
       }
       seenReferences.add(reference.value)
 
-      if (Object.keys(reference.value).length > 1) {
-        // don't follow references if they contain sibling properties
-        return reference
-      }
       const referencedValue = this.findValue(
         resolveURIReference(reference.value.$ref, reference.context.baseURI),
         seenReferences
@@ -220,8 +217,20 @@ export function indexDocumentInto(
   visitValues(document, documentContext, configuration, (value, kind, context) => {
     if (kind === 'schema') {
       context.resolvedURIs.forEach((uri) => (index.schemasByURI[uri] = { value, context: { ...context } as any }))
+
+      // References with sibling properties
+      if ('$ref' in value) {
+        let uri = resolveURIReference(value.$ref, context.baseURI)
+        const { absoluteURI } = splitFragment(uri)
+        // Don't retrieve yet, because it may resolve to a nested schema with an id
+        unretrievedURIs.add(absoluteURI)
+      }
+      if ('$dynamicRef' in value) {
+        context.resolvedURIs.forEach(
+          (uri) => (index.dynamicReferencesByURI[uri] = { value, context: { ...context } as any })
+        )
+      }
     } else if (kind === 'reference') {
-      // Includes references with sibling properties
       if ('$ref' in value) {
         context.resolvedURIs.forEach((uri) => (index.referencesByURI[uri] = { value, context: { ...context } as any }))
 

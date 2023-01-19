@@ -3,8 +3,10 @@ import { appendJSONPointer, Context } from './Context'
 import { VisitorConfiguration } from './visitValues'
 
 export type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
-export type SchemaContext = Context & { cloneInto: (target: object) => void }
 export type ReferenceContext = Context & { clone: (value: any, context: Context) => any }
+export type SchemaContext = ReferenceContext & {
+  cloneInto: (target: object) => void
+}
 export type ContextForKind<K extends Kind> = K extends 'schema'
   ? SchemaContext
   : K extends 'reference'
@@ -31,13 +33,12 @@ export function cloneValues(
     if (typeof value === 'object' && value !== null && !ArrayBuffer.isView(value)) {
       // needs a seen guard?
 
-      if (
-        ('$ref' in value && typeof value.$ref === 'string') ||
-        ('$dynamicRef' in value && typeof value.$dynamicRef === 'string')
-      ) {
-        return cloneReference(value, context)
-      } else if (Array.isArray(value)) {
+      if (Array.isArray(value)) {
         return cloneArray(value, context)
+      } else if (('$ref' in value || '$dynamicRef' in value) && Object.keys(value).length === 1) {
+        // Will detect references outside of where we would expect a schema
+        // Will also detect $dynamicRef outside of 2020-12.
+        return cloneReference(value, { ...context, jsonPointerFromSchema: '' })
       } else if (configuration.isSubschema(context)) {
         return cloneSubschema(value, { ...context, jsonPointerFromSchema: '' })
       } else {
@@ -74,7 +75,7 @@ export function cloneValues(
         target[key] = cloneValue(schema[key], appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`))
       }
     }
-    return cloner(schema, 'schema', { ...resolvedContext, cloneInto })
+    return cloner(schema, 'schema', { ...resolvedContext, cloneInto, clone: cloneValue })
   }
 
   const cloneReference = (reference: { $ref: string }, context: Context) => {

@@ -141,7 +141,7 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
     dereferencedBySource.set(reference, result)
 
     dynamicPath.push(context)
-    const dereferenced = context.clone(
+    const dereferenced = dereferenceReference(
       { $ref },
       {
         ...context,
@@ -173,13 +173,13 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
       configuration,
       (value, kind, context) => {
         if (kind === 'schema') {
-          return dereferenceSubschema(value, context as SchemaContext)
-        } else if (kind === 'reference') {
-          if (Object.keys(value).length == 1) {
-            return dereferenceReference(value, context as ReferenceContext)
-          } else {
+          if ('$ref' in value || '$dynamicRef' in value) {
             return dereferenceReferenceWithSiblings(value, context as ReferenceContext)
+          } else {
+            return dereferenceSubschema(value, context as SchemaContext)
           }
+        } else if (kind === 'reference') {
+          return dereferenceReference(value, context as ReferenceContext)
         } else {
           return value
         }

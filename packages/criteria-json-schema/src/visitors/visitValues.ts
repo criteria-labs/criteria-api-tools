@@ -33,16 +33,12 @@ export function visitValues(
       }
       seen.add(value)
 
-      if (
-        ('$ref' in value && typeof value.$ref === 'string') ||
-        ('$dynamicRef' in value && typeof value.$dynamicRef === 'string')
-      ) {
-        // NOTE: this will detect a $ref or $dynamicRef anywhere in a document,
-        // not just where a schema is expected, which may be against the specification.
-        // It will also detect $dynamicRef outside of 2020-12.
-        return visitReference(value, context)
-      } else if (Array.isArray(value)) {
+      if (Array.isArray(value)) {
         return visitArray(value, context)
+      } else if (('$ref' in value || '$dynamicRef' in value) && Object.keys(value).length === 1) {
+        // Will detect references outside of where we would expect a schema
+        // Will also detect $dynamicRef outside of 2020-12.
+        return visitReference(value, { ...context, jsonPointerFromSchema: '' })
       } else if (configuration.isSubschema(context)) {
         return visitSchema(value, { ...context, jsonPointerFromSchema: '' })
       } else {

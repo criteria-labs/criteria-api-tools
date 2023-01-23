@@ -52,5 +52,10 @@ export default {
       jsonPointerFromSchema: '',
       resolvedURIs
     }
+  },
+  mergeReferencedSchema: (target: object, referencedSchema: object) => {
+    // Reapply siblings so that referencedSchema does not override sibling properties
+    const { ...siblings } = target
+    Object.assign(target, referencedSchema, siblings)
   }
 } satisfies VisitorConfiguration

@@ -12,6 +12,10 @@ export interface VisitorConfiguration {
 
   // Returns the context resolved to the current schema or reference
   resolveContext: (context: Context, schema: object) => Context
+
+  // Applies referencedSchema to target.
+  // Called when target contains $ref and sibling properties.
+  mergeReferencedSchema: (target: object, referencedSchema: object) => void
 }
 
 export function visitValues(

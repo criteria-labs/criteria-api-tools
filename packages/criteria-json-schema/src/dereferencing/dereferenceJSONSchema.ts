@@ -153,7 +153,8 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
     // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
     // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
     deferredTasks.push(() => {
-      Object.assign(result, dereferenced, siblings)
+      Object.assign(result, siblings)
+      configuration.mergeReferencedSchema(result, dereferenced)
     })
 
     // TODO: can we dereference siblings now?

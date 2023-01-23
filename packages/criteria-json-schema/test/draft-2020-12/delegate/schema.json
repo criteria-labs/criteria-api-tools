@@ -4,12 +4,12 @@
   "required": ["identifier"],
   "properties": {
     "identifier": {
-      "$ref": "#/definitions/alphanumericWithInitialLetter"
+      "$ref": "#/$defs/alphanumericWithInitialLetter"
     }
   },
-  "definitions": {
+  "$defs": {
     "alphanumericWithInitialLetter": {
-      "$ref": "#/definitions/alphanumeric",
+      "$ref": "#/$defs/alphanumeric",
       "pattern": "^[a-zA-Z]"
     },
     "alphanumeric": {

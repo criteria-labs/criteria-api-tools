@@ -7,7 +7,7 @@ export default {
       type: 'integer'
     }
   },
-  definitions: {
+  $defs: {
     inner: {
       $id: 'inner.json',
       items: {

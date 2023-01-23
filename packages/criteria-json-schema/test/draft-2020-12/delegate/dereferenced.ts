@@ -11,7 +11,7 @@ export default {
       pattern: '^[a-zA-Z]'
     }
   },
-  definitions: {
+  $defs: {
     alphanumericWithInitialLetter: {
       $ref: {
         type: 'string',

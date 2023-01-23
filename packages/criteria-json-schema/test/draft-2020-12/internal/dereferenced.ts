@@ -1,5 +1,5 @@
 const schema: any = {
-  definitions: {
+  $defs: {
     name: {
       required: ['first', 'last'],
       type: 'object',
@@ -70,13 +70,13 @@ const schema: any = {
   title: 'Person'
 }
 
-schema.definitions.name.properties.first = schema.definitions.requiredString
-schema.definitions.name.properties.last = schema.definitions.requiredString
-schema.definitions.name.properties.prefix.$ref = schema.definitions.requiredString
-schema.definitions.name.properties.suffix.$ref = schema.definitions.requiredString
+schema.$defs.name.properties.first = schema.$defs.requiredString
+schema.$defs.name.properties.last = schema.$defs.requiredString
+schema.$defs.name.properties.prefix.$ref = schema.$defs.requiredString
+schema.$defs.name.properties.suffix.$ref = schema.$defs.requiredString
 
-schema.properties.name = schema.definitions.name
-schema.properties.phone = schema.definitions.phone
-schema.properties.fragment = schema.definitions.fragment
+schema.properties.name = schema.$defs.name
+schema.properties.phone = schema.$defs.phone
+schema.properties.fragment = schema.$defs.fragment
 
 export default schema

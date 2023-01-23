@@ -1,5 +1,5 @@
 {
-  "definitions": {
+  "$defs": {
     "alice": {
       "$anchor": "alice",
       "allOf": [{ "$ref": "#bob" }]

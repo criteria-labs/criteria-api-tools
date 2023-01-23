@@ -4,10 +4,10 @@
   "required": ["name"],
   "properties": {
     "name": {
-      "$ref": "#/definitions/name"
+      "$ref": "#/$defs/name"
     },
     "phone": {
-      "$ref": "#/definitions/phone"
+      "$ref": "#/$defs/phone"
     },
     "age": {
       "type": "integer",
@@ -21,32 +21,32 @@
       "$ref": "#fragment"
     }
   },
-  "definitions": {
+  "$defs": {
     "name": {
       "type": "object",
       "required": ["first", "last"],
       "properties": {
         "first": {
-          "$ref": "#/definitions/requiredString"
+          "$ref": "#/$defs/requiredString"
         },
         "last": {
-          "$ref": "#/definitions/name/properties/first"
+          "$ref": "#/$defs/name/properties/first"
         },
         "middle": {
           "type": {
-            "$ref": "#/definitions/name/properties/first/type"
+            "$ref": "#/$defs/name/properties/first/type"
           },
           "minLength": {
-            "$ref": "#/definitions/name/properties/last/minLength"
+            "$ref": "#/$defs/name/properties/last/minLength"
           }
         },
         "prefix": {
-          "$ref": "#/definitions/name/properties/last",
+          "$ref": "#/$defs/name/properties/last",
           "minLength": 3
         },
         "suffix": {
           "type": "string",
-          "$ref": "#/definitions/name/properties/prefix",
+          "$ref": "#/$defs/name/properties/prefix",
           "maxLength": 3
         }
       }
@@ -57,17 +57,17 @@
       "required": ["home", "work"],
       "properties": {
         "home": {
-          "$ref": "#/definitions/phone/properties/work"
+          "$ref": "#/$defs/phone/properties/work"
         },
         "work": {
-          "$ref": "#/definitions/requiredString"
+          "$ref": "#/$defs/requiredString"
         },
         "mobile": {
           "type": {
-            "$ref": "#/definitions/phone/properties/home/type"
+            "$ref": "#/$defs/phone/properties/home/type"
           },
           "minLength": {
-            "$ref": "#/definitions/phone/properties/work/minLength"
+            "$ref": "#/$defs/phone/properties/work/minLength"
           }
         }
       }

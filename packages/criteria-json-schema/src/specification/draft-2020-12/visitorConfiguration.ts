@@ -1,8 +1,11 @@
 import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
+import visitorConfigurationDraft04 from '../draft-04/visitorConfiguration'
+import visitorConfigurationDraft2020_12 from '../draft-2020-12/visitorConfiguration'
 
 export default {
+  dialect: 'https://json-schema.org/draft/2020-12/schema',
   isSubschema: (context: Context): boolean => {
     const jsonPointer = context.jsonPointerFromSchema
     return (
@@ -33,6 +36,22 @@ export default {
     )
   },
   resolveContext: (context: Context, schema: object) => {
+    let resolvedConfiguration = context.configuration
+    if ('$schema' in schema && typeof schema.$schema === 'string') {
+      switch (schema.$schema) {
+        case 'http://json-schema.org/draft-04/schema#':
+          resolvedConfiguration = visitorConfigurationDraft04
+          break
+        case 'https://json-schema.org/draft/2020-12/schema':
+          resolvedConfiguration = visitorConfigurationDraft2020_12
+          break
+        default:
+          // Warn that $schema not recognized
+          resolvedConfiguration = context.configuration
+          break
+      }
+    }
+
     let $id: string | undefined
     if ('$id' in schema && typeof schema.$id === 'string') {
       $id = resolveURIReference(schema.$id, context.baseURI)
@@ -66,6 +85,7 @@ export default {
     }
 
     return {
+      configuration: resolvedConfiguration,
       baseURI,
       jsonPointerFromBaseURI,
       jsonPointerFromSchema: '',

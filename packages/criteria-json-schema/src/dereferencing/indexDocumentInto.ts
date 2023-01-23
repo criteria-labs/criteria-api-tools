@@ -13,13 +13,12 @@ export interface IndexEntry<T> {
 }
 
 export class Index {
-  configuration: VisitorConfiguration
   documentsByURI: { [uri: URI]: IndexEntry<any> }
   schemasByURI: { [uri: URI]: IndexEntry<any> }
   referencesByURI: { [uri: URI]: IndexEntry<{ $ref: string }> }
   dynamicReferencesByURI: { [uri: URI]: IndexEntry<{ $dynamicRef: string }> } // used by draft 2020-12
-  constructor(configuration: VisitorConfiguration) {
-    this.configuration = configuration
+
+  constructor() {
     this.documentsByURI = {}
     this.schemasByURI = {}
     this.referencesByURI = {}
@@ -152,6 +151,7 @@ export class Index {
         return {
           value: evaluatedValue,
           context: {
+            configuration: parentValue.context.configuration,
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
@@ -179,6 +179,7 @@ export class Index {
         return {
           value: evaluatedValue,
           context: {
+            configuration: followedParentValue.context.configuration,
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
@@ -197,10 +198,11 @@ export function indexDocumentInto(
   index: Index,
   document: any,
   documentURI: URI,
-  configuration: VisitorConfiguration,
+  defaultConfiguration: VisitorConfiguration,
   retrieve: (uri: URI) => any
 ) {
   const documentContext: Context = {
+    configuration: defaultConfiguration,
     baseURI: documentURI,
     jsonPointerFromBaseURI: '',
     jsonPointerFromSchema: '',
@@ -214,7 +216,7 @@ export function indexDocumentInto(
 
   // Collect external URIs to retrieve
   var unretrievedURIs = new Set<URI>()
-  visitValues(document, documentContext, configuration, (value, kind, context) => {
+  visitValues(document, documentContext, defaultConfiguration, (value, kind, context) => {
     if (kind === 'schema') {
       context.resolvedURIs.forEach((uri) => (index.schemasByURI[uri] = { value, context: { ...context } as any }))
 
@@ -259,6 +261,6 @@ export function indexDocumentInto(
       throw new Error(`Failed to retrieve document at uri '${uri}'`)
     }
 
-    indexDocumentInto(index, externalDocument, uri, configuration, retrieve)
+    indexDocumentInto(index, externalDocument, uri, defaultConfiguration, retrieve)
   })
 }

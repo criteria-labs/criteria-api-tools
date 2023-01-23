@@ -31,7 +31,7 @@ const schema = {
 
 describe('indexDocumentInto()', () => {
   describe('draft-04', () => {
-    const index = new Index(visitorConfiguration)
+    const index = new Index()
     indexDocumentInto(index, schema, '', visitorConfiguration, defaultRetrieve)
 
     test('evaluates json pointers', () => {

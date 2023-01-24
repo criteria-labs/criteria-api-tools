@@ -3,22 +3,28 @@ import { JSONSchema } from '../JSONSchema'
 /**
  * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-01#section-10
  */
-export type JSONSchemaApplicatorVocabulary<AdditionalVocabularies extends object> = {
-  allOf?: [JSONSchema<AdditionalVocabularies>, ...JSONSchema<AdditionalVocabularies>[]]
-  anyOf?: [JSONSchema<AdditionalVocabularies>, ...JSONSchema<AdditionalVocabularies>[]]
-  oneOf?: [JSONSchema<AdditionalVocabularies>, ...JSONSchema<AdditionalVocabularies>[]]
-  not?: JSONSchema<AdditionalVocabularies>
-  if?: JSONSchema<AdditionalVocabularies>
-  then?: JSONSchema<AdditionalVocabularies>
-  else?: JSONSchema<AdditionalVocabularies>
-  dependentSchemas?: { [key: string]: JSONSchema<AdditionalVocabularies> }
+export type JSONSchemaApplicatorVocabulary<
+  AdditionalVocabularies extends object,
+  ReferenceType extends string | object
+> = {
+  allOf?: [JSONSchema<AdditionalVocabularies, ReferenceType>, ...JSONSchema<AdditionalVocabularies, ReferenceType>[]]
+  anyOf?: [JSONSchema<AdditionalVocabularies, ReferenceType>, ...JSONSchema<AdditionalVocabularies, ReferenceType>[]]
+  oneOf?: [JSONSchema<AdditionalVocabularies, ReferenceType>, ...JSONSchema<AdditionalVocabularies, ReferenceType>[]]
+  not?: JSONSchema<AdditionalVocabularies, ReferenceType>
+  if?: JSONSchema<AdditionalVocabularies, ReferenceType>
+  then?: JSONSchema<AdditionalVocabularies, ReferenceType>
+  else?: JSONSchema<AdditionalVocabularies, ReferenceType>
+  dependentSchemas?: { [key: string]: JSONSchema<AdditionalVocabularies, ReferenceType> }
 
-  prefixItems?: [JSONSchema<AdditionalVocabularies>, ...JSONSchema<AdditionalVocabularies>[]]
-  items?: JSONSchema<AdditionalVocabularies>
-  contains?: JSONSchema<AdditionalVocabularies>
+  prefixItems?: [
+    JSONSchema<AdditionalVocabularies, ReferenceType>,
+    ...JSONSchema<AdditionalVocabularies, ReferenceType>[]
+  ]
+  items?: JSONSchema<AdditionalVocabularies, ReferenceType>
+  contains?: JSONSchema<AdditionalVocabularies, ReferenceType>
 
-  properties?: { [key: string]: JSONSchema<AdditionalVocabularies> }
-  patternProperties?: { [key: string]: JSONSchema<AdditionalVocabularies> }
-  additionalProperties?: JSONSchema<AdditionalVocabularies>
-  propertyNames?: JSONSchema<AdditionalVocabularies>
+  properties?: { [key: string]: JSONSchema<AdditionalVocabularies, ReferenceType> }
+  patternProperties?: { [key: string]: JSONSchema<AdditionalVocabularies, ReferenceType> }
+  additionalProperties?: JSONSchema<AdditionalVocabularies, ReferenceType>
+  propertyNames?: JSONSchema<AdditionalVocabularies, ReferenceType>
 }

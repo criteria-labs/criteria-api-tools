@@ -1,4 +1,5 @@
 import { memoize } from '../retrievers/memoize'
+import visitorConfiguration2020_12 from '../specification/draft-2020-12/visitorConfiguration'
 import { normalizeURI, resolveURIReference, URI } from '../util/uri'
 import { cloneValues, ReferenceContext, SchemaContext } from '../visitors/cloneValues'
 import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
@@ -7,15 +8,17 @@ import { Index, indexDocumentInto } from './indexDocumentInto'
 interface Options {
   baseURI?: URI
   retrieve?: (uri: URI) => any
+  defaultConfiguration?: VisitorConfiguration
 }
 
 export const defaultBaseURI = ''
 export const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
+export const defaultDefaultConfiguration = visitorConfiguration2020_12 // yes, defaultDefault...
 
 // TODO: warn on violations of SHOULD directives
-export function dereferenceJSONSchema(schema: any, configuration: VisitorConfiguration, options?: Options) {
+export function dereferenceJSONSchema(schema: any, options?: Options) {
   const baseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
   const retrieve = memoize((uri: string) => {
     const document = uri === baseURI ? schema : options?.retrieve(uri) ?? defaultRetrieve(uri)
@@ -24,9 +27,10 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
     }
     return document
   })
+  const defaultConfiguration = options?.defaultConfiguration ?? defaultDefaultConfiguration
 
-  const index = new Index(configuration)
-  indexDocumentInto(index, schema, baseURI, configuration, retrieve)
+  const index = new Index()
+  indexDocumentInto(index, schema, baseURI, defaultConfiguration, retrieve)
 
   // Cache of previously dereferenced values by uri
   // Multiple URIs may refer to the same value
@@ -95,7 +99,7 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
           throw new Error(`No schema at uri '${uri}'`) // should never get here
         }
 
-        visitValues(schema.value, schema.context, configuration, (value, kind, context) => {
+        visitValues(schema.value, schema.context, context.configuration, (value, kind, context) => {
           if (typeof value === 'object' && '$dynamicAnchor' in value) {
             if (`#${value.$dynamicAnchor}` === reference.$dynamicRef) {
               sourceValue = { value, context }
@@ -153,7 +157,8 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
     // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
     // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
     deferredTasks.push(() => {
-      Object.assign(result, dereferenced, siblings)
+      Object.assign(result, siblings)
+      context.configuration.mergeReferencedSchema(result, dereferenced)
     })
 
     // TODO: can we dereference siblings now?
@@ -170,7 +175,7 @@ export function dereferenceJSONSchema(schema: any, configuration: VisitorConfigu
     dereferencedDocuments[uri] = cloneValues(
       sourceDocument.value,
       sourceDocument.context,
-      configuration,
+      defaultConfiguration,
       (value, kind, context) => {
         if (kind === 'schema') {
           if ('$ref' in value || '$dynamicRef' in value) {

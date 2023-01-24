@@ -4,6 +4,9 @@ import { appendJSONPointer, Context } from './Context'
 type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 
 export interface VisitorConfiguration {
+  // The JSON schema dialect of this configuration
+  dialect: string
+
   // Identifies whether we are deferencing an actual subschema,
   // and not just a nested object that happens to contain an 'id' property.
   // When this is called we already know typeof value === 'object',
@@ -12,12 +15,16 @@ export interface VisitorConfiguration {
 
   // Returns the context resolved to the current schema or reference
   resolveContext: (context: Context, schema: object) => Context
+
+  // Applies referencedSchema to target.
+  // Called when target contains $ref and sibling properties.
+  mergeReferencedSchema: (target: object, referencedSchema: object) => void
 }
 
 export function visitValues(
   root: object,
   rootContext: Context | null,
-  configuration: VisitorConfiguration,
+  defaultConfiguration: VisitorConfiguration,
   visitor: (value: any, kind: Kind, context: Context) => boolean | void,
   leaver?: (value: any, kind: Kind, context: Context) => boolean | void
 ) {
@@ -39,7 +46,7 @@ export function visitValues(
         // Will detect references outside of where we would expect a schema
         // Will also detect $dynamicRef outside of 2020-12.
         return visitReference(value, { ...context, jsonPointerFromSchema: '' })
-      } else if (configuration.isSubschema(context)) {
+      } else if (context.configuration.isSubschema(context)) {
         return visitSchema(value, { ...context, jsonPointerFromSchema: '' })
       } else {
         return visitObject(value, context)
@@ -90,7 +97,7 @@ export function visitValues(
   }
 
   const visitSchema = (schema: object, context: Context) => {
-    const resolvedContext = configuration.resolveContext(context, schema)
+    const resolvedContext = context.configuration.resolveContext(context, schema)
     stop = Boolean(visitor(schema, 'schema', resolvedContext))
     if (!stop) {
       for (const key in schema) {
@@ -107,7 +114,7 @@ export function visitValues(
   }
 
   const visitReference = (reference: { $ref: string }, context: Context) => {
-    const resolvedContext = configuration.resolveContext(context, reference)
+    const resolvedContext = context.configuration.resolveContext(context, reference)
     stop = Boolean(visitor(reference, 'reference', resolvedContext))
     if (!stop) {
       // recurse into siblings if there are any, otherwise this will just call visitPrimitive with the value of $ref
@@ -126,6 +133,12 @@ export function visitValues(
 
   visitValue(
     root,
-    rootContext ?? { baseURI: '', jsonPointerFromBaseURI: '', jsonPointerFromSchema: '', resolvedURIs: [] }
+    rootContext ?? {
+      configuration: defaultConfiguration,
+      baseURI: '',
+      jsonPointerFromBaseURI: '',
+      jsonPointerFromSchema: '',
+      resolvedURIs: []
+    }
   )
 }

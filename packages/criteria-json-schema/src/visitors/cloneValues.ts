@@ -22,7 +22,7 @@ export type ContextForKind<K extends Kind> = K extends 'schema'
 export function cloneValues(
   root: object,
   rootContext: Context,
-  configuration: VisitorConfiguration,
+  defaultConfiguration: VisitorConfiguration,
   cloner: <Kind extends 'object' | 'array' | 'primitive' | 'schema' | 'reference'>(
     value: any,
     kind: Kind,
@@ -39,7 +39,7 @@ export function cloneValues(
         // Will detect references outside of where we would expect a schema
         // Will also detect $dynamicRef outside of 2020-12.
         return cloneReference(value, { ...context, jsonPointerFromSchema: '' })
-      } else if (configuration.isSubschema(context)) {
+      } else if (context.configuration.isSubschema(context)) {
         return cloneSubschema(value, { ...context, jsonPointerFromSchema: '' })
       } else {
         return cloneObject(value, context)
@@ -68,7 +68,7 @@ export function cloneValues(
   }
 
   const cloneSubschema = (schema: object, context: Context) => {
-    const resolvedContext = configuration.resolveContext(context, schema)
+    const resolvedContext = context.configuration.resolveContext(context, schema)
 
     const cloneInto = (target: object) => {
       for (const key in schema) {
@@ -79,7 +79,7 @@ export function cloneValues(
   }
 
   const cloneReference = (reference: { $ref: string }, context: Context) => {
-    const resolvedContext = configuration.resolveContext(context, reference)
+    const resolvedContext = context.configuration.resolveContext(context, reference)
     return cloner(reference, 'reference', { ...resolvedContext, clone: cloneValue })
   }
 

@@ -9,5 +9,5 @@ interface Options {
 }
 
 export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): DereferencedJSONSchema {
-  return dereferenceJSONSchemaWithConfiguration(schema, visitorConfiguration, options)
+  return dereferenceJSONSchemaWithConfiguration(schema, { ...options, defaultConfiguration: visitorConfiguration })
 }

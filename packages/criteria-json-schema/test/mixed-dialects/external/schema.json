@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/person.json",
+  "type": "object",
+  "title": "person",
+  "properties": {
+    "oldRelative": {
+      "$ref": "04-person.json"
+    },
+    "newRelative": {
+      "$ref": "2020-12-person.json"
+    }
+  }
+}

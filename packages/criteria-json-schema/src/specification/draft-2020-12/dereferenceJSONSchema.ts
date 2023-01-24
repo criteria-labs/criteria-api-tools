@@ -1,6 +1,6 @@
 import { dereferenceJSONSchema as dereferenceJSONSchemaWithConfiguration } from '../../dereferencing/dereferenceJSONSchema'
 import { URI } from '../../util/uri'
-import { DereferencedJSONSchema, JSONSchema } from './JSONSchema'
+import { DereferencedJSONSchemaObject, JSONSchema, JSONSchemaBooleanSchema } from './JSONSchema'
 import visitorConfiguration from './visitorConfiguration'
 
 interface Options {
@@ -8,6 +8,9 @@ interface Options {
   retrieve?: (uri: URI) => JSONSchema
 }
 
-export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): DereferencedJSONSchema {
-  return dereferenceJSONSchemaWithConfiguration(schema, visitorConfiguration, options)
+export function dereferenceJSONSchema<T extends JSONSchema>(
+  schema: T,
+  options?: Options
+): T extends JSONSchemaBooleanSchema ? JSONSchemaBooleanSchema : DereferencedJSONSchemaObject {
+  return dereferenceJSONSchemaWithConfiguration(schema, { ...options, defaultConfiguration: visitorConfiguration })
 }

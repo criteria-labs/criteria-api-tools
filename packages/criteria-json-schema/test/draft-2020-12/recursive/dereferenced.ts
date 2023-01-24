@@ -1,5 +1,5 @@
 const schema: any = {
-  definitions: {
+  $defs: {
     alice: {
       $anchor: 'alice',
       allOf: []
@@ -11,7 +11,7 @@ const schema: any = {
   }
 }
 
-schema.definitions.alice.allOf.push(schema.definitions.bob)
-schema.definitions.bob.allOf.push(schema.definitions.alice)
+schema.$defs.alice.allOf.push(schema.$defs.bob)
+schema.$defs.bob.allOf.push(schema.$defs.alice)
 
 export default schema

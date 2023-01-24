@@ -9,7 +9,7 @@ describe('Schema with infinite recursion', () => {
     expect(output).toCircularEqual(dereferenced)
 
     // Reference equality
-    expect(output.definitions.alice.allOf[0]).toBe(output.definitions.bob)
-    expect(output.definitions.bob.allOf[0]).toBe(output.definitions.alice)
+    expect(output.$defs.alice.allOf[0]).toBe(output.$defs.bob)
+    expect(output.$defs.bob.allOf[0]).toBe(output.$defs.alice)
   })
 })

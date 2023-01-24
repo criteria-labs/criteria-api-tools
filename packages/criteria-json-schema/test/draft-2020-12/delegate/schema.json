@@ -1,0 +1,20 @@
+{
+  "title": "Record",
+  "type": "object",
+  "required": ["identifier"],
+  "properties": {
+    "identifier": {
+      "$ref": "#/$defs/alphanumericWithInitialLetter"
+    }
+  },
+  "$defs": {
+    "alphanumericWithInitialLetter": {
+      "$ref": "#/$defs/alphanumeric",
+      "pattern": "^[a-zA-Z]"
+    },
+    "alphanumeric": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9]*$"
+    }
+  }
+}

@@ -13,6 +13,7 @@ TypeScript type definitions and functions for the [JSON Schema](https://json-sch
   - [Definining additional vocabularies](#definining-additional-vocabularies)
 - [Acknowledgments](#acknowledgments)
 - [License](#license)
+- [About Criteria](#about-criteria)
 
 ## Overview
 
@@ -345,3 +346,7 @@ Many test cases have been ported from [@apidevtools/json-schema-ref-parser](http
 ## License
 
 This project is [MIT](https://github.com/criteria-labs/criteria-api-tools/blob/main/packages/criteria-json-schema/LICENSE) licensed.
+
+## About Criteria
+
+[Criteria](https://criteria.sh) is a collaborative platform for designing APIs.

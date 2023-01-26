@@ -46,16 +46,24 @@ export default {
 
     if (
       (context.objectType === 'response' && Boolean(jsonPointer.match(/^\/content\/[^/]*$/))) ||
+      (context.objectType === 'parameter' && Boolean(jsonPointer.match(/^\/content\/[^/]*$/))) ||
+      (context.objectType === 'header' && Boolean(jsonPointer.match(/^\/content\/[^/]*$/))) ||
       (context.objectType === 'mediaType' && jsonPointer === '')
     ) {
       return 'mediaType'
     }
 
-    if (context.objectType === 'encoding' && jsonPointer === '') {
+    if (
+      (context.objectType === 'mediaType' && Boolean(jsonPointer.match(/^\/encoding\/[^/]*$/))) ||
+      (context.objectType === 'encoding' && jsonPointer === '')
+    ) {
       return 'encoding'
     }
 
-    if (context.objectType === 'responses' && jsonPointer === '') {
+    if (
+      (context.objectType === 'operation' && jsonPointer === '/responses') ||
+      (context.objectType === 'responses' && jsonPointer === '')
+    ) {
       return 'responses'
     }
 

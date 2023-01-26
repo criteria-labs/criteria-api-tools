@@ -32,7 +32,8 @@ export function dereferenceOpenAPI(openAPI: any, options?: Options) {
     return document
   })
   const merge = options?.merge ?? defaultMerge
-  const defaultConfiguration = options?.defaultConfiguration ?? defaultDefaultConfiguration // yes, defaultDefault...
+  const defaultConfiguration =
+    options?.defaultConfiguration ?? defaultDefaultConfiguration({ jsonSchemaDialect: openAPI.jsonSchemaDialect }) // yes, defaultDefault...
 
   const index = new Index()
   indexDocumentInto(index, openAPI, 'openAPI', baseURI, defaultConfiguration, retrieve)

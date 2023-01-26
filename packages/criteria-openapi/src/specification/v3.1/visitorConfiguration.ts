@@ -2,7 +2,10 @@ import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context, ObjectType } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
 
-const jsonSchemaDraft04VisitorConfiguration: VisitorConfiguration = {
+// TODO: Is options necessary as well as jsonSchemaDialect?
+// What happens if a schema with a $schema references one without, does it default to the referring schema's dialect,
+// or the jsonSchemaDialect value of the overall OpenAPI document?
+const jsonSchemaDraft04VisitorConfiguration = (options: { jsonSchemaDialect?: string }): VisitorConfiguration => ({
   jsonSchemaDialect: 'http://json-schema.org/draft-04/schema#',
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
@@ -29,16 +32,22 @@ const jsonSchemaDraft04VisitorConfiguration: VisitorConfiguration = {
   resolveContext: (context: Context, object: object): Context => {
     // Assume that object is a Schema object
     let resolvedConfiguration = context.configuration
-    if (context.objectType === 'schema' && '$schema' in object && typeof object.$schema === 'string') {
-      switch (object.$schema) {
+    if (context.objectType === 'schema') {
+      let $schema: string | undefined
+      if ('$schema' in object && typeof object.$schema === 'string') {
+        $schema = object.$schema
+      } else {
+        $schema = options?.jsonSchemaDialect ?? 'https://spec.openapis.org/oas/3.1/dialect/base'
+      }
+      switch ($schema) {
         case 'https://spec.openapis.org/oas/3.1/dialect/base':
-          resolvedConfiguration = configuration
+          resolvedConfiguration = configuration(options)
           break
         case 'http://json-schema.org/draft-04/schema#':
-          resolvedConfiguration = jsonSchemaDraft04VisitorConfiguration
+          resolvedConfiguration = jsonSchemaDraft04VisitorConfiguration(options)
           break
         case 'https://json-schema.org/draft/2020-12/schema':
-          resolvedConfiguration = jsonSchemaDraft2020_12VisitorConfiguration
+          resolvedConfiguration = jsonSchemaDraft2020_12VisitorConfiguration(options)
           break
         default:
           // Warn that $schema not recognized
@@ -111,9 +120,9 @@ const jsonSchemaDraft04VisitorConfiguration: VisitorConfiguration = {
   //     Object.assign(target, referencedSchema, siblings)
   //   }
   // }
-}
+})
 
-const jsonSchemaDraft2020_12VisitorConfiguration: VisitorConfiguration = {
+const jsonSchemaDraft2020_12VisitorConfiguration = (options: { jsonSchemaDialect?: string }): VisitorConfiguration => ({
   jsonSchemaDialect: 'https://json-schema.org/draft/2020-12/schema',
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
@@ -151,16 +160,22 @@ const jsonSchemaDraft2020_12VisitorConfiguration: VisitorConfiguration = {
   resolveContext: (context: Context, object: object): Context => {
     // Assume that object is a Schema object
     let resolvedConfiguration = context.configuration
-    if (context.objectType === 'schema' && '$schema' in object && typeof object.$schema === 'string') {
-      switch (object.$schema) {
+    if (context.objectType === 'schema') {
+      let $schema: string | undefined
+      if ('$schema' in object && typeof object.$schema === 'string') {
+        $schema = object.$schema
+      } else {
+        $schema = options?.jsonSchemaDialect ?? 'https://spec.openapis.org/oas/3.1/dialect/base'
+      }
+      switch ($schema) {
         case 'https://spec.openapis.org/oas/3.1/dialect/base':
-          resolvedConfiguration = configuration
+          resolvedConfiguration = configuration(options)
           break
         case 'http://json-schema.org/draft-04/schema#':
-          resolvedConfiguration = jsonSchemaDraft04VisitorConfiguration
+          resolvedConfiguration = jsonSchemaDraft04VisitorConfiguration(options)
           break
         case 'https://json-schema.org/draft/2020-12/schema':
-          resolvedConfiguration = jsonSchemaDraft2020_12VisitorConfiguration
+          resolvedConfiguration = jsonSchemaDraft2020_12VisitorConfiguration(options)
           break
         default:
           // Warn that $schema not recognized
@@ -242,9 +257,9 @@ const jsonSchemaDraft2020_12VisitorConfiguration: VisitorConfiguration = {
   //     Object.assign(target, referencedSchema, siblings)
   //   }
   // }
-}
+})
 
-const configuration: VisitorConfiguration = {
+const configuration = (options: { jsonSchemaDialect?: string }): VisitorConfiguration => ({
   jsonSchemaDialect: 'http://json-schema.org/draft-04/schema#',
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
@@ -400,7 +415,7 @@ const configuration: VisitorConfiguration = {
   },
   resolveContext: (context: Context, object: object) => {
     if (context.objectType === 'schema') {
-      return jsonSchemaDraft2020_12VisitorConfiguration.resolveContext(context, object)
+      return jsonSchemaDraft2020_12VisitorConfiguration(options).resolveContext(context, object)
     }
 
     const resolvedURIs = context.resolvedURIs
@@ -421,6 +436,6 @@ const configuration: VisitorConfiguration = {
       resolvedURIs
     }
   }
-}
+})
 
 export default configuration

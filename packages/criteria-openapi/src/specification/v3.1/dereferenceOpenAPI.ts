@@ -9,6 +9,9 @@ interface Options {
   merge?: (dereferencedObject: object, additionalProperties: object) => void
 }
 
-export function dereferenceOpenAPI(schema: OpenAPI, options?: Options): DereferencedOpenAPI {
-  return dereferenceOpenAPIWithConfiguration(schema, { ...options, defaultConfiguration: visitorConfiguration })
+export function dereferenceOpenAPI(openAPI: OpenAPI, options?: Options): DereferencedOpenAPI {
+  return dereferenceOpenAPIWithConfiguration(openAPI, {
+    ...options,
+    defaultConfiguration: visitorConfiguration({ jsonSchemaDialect: openAPI.jsonSchemaDialect })
+  })
 }

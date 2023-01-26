@@ -34,7 +34,7 @@
     "test": "jest ."
   },
   "dependencies": {
-    "@criteria/json-schema": "^0.0.0",
+    "@criteria/json-schema": "^0.2.0",
     "@criteria/json-pointer": "^0.0.0"
   },
   "devDependencies": {

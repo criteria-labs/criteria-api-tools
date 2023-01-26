@@ -2,9 +2,8 @@ import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
 import visitorConfigurationDraft04 from '../draft-04/visitorConfiguration'
-import visitorConfigurationDraft2020_12 from '../draft-2020-12/visitorConfiguration'
 
-export default {
+const configuration: VisitorConfiguration = {
   dialect: 'https://json-schema.org/draft/2020-12/schema',
   isSubschema: (context: Context): boolean => {
     const jsonPointer = context.jsonPointerFromSchema
@@ -43,7 +42,7 @@ export default {
           resolvedConfiguration = visitorConfigurationDraft04
           break
         case 'https://json-schema.org/draft/2020-12/schema':
-          resolvedConfiguration = visitorConfigurationDraft2020_12
+          resolvedConfiguration = configuration
           break
         default:
           // Warn that $schema not recognized
@@ -123,4 +122,5 @@ export default {
       Object.assign(target, referencedSchema, siblings)
     }
   }
-} satisfies VisitorConfiguration
+}
+export default configuration

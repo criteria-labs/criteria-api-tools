@@ -4,17 +4,21 @@ import { normalizeURI, resolveURIReference, URI } from '../util/uri'
 import { cloneValues, ObjectContext, ReferenceContext } from '../visitors/cloneValues'
 import { VisitorConfiguration } from '../visitors/visitValues'
 import { Index, indexDocumentInto } from './indexDocumentInto'
-import { dereferenceJSONSchemaDraft04, dereferenceJSONSchemaDraft2020_12 } from '@criteria/json-schema'
 
 interface Options {
   baseURI?: URI
   retrieve?: (uri: string) => object
+  merge?: (dereferencedObject: object, additionalProperties: object) => void
   defaultConfiguration?: VisitorConfiguration
 }
 
 export const defaultBaseURI = ''
 export const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
+}
+export const defaultMerge = (dereferencedObject: object, additionalProperties: object): void => {
+  // No-op per the specification
+  // when dereferencing a Reference object, any properties added SHALL be ignored.
 }
 export const defaultDefaultConfiguration = visitorConfigurationv3_0 // yes, defaultDefault...
 
@@ -27,10 +31,11 @@ export function dereferenceOpenAPI(openAPI: any, options?: Options) {
     }
     return document
   })
+  const merge = options?.merge ?? defaultMerge
   const defaultConfiguration = options?.defaultConfiguration ?? defaultDefaultConfiguration // yes, defaultDefault...
 
   const index = new Index()
-  indexDocumentInto(index, openAPI, baseURI, defaultConfiguration, retrieve)
+  indexDocumentInto(index, openAPI, 'openAPI', baseURI, defaultConfiguration, retrieve)
 
   // Cache of previously dereferenced values by uri
   // Multiple URIs may refer to the same value
@@ -84,8 +89,51 @@ export function dereferenceOpenAPI(openAPI: any, options?: Options) {
   }
 
   const dereferenceReferenceWithSiblings = (reference: { $ref: string }, context: ReferenceContext) => {
-    // Ignore siblings according to the specification
-    return dereferenceReference(reference, context)
+    // Merging $ref and siblings creates a new unique object,
+    // otherwise sibling properties will be applied everywhere the same $ref is used
+    // Assume that siblings does not need to be further dereferenced
+
+    for (const uri of context.resolvedURIs) {
+      const result = dereferencedByURI[uri]
+      if (result) {
+        return result
+      }
+    }
+
+    const { $ref, ...siblings } = reference
+
+    // Since references with siblings are treated as unique merged objects, we may still get cycles here
+    // If we detect a cycle, we still have to apply sibling properties
+    if (dereferencedBySource.has(reference)) {
+      const result = dereferencedBySource.get(reference)
+      context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
+      return result
+    }
+
+    const result = {}
+    dereferencedBySource.set(reference, result)
+
+    const dereferenced = dereferenceReference(
+      { $ref },
+      {
+        ...context,
+        resolvedURIs: [] // do not pass through since these point to a new unique merge object, not the referenced object
+      }
+    )
+
+    // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
+    // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
+    deferredTasks.push(() => {
+      // Ignore siblings per the specification
+      Object.assign(result, dereferenced)
+      merge(result, siblings)
+    })
+
+    // TODO: can we dereference siblings now?
+
+    dereferencedBySource.set(reference, result)
+    context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
+    return result
   }
 
   // Actually clone the OpenAPI document

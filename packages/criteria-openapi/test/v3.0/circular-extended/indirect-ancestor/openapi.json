@@ -1,0 +1,21 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "parent": {
+        "$ref": "../definitions/parent-with-child.json"
+      },
+      "child": {
+        "$ref": "../definitions/child-with-children.json"
+      },
+      "pet": {
+        "$ref": "../definitions/pet.json"
+      }
+    }
+  }
+}

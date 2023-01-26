@@ -1,11 +1,10 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { appendJSONPointer, Context } from './Context'
-import { VisitorConfiguration } from './visitValues'
 
 // object refers to an OpenAPI object, map refers to a plain JavaScript object
 export type Kind = 'map' | 'array' | 'primitive' | 'object' | 'reference'
 export type ReferenceContext = Context & { clone: (value: any, context: Context) => any }
-export type ObjectContext = Context & {
+export type ObjectContext = ReferenceContext & {
   cloneInto: (target: object) => void
 }
 export type ContextForKind<K extends Kind> = K extends 'object'
@@ -78,7 +77,7 @@ export function cloneValues(
         target[key] = cloneValue(object[key], appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`))
       }
     }
-    return cloner(object, 'object', { ...resolvedContext, cloneInto })
+    return cloner(object, 'object', { ...resolvedContext, cloneInto, clone: cloneValue })
   }
 
   const cloneReference = (reference: { $ref: string }, context: Context) => {

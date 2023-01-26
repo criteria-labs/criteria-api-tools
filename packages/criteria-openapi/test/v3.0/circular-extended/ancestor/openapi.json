@@ -1,0 +1,14 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "person": { "$ref": "../definitions/person-with-spouse.json" },
+      "pet": { "$ref": "../definitions/pet.json" }
+    }
+  }
+}

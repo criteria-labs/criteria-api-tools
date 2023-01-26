@@ -1,0 +1,16 @@
+{
+  "title": "pet",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "animals.json#/definitions/dog/properties/name"
+    },
+    "age": {
+      "$ref": "animals.json#/definitions/bird/properties/age"
+    },
+    "species": {
+      "type": "string",
+      "enum": ["cat", "dog", "bird", "fish"]
+    }
+  }
+}

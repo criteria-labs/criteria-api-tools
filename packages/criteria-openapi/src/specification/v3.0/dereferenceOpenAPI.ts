@@ -6,6 +6,7 @@ import visitorConfiguration from './visitorConfiguration'
 interface Options {
   baseURI?: URI
   retrieve?: (uri: URI) => any
+  merge?: (dereferencedObject: object, additionalProperties: object) => void
 }
 
 export function dereferenceOpenAPI(schema: OpenAPI, options?: Options): DereferencedOpenAPI {

@@ -40,7 +40,7 @@ const openAPI = {
 describe('indexDocumentInto()', () => {
   describe('v3.0', () => {
     const index = new Index()
-    indexDocumentInto(index, openAPI, 'openapi.json', visitorConfiguration, defaultRetrieve)
+    indexDocumentInto(index, openAPI, 'openAPI', 'openapi.json', visitorConfiguration, defaultRetrieve)
 
     test('evaluates json pointers', () => {
       expect(index.findValue('openapi.json').value).toEqual(openAPI)

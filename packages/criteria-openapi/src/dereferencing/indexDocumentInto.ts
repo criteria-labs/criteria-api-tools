@@ -2,7 +2,7 @@ import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { JSONPointer } from '../util/JSONPointer'
 import { resolveURIReference, splitFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
-import { appendJSONPointer, Context } from '../visitors/Context'
+import { appendJSONPointer, Context, ObjectType } from '../visitors/Context'
 import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
 
 export interface IndexEntry<T> {
@@ -196,6 +196,7 @@ export class Index {
 export function indexDocumentInto(
   index: Index,
   document: any,
+  documentObjectType: ObjectType | null,
   documentURI: URI,
   defaultConfiguration: VisitorConfiguration,
   retrieve: (uri: URI) => any
@@ -204,7 +205,7 @@ export function indexDocumentInto(
     configuration: defaultConfiguration,
     baseURI: documentURI,
     jsonPointerFromBaseURI: '',
-    objectType: 'openAPI',
+    objectType: documentObjectType,
     jsonPointerFromObject: '',
     resolvedURIs: []
   }
@@ -215,7 +216,7 @@ export function indexDocumentInto(
   }
 
   // Collect external URIs to retrieve
-  var unretrievedURIs = new Set<URI>()
+  var unretrievedURIs: { [uri: URI]: ObjectType } = {}
   visitValues(document, documentContext, (value, kind, context) => {
     if (kind === 'object') {
       context.resolvedURIs.forEach((uri) => (index.objectsByURI[uri] = { value, context: { ...context } as any }))
@@ -225,7 +226,8 @@ export function indexDocumentInto(
         let uri = resolveURIReference(value.$ref, context.baseURI)
         const { absoluteURI } = splitFragment(uri)
         // Don't retrieve yet, because it may resolve to a nested schema with an id
-        unretrievedURIs.add(absoluteURI)
+        // TODO: assert if already exists in map but context.objectType is different
+        unretrievedURIs[absoluteURI] = context.objectType
       }
     } else if (kind === 'reference') {
       if ('$ref' in value) {
@@ -234,13 +236,14 @@ export function indexDocumentInto(
         let uri = resolveURIReference(value.$ref, context.baseURI)
         const { absoluteURI } = splitFragment(uri)
         // Don't retrieve yet, because it may resolve to a nested schema with an id
-        unretrievedURIs.add(absoluteURI)
+        // TODO: assert if already exists in map but context.objectType is different
+        unretrievedURIs[absoluteURI] = context.objectType
       }
     }
   })
 
   // Retrieve documents from URIs
-  unretrievedURIs.forEach((uri) => {
+  Object.entries(unretrievedURIs).forEach(([uri, objectType]) => {
     if (index.has(uri)) {
       return
     }
@@ -251,6 +254,6 @@ export function indexDocumentInto(
       throw new Error(`Failed to retrieve document at uri '${uri}'`)
     }
 
-    indexDocumentInto(index, externalDocument, uri, defaultConfiguration, retrieve)
+    indexDocumentInto(index, externalDocument, objectType, uri, defaultConfiguration, retrieve)
   })
 }

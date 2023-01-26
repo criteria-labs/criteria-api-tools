@@ -22,7 +22,6 @@ export type ContextForKind<K extends Kind> = K extends 'schema'
 export function cloneValues(
   root: object,
   rootContext: Context,
-  defaultConfiguration: VisitorConfiguration,
   cloner: <Kind extends 'object' | 'array' | 'primitive' | 'schema' | 'reference'>(
     value: any,
     kind: Kind,

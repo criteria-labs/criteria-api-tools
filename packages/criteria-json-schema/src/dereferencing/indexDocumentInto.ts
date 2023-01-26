@@ -1,10 +1,9 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
+import { JSONPointer } from '../util/JSONPointer'
 import { resolveURIReference, splitFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
 import { appendJSONPointer, Context } from '../visitors/Context'
 import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
-
-type JSONPointer = '' | `/${string}`
 
 export interface IndexEntry<T> {
   value: T

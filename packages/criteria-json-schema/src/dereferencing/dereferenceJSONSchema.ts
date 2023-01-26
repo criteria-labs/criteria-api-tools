@@ -172,24 +172,19 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
   // TODO: should this only clone the root one? can ony be pne dynamic path.
   const dereferencedDocuments = {}
   for (const [uri, sourceDocument] of Object.entries(index.documentsByURI)) {
-    dereferencedDocuments[uri] = cloneValues(
-      sourceDocument.value,
-      sourceDocument.context,
-      defaultConfiguration,
-      (value, kind, context) => {
-        if (kind === 'schema') {
-          if ('$ref' in value || '$dynamicRef' in value) {
-            return dereferenceReferenceWithSiblings(value, context as ReferenceContext)
-          } else {
-            return dereferenceSubschema(value, context as SchemaContext)
-          }
-        } else if (kind === 'reference') {
-          return dereferenceReference(value, context as ReferenceContext)
+    dereferencedDocuments[uri] = cloneValues(sourceDocument.value, sourceDocument.context, (value, kind, context) => {
+      if (kind === 'schema') {
+        if ('$ref' in value || '$dynamicRef' in value) {
+          return dereferenceReferenceWithSiblings(value, context as ReferenceContext)
         } else {
-          return value
+          return dereferenceSubschema(value, context as SchemaContext)
         }
+      } else if (kind === 'reference') {
+        return dereferenceReference(value, context as ReferenceContext)
+      } else {
+        return value
       }
-    )
+    })
   }
 
   // Now that the object graph has been fully cloned, perform any post-processing

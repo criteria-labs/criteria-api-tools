@@ -61,29 +61,6 @@ export function dereferenceOpenAPI(openAPI: any, options?: Options) {
     context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
     context.cloneInto(result)
 
-    // if (context.objectType === 'schema') {
-    //   const jsonSchemaRetrieve = (uri: string) => {
-    //     if (uri === baseURI) {
-    //       return openAPI
-    //     }
-    //     return retrieve(uri)
-    //   }
-    //   const resolvedURI = context.resolvedURIs[context.resolvedURIs.length - 1]
-    //   deferredTasks.push(() => {
-    //     switch (context.configuration.jsonSchemaDialect) {
-    //       case 'http://json-schema.org/draft-04/schema#':
-    //         dereferenceJSONSchemaDraft04(object, { baseURI: resolvedURI, retrieve: jsonSchemaRetrieve })
-    //         break
-    //       case 'https://json-schema.org/draft/2020-12/schema':
-    //         dereferenceJSONSchemaDraft2020_12(object, { baseURI: resolvedURI, retrieve: jsonSchemaRetrieve })
-    //         break
-    //       default:
-    //         dereferenceJSONSchemaDraft04(object)
-    //         break
-    //     }
-    //   })
-    // }
-
     return result
   }
 

@@ -182,8 +182,8 @@ export class Index {
             configuration: followedParentValue.context.configuration,
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
-            jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
-            resolvedURIs: appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+            jsonPointerFromSchema: `${followedParentValue.context.jsonPointerFromSchema}${remainingPointer}`,
+            resolvedURIs: appendJSONPointer(followedParentValue.context, remainingPointer).resolvedURIs
           }
         }
       }

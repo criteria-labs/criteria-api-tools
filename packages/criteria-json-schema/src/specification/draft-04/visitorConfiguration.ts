@@ -12,15 +12,15 @@ const configuration: VisitorConfiguration = {
       jsonPointer === '/additionalItems' ||
       jsonPointer === '/items' ||
       Boolean(jsonPointer.match(/^\/items\/[\d]+$/)) ||
-      Boolean(jsonPointer.match(/^\/properties\/[^/]+$/)) ||
-      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/properties\/[^/]*$/)) ||
+      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]*$/)) ||
       jsonPointer === '/additionalProperties' ||
-      Boolean(jsonPointer.match(/^\/dependencies\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/dependencies\/[^/]*$/)) ||
       Boolean(jsonPointer.match(/^\/allOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/anyOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/oneOf\/[\d]+$/)) ||
       jsonPointer === '/not' ||
-      Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/))
+      Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/))
     )
   },
   resolveContext: (context: Context, schema: object) => {

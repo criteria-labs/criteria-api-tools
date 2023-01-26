@@ -113,15 +113,15 @@ export default {
       (context.objectType === 'schema' && jsonPointer === '/additionalItems') ||
       (context.objectType === 'schema' && jsonPointer === '/items') ||
       (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/items\/[\d]+$/))) ||
-      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/properties\/[^/]+$/))) ||
-      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/patternProperties\/[^/]+$/))) ||
+      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/properties\/[^/]*$/))) ||
+      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/patternProperties\/[^/]*$/))) ||
       (context.objectType === 'schema' && jsonPointer === '/additionalProperties') ||
-      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/dependencies\/[^/]+$/))) ||
+      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/dependencies\/[^/]*$/))) ||
       (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/allOf\/[\d]+$/))) ||
       (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/anyOf\/[\d]+$/))) ||
       (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/oneOf\/[\d]+$/))) ||
       (context.objectType === 'schema' && jsonPointer === '/not') ||
-      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/)))
+      (context.objectType === 'schema' && Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/)))
     ) {
       return 'schema'
     }

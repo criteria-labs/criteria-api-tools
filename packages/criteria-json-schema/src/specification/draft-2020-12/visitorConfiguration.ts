@@ -9,7 +9,7 @@ const configuration: VisitorConfiguration = {
     const jsonPointer = context.jsonPointerFromSchema
     return (
       jsonPointer === '' ||
-      Boolean(jsonPointer.match(/^\/\$defs\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/\$defs\/[^/]*$/)) ||
       Boolean(jsonPointer.match(/^\/allOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/anyOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/oneOf\/[\d]+$/)) ||
@@ -17,12 +17,12 @@ const configuration: VisitorConfiguration = {
       jsonPointer === '/if' ||
       jsonPointer === '/then' ||
       jsonPointer === '/else' ||
-      Boolean(jsonPointer.match(/^\/dependentSchemas\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/dependentSchemas\/[^/]*$/)) ||
       Boolean(jsonPointer.match(/^\/prefixItems\/[\d]+$/)) ||
       jsonPointer === '/items' ||
       jsonPointer === '/contains' ||
-      Boolean(jsonPointer.match(/^\/properties\/[^/]+$/)) ||
-      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/properties\/[^/]*$/)) ||
+      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]*$/)) ||
       jsonPointer === '/additionalProperties' ||
       jsonPointer === '/propertyNames' ||
       jsonPointer === '/unevaluatedItems' ||
@@ -30,8 +30,8 @@ const configuration: VisitorConfiguration = {
       jsonPointer === '/contentSchema' ||
       // deprecated but still supported, TODO: verify
       jsonPointer === '/additionalItems' ||
-      Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/)) ||
-      Boolean(jsonPointer.match(/^\/dependencies\/[^/]+$/))
+      Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/)) ||
+      Boolean(jsonPointer.match(/^\/dependencies\/[^/]*$/))
     )
   },
   resolveContext: (context: Context, schema: object) => {

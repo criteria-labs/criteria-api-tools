@@ -1,0 +1,71 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "person": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://example.com/person.json",
+        "type": "object",
+        "title": "person",
+        "properties": {
+          "oldRelative": {
+            "$ref": "#/$defs/04-person"
+          },
+          "newRelative": {
+            "$ref": "#/$defs/similar-person"
+          }
+        },
+        "$defs": {
+          "04-person": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$id": "https://example.com/04-person.json",
+            "type": "object",
+            "title": "person",
+            "properties": {
+              "first": {
+                "$ref": "#/definitions/requiredString"
+              },
+              "last": {
+                "$ref": "#requiredString"
+              }
+            },
+            "definitions": {
+              "requiredString": {
+                "id": "#requiredString",
+                "title": "requiredString",
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "similar-person": {
+            "$id": "https://example.com/similar-person.json",
+            "type": "object",
+            "title": "person",
+            "properties": {
+              "first": {
+                "$ref": "#/$defs/requiredString"
+              },
+              "last": {
+                "$ref": "#requiredString"
+              }
+            },
+            "$defs": {
+              "requiredString": {
+                "$anchor": "requiredString",
+                "title": "requiredString",
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

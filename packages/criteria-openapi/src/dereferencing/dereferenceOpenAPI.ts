@@ -1,5 +1,5 @@
 import { memoize } from '../retrievers/memoize'
-import visitorConfigurationv3_0 from '../specification/v3.0/visitorConfiguration' // TODO: change to 3.1
+import visitorConfigurationv3_1 from '../specification/v3.1/visitorConfiguration'
 import { normalizeURI, resolveURIReference, URI } from '../util/uri'
 import { cloneValues, ObjectContext, ReferenceContext } from '../visitors/cloneValues'
 import { VisitorConfiguration } from '../visitors/visitValues'
@@ -20,7 +20,7 @@ export const defaultMerge = (dereferencedObject: object, additionalProperties: o
   // No-op per the specification
   // when dereferencing a Reference object, any properties added SHALL be ignored.
 }
-export const defaultDefaultConfiguration = visitorConfigurationv3_0 // yes, defaultDefault...
+export const defaultDefaultConfiguration = visitorConfigurationv3_1 // yes, defaultDefault...
 
 export function dereferenceOpenAPI(openAPI: any, options?: Options) {
   const baseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)

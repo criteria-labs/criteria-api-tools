@@ -106,8 +106,6 @@ export function dereferenceOpenAPI(openAPI: any, options?: Options) {
     })
   }
 
-  // Dereference any JSON schemas
-
   // Now that the object graph has been fully cloned, perform any post-processing
   deferredTasks.forEach((task) => task())
 

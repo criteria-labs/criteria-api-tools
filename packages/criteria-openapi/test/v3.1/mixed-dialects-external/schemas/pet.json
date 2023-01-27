@@ -1,0 +1,9 @@
+{
+  "title": "pet",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    }
+  }
+}

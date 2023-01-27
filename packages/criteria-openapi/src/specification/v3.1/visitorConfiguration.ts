@@ -2,10 +2,15 @@ import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context, ObjectType } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
 
+export interface Options {
+  jsonSchemaDialect?: string
+  mergeAdditionalProperties?: (dereferencedObject: object, additionalProperties: object) => void
+}
+
 // TODO: Is options necessary as well as jsonSchemaDialect?
 // What happens if a schema with a $schema references one without, does it default to the referring schema's dialect,
 // or the jsonSchemaDialect value of the overall OpenAPI document?
-const jsonSchemaDraft04VisitorConfiguration = (options: { jsonSchemaDialect?: string }): VisitorConfiguration => ({
+const jsonSchemaDraft04VisitorConfiguration = (options: Options): VisitorConfiguration => ({
   jsonSchemaDialect: 'http://json-schema.org/draft-04/schema#',
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
@@ -88,41 +93,15 @@ const jsonSchemaDraft04VisitorConfiguration = (options: { jsonSchemaDialect?: st
       jsonPointerFromObject: context.jsonPointerFromObject,
       resolvedURIs
     }
+  },
+  mergeReferencedObject: (context: Context, target: object, referencedObject: object) => {
+    // Reapply siblings so that referencedObject does not override sibling properties
+    const { ...siblings } = target
+    Object.assign(target, referencedObject, siblings)
   }
-  // mergeReferencedSchema: (target: object, referencedSchema: object) => {
-  //   // This implementation will either merge referencedSchema's keywords alongside target,
-  //   // unless there is a conflict between keywords (with some exceptions).
-  //   // If there is a conflict, then referencedSchema will remain under the $ref keyword,
-  //   // but dereferenced.
-  //   // This assumes that all keywords are independent and don't interact with each other.
-  //   const targetKeywords = Object.keys(target)
-  //   const referencedKeywords = Object.keys(referencedSchema).filter((keyword) => {
-  //     // $id doesn't count as a conflict if we're going to merge the referenced schema
-  //     if (keyword === '$id') {
-  //       return false
-  //     }
-  //     // $defs doesn't count as a conflict if we're going to merge the referenced schema
-  //     if (keyword === '$defs' || keyword === 'definitions') {
-  //       return false
-  //     }
-  //     // keyword doesn't count as a conflict if they are the same value
-  //     if (referencedSchema[keyword] === target[keyword]) {
-  //       return false
-  //     }
-  //     return true
-  //   })
-  //   const hasConflictingKeywords = targetKeywords.some((keyword) => referencedKeywords.includes(keyword))
-  //   if (hasConflictingKeywords) {
-  //     target['$ref'] = referencedSchema
-  //   } else {
-  //     // Since no keywords appear in both, merge schemas into one as in draft 04.
-  //     const { ...siblings } = target
-  //     Object.assign(target, referencedSchema, siblings)
-  //   }
-  // }
 })
 
-const jsonSchemaDraft2020_12VisitorConfiguration = (options: { jsonSchemaDialect?: string }): VisitorConfiguration => ({
+const jsonSchemaDraft2020_12VisitorConfiguration = (options: Options): VisitorConfiguration => ({
   jsonSchemaDialect: 'https://json-schema.org/draft/2020-12/schema',
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
@@ -225,41 +204,41 @@ const jsonSchemaDraft2020_12VisitorConfiguration = (options: { jsonSchemaDialect
       jsonPointerFromObject: context.jsonPointerFromObject,
       resolvedURIs
     }
+  },
+  mergeReferencedObject: (context: Context, target: object, referencedObject: object) => {
+    // This implementation will either merge referencedSchema's keywords alongside target,
+    // unless there is a conflict between keywords (with some exceptions).
+    // If there is a conflict, then referencedSchema will remain under the $ref keyword,
+    // but dereferenced.
+    // This assumes that all keywords are independent and don't interact with each other.
+    const targetKeywords = Object.keys(target)
+    const referencedKeywords = Object.keys(referencedObject).filter((keyword) => {
+      // $id doesn't count as a conflict if we're going to merge the referenced schema
+      if (keyword === '$id') {
+        return false
+      }
+      // $defs doesn't count as a conflict if we're going to merge the referenced schema
+      if (keyword === '$defs' || keyword === 'definitions') {
+        return false
+      }
+      // keyword doesn't count as a conflict if they are the same value
+      if (referencedObject[keyword] === target[keyword]) {
+        return false
+      }
+      return true
+    })
+    const hasConflictingKeywords = targetKeywords.some((keyword) => referencedKeywords.includes(keyword))
+    if (hasConflictingKeywords) {
+      target['$ref'] = referencedObject
+    } else {
+      // Since no keywords appear in both, merge schemas into one as in draft 04.
+      const { ...siblings } = target
+      Object.assign(target, referencedObject, siblings)
+    }
   }
-  // mergeReferencedSchema: (target: object, referencedSchema: object) => {
-  //   // This implementation will either merge referencedSchema's keywords alongside target,
-  //   // unless there is a conflict between keywords (with some exceptions).
-  //   // If there is a conflict, then referencedSchema will remain under the $ref keyword,
-  //   // but dereferenced.
-  //   // This assumes that all keywords are independent and don't interact with each other.
-  //   const targetKeywords = Object.keys(target)
-  //   const referencedKeywords = Object.keys(referencedSchema).filter((keyword) => {
-  //     // $id doesn't count as a conflict if we're going to merge the referenced schema
-  //     if (keyword === '$id') {
-  //       return false
-  //     }
-  //     // $defs doesn't count as a conflict if we're going to merge the referenced schema
-  //     if (keyword === '$defs' || keyword === 'definitions') {
-  //       return false
-  //     }
-  //     // keyword doesn't count as a conflict if they are the same value
-  //     if (referencedSchema[keyword] === target[keyword]) {
-  //       return false
-  //     }
-  //     return true
-  //   })
-  //   const hasConflictingKeywords = targetKeywords.some((keyword) => referencedKeywords.includes(keyword))
-  //   if (hasConflictingKeywords) {
-  //     target['$ref'] = referencedSchema
-  //   } else {
-  //     // Since no keywords appear in both, merge schemas into one as in draft 04.
-  //     const { ...siblings } = target
-  //     Object.assign(target, referencedSchema, siblings)
-  //   }
-  // }
 })
 
-const configuration = (options: { jsonSchemaDialect?: string }): VisitorConfiguration => ({
+const configuration = (options: Options): VisitorConfiguration => ({
   jsonSchemaDialect: 'http://json-schema.org/draft-04/schema#',
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
@@ -435,6 +414,18 @@ const configuration = (options: { jsonSchemaDialect?: string }): VisitorConfigur
       jsonPointerFromObject: context.jsonPointerFromObject,
       resolvedURIs
     }
+  },
+  mergeReferencedObject: (context: Context, target: object, referencedObject: object) => {
+    // summary and description are the only supported additional properties in OpenAPI 3.1
+    const { summary, description, ...rest } = target as any
+    Object.assign(target, referencedObject)
+
+    if (options.mergeAdditionalProperties) {
+      options.mergeAdditionalProperties(target, rest)
+    }
+
+    // Reapply summary and description so that referencedSchema does not override sibling properties
+    Object.assign(target, { summary, description })
   }
 })
 

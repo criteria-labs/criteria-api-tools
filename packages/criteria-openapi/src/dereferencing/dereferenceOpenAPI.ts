@@ -8,17 +8,13 @@ import { Index, indexDocumentInto } from './indexDocumentInto'
 interface Options {
   baseURI?: URI
   retrieve?: (uri: string) => object
-  merge?: (dereferencedObject: object, additionalProperties: object) => void
+  mergeAdditionalProperties?: (dereferencedObject: object, additionalProperties: object) => void
   defaultConfiguration?: VisitorConfiguration
 }
 
 export const defaultBaseURI = ''
 export const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
-}
-export const defaultMerge = (dereferencedObject: object, additionalProperties: object): void => {
-  // No-op per the specification
-  // when dereferencing a Reference object, any properties added SHALL be ignored.
 }
 export const defaultDefaultConfiguration = visitorConfigurationv3_1 // yes, defaultDefault...
 
@@ -31,9 +27,12 @@ export function dereferenceOpenAPI(openAPI: any, options?: Options) {
     }
     return document
   })
-  const merge = options?.merge ?? defaultMerge
   const defaultConfiguration =
-    options?.defaultConfiguration ?? defaultDefaultConfiguration({ jsonSchemaDialect: openAPI.jsonSchemaDialect }) // yes, defaultDefault...
+    options?.defaultConfiguration ??
+    defaultDefaultConfiguration({
+      jsonSchemaDialect: openAPI.jsonSchemaDialect,
+      mergeAdditionalProperties: options?.mergeAdditionalProperties
+    }) // yes, defaultDefault...
 
   const index = new Index()
   indexDocumentInto(index, openAPI, 'openAPI', baseURI, defaultConfiguration, retrieve)
@@ -125,9 +124,8 @@ export function dereferenceOpenAPI(openAPI: any, options?: Options) {
     // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
     // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
     deferredTasks.push(() => {
-      // Ignore siblings per the specification
-      Object.assign(result, dereferenced)
-      merge(result, siblings)
+      Object.assign(result, siblings)
+      context.configuration.mergeReferencedObject(context, result, dereferenced)
     })
 
     // TODO: can we dereference siblings now?

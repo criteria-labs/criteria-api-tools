@@ -161,5 +161,10 @@ export default {
       jsonPointerFromObject: context.jsonPointerFromObject,
       resolvedURIs
     }
+  },
+  mergeReferencedObject: (context: Context, target: object, referencedObject: object) => {
+    // If target contains any additional properties not present in referencedObject,
+    // They will be untouched. Note, this situation is strictly unsupported by the specification.
+    Object.assign(target, referencedObject)
   }
 } satisfies VisitorConfiguration

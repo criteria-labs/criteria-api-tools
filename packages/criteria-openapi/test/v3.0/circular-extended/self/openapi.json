@@ -8,7 +8,7 @@
   "components": {
     "schemas": {
       "thing": {
-        "$ref": "../definitions/thing.json"
+        "$ref": "../schemas/thing.json"
       }
     }
   }

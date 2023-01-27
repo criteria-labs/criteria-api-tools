@@ -8,13 +8,13 @@
   "components": {
     "schemas": {
       "parent": {
-        "$ref": "../definitions/parent-with-children.json"
+        "$ref": "../schemas/parent-with-children.json"
       },
       "child": {
-        "$ref": "../definitions/child-with-parents.json"
+        "$ref": "../schemas/child-with-parents.json"
       },
       "pet": {
-        "$ref": "../definitions/pet.json"
+        "$ref": "../schemas/pet.json"
       }
     }
   }

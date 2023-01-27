@@ -7,8 +7,8 @@
   "paths": {},
   "components": {
     "schemas": {
-      "person": { "$ref": "../definitions/person-with-spouse.json" },
-      "pet": { "$ref": "../definitions/pet.json" }
+      "person": { "$ref": "../schemas/person-with-spouse.json" },
+      "pet": { "$ref": "../schemas/pet.json" }
     }
   }
 }

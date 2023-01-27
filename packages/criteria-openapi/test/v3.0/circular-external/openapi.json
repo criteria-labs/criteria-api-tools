@@ -8,19 +8,19 @@
   "components": {
     "schemas": {
       "pet": {
-        "$ref": "definitions/pet.json"
+        "$ref": "schemas/pet.json"
       },
       "thing": {
         "$ref": "openapi.json#/components/schemas/thing"
       },
       "person": {
-        "$ref": "definitions/person.json"
+        "$ref": "schemas/person.json"
       },
       "parent": {
-        "$ref": "definitions/parent.json"
+        "$ref": "schemas/parent.json"
       },
       "child": {
-        "$ref": "definitions/child.json"
+        "$ref": "schemas/child.json"
       }
     }
   }

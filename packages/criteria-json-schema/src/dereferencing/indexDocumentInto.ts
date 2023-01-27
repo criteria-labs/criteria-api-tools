@@ -1,10 +1,9 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
+import { JSONPointer } from '../util/JSONPointer'
 import { resolveURIReference, splitFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
 import { appendJSONPointer, Context } from '../visitors/Context'
 import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
-
-type JSONPointer = '' | `/${string}`
 
 export interface IndexEntry<T> {
   value: T
@@ -182,8 +181,8 @@ export class Index {
             configuration: followedParentValue.context.configuration,
             baseURI: parentURI,
             jsonPointerFromBaseURI: remainingPointer,
-            jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
-            resolvedURIs: appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
+            jsonPointerFromSchema: `${followedParentValue.context.jsonPointerFromSchema}${remainingPointer}`,
+            resolvedURIs: appendJSONPointer(followedParentValue.context, remainingPointer).resolvedURIs
           }
         }
       }

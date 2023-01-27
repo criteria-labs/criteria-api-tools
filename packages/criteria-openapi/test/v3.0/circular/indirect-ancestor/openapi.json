@@ -1,0 +1,33 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "parent": {
+        "title": "parent",
+        "properties": { "name": { "type": "string" }, "child": { "$ref": "#/components/schemas/child" } }
+      },
+      "child": {
+        "title": "child",
+        "properties": {
+          "name": { "type": "string" },
+          "pet": { "$ref": "#/components/schemas/pet" },
+          "children": { "description": "children", "type": "array", "items": { "$ref": "#/components/schemas/child" } }
+        }
+      },
+      "pet": {
+        "title": "pet",
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "age": { "type": "number" },
+          "species": { "type": "string", "enum": ["cat", "dog", "bird", "fish"] }
+        }
+      }
+    }
+  }
+}

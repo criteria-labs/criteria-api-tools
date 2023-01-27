@@ -1,10 +1,9 @@
 import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
-import visitorConfigurationDraft04 from '../draft-04/visitorConfiguration'
 import visitorConfigurationDraft2020_12 from '../draft-2020-12/visitorConfiguration'
 
-export default {
+const configuration: VisitorConfiguration = {
   dialect: 'http://json-schema.org/draft-04/schema#',
   isSubschema: (context: Context): boolean => {
     const jsonPointer = context.jsonPointerFromSchema
@@ -13,15 +12,15 @@ export default {
       jsonPointer === '/additionalItems' ||
       jsonPointer === '/items' ||
       Boolean(jsonPointer.match(/^\/items\/[\d]+$/)) ||
-      Boolean(jsonPointer.match(/^\/properties\/[^/]+$/)) ||
-      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/properties\/[^/]*$/)) ||
+      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]*$/)) ||
       jsonPointer === '/additionalProperties' ||
-      Boolean(jsonPointer.match(/^\/dependencies\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/dependencies\/[^/]*$/)) ||
       Boolean(jsonPointer.match(/^\/allOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/anyOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/oneOf\/[\d]+$/)) ||
       jsonPointer === '/not' ||
-      Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/))
+      Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/))
     )
   },
   resolveContext: (context: Context, schema: object) => {
@@ -29,7 +28,7 @@ export default {
     if ('$schema' in schema && typeof schema.$schema === 'string') {
       switch (schema.$schema) {
         case 'http://json-schema.org/draft-04/schema#':
-          resolvedConfiguration = visitorConfigurationDraft04
+          resolvedConfiguration = configuration
         case 'https://json-schema.org/draft/2020-12/schema':
           resolvedConfiguration = visitorConfigurationDraft2020_12
         default:
@@ -73,4 +72,6 @@ export default {
     const { ...siblings } = target
     Object.assign(target, referencedSchema, siblings)
   }
-} satisfies VisitorConfiguration
+}
+
+export default configuration

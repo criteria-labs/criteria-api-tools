@@ -1,11 +1,11 @@
 /* eslint-env jest */
 import { dereferenceOpenAPI } from './dereferenceOpenAPI'
-import { OpenAPI, Schema } from './types'
+import { OpenAPI } from '../specification/v3.0'
 
 describe('dereferenceOpenAPI()', () => {
   test('dereferenced object is a copy', () => {
     const document: OpenAPI = {
-      openapi: '3.1.0',
+      openapi: '3.0.3',
       info: {
         title: 'Test API',
         version: '1.0.0'
@@ -21,7 +21,7 @@ describe('dereferenceOpenAPI()', () => {
 
   test('dereferenced object has same identity', () => {
     const document: OpenAPI = {
-      openapi: '3.1.0',
+      openapi: '3.0.3',
       info: {
         title: 'Test API',
         version: '1.0.0'
@@ -47,7 +47,7 @@ describe('dereferenceOpenAPI()', () => {
 
   test('chained references are dereferenced', () => {
     const document: OpenAPI = {
-      openapi: '3.1.0',
+      openapi: '3.0.3',
       info: {
         title: 'Test API',
         version: '1.0.0'
@@ -77,7 +77,7 @@ describe('dereferenceOpenAPI()', () => {
 
   test('array elements are dereferenced', () => {
     const document: OpenAPI = {
-      openapi: '3.1.0',
+      openapi: '3.0.3',
       info: {
         title: 'Test API',
         version: '1.0.0'
@@ -103,13 +103,13 @@ describe('dereferenceOpenAPI()', () => {
 
     expect(dereferencedDocument.components.schemas.Object).toBeDefined()
     expect(dereferencedDocument.components.schemas.Object).toBe(
-      (dereferencedDocument.components.schemas.Reference as Exclude<Schema, boolean>).allOf[0]
+      dereferencedDocument.components.schemas.Reference.allOf[0]
     )
   })
 
   test('recursive references are dereferenced', () => {
     const document: OpenAPI = {
-      openapi: '3.1.0',
+      openapi: '3.0.3',
       info: {
         title: 'Test API',
         version: '1.0.0'
@@ -133,7 +133,7 @@ describe('dereferenceOpenAPI()', () => {
 
     expect(dereferencedDocument.components.schemas.Object).toBeDefined()
     expect(dereferencedDocument.components.schemas.Object).toBe(
-      (dereferencedDocument.components.schemas.Object as Exclude<Schema, boolean>).properties.recursive
+      dereferencedDocument.components.schemas.Object.properties.recursive
     )
   })
 })

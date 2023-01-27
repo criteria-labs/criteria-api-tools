@@ -2,21 +2,39 @@
   "name": "@criteria/openapi",
   "version": "0.0.0",
   "description": "TypeScript implementation of the OpenAPI specification.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "keywords": [
+    "openapi",
+    "open-api"
+  ],
+  "homepage": "https://github.com/criteria-labs/criteria-api-tools",
+  "bugs": {
+    "url": "https://github.com/criteria-labs/criteria-api-tools/issues",
+    "email": "support@criteria.sh"
+  },
+  "license": "MIT",
+  "author": "Criteria Labs Pty Ltd",
+  "files": [
+    "dist/*",
+    "!dist/**/*.test.{js,d.ts}"
+  ],
   "exports": {
     ".": "./dist/index.js",
     "./v3.0": "./dist/v3.0.js",
     "./v3.1": "./dist/v3.1.js"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/criteria-labs/criteria-api-tools.git",
+    "directory": "packages/criteria-json-schema"
+  },
   "scripts": {
     "build": "tsc --build",
     "test": "jest ."
   },
-  "author": "Criteria Labs Pty Ltd",
-  "license": "MIT",
   "dependencies": {
-    "@criteria/json-schema": "^0.0.0",
+    "@criteria/json-schema": "^0.2.0",
     "@criteria/json-pointer": "^0.0.0"
   },
   "devDependencies": {

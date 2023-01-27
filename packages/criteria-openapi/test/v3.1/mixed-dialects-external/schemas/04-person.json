@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "https://example.com/04-person.json",
+  "type": "object",
+  "title": "person",
+  "properties": {
+    "first": {
+      "$ref": "#/definitions/requiredString"
+    },
+    "last": {
+      "$ref": "#requiredString"
+    }
+  },
+  "definitions": {
+    "requiredString": {
+      "id": "#requiredString",
+      "title": "requiredString",
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

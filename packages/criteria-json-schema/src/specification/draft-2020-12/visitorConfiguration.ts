@@ -2,15 +2,14 @@ import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
 import visitorConfigurationDraft04 from '../draft-04/visitorConfiguration'
-import visitorConfigurationDraft2020_12 from '../draft-2020-12/visitorConfiguration'
 
-export default {
+const configuration: VisitorConfiguration = {
   dialect: 'https://json-schema.org/draft/2020-12/schema',
   isSubschema: (context: Context): boolean => {
     const jsonPointer = context.jsonPointerFromSchema
     return (
       jsonPointer === '' ||
-      Boolean(jsonPointer.match(/^\/\$defs\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/\$defs\/[^/]*$/)) ||
       Boolean(jsonPointer.match(/^\/allOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/anyOf\/[\d]+$/)) ||
       Boolean(jsonPointer.match(/^\/oneOf\/[\d]+$/)) ||
@@ -18,12 +17,12 @@ export default {
       jsonPointer === '/if' ||
       jsonPointer === '/then' ||
       jsonPointer === '/else' ||
-      Boolean(jsonPointer.match(/^\/dependentSchemas\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/dependentSchemas\/[^/]*$/)) ||
       Boolean(jsonPointer.match(/^\/prefixItems\/[\d]+$/)) ||
       jsonPointer === '/items' ||
       jsonPointer === '/contains' ||
-      Boolean(jsonPointer.match(/^\/properties\/[^/]+$/)) ||
-      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]+$/)) ||
+      Boolean(jsonPointer.match(/^\/properties\/[^/]*$/)) ||
+      Boolean(jsonPointer.match(/^\/patternProperties\/[^/]*$/)) ||
       jsonPointer === '/additionalProperties' ||
       jsonPointer === '/propertyNames' ||
       jsonPointer === '/unevaluatedItems' ||
@@ -31,8 +30,8 @@ export default {
       jsonPointer === '/contentSchema' ||
       // deprecated but still supported, TODO: verify
       jsonPointer === '/additionalItems' ||
-      Boolean(jsonPointer.match(/^\/definitions\/[^/]+$/)) ||
-      Boolean(jsonPointer.match(/^\/dependencies\/[^/]+$/))
+      Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/)) ||
+      Boolean(jsonPointer.match(/^\/dependencies\/[^/]*$/))
     )
   },
   resolveContext: (context: Context, schema: object) => {
@@ -43,7 +42,7 @@ export default {
           resolvedConfiguration = visitorConfigurationDraft04
           break
         case 'https://json-schema.org/draft/2020-12/schema':
-          resolvedConfiguration = visitorConfigurationDraft2020_12
+          resolvedConfiguration = configuration
           break
         default:
           // Warn that $schema not recognized
@@ -123,4 +122,5 @@ export default {
       Object.assign(target, referencedSchema, siblings)
     }
   }
-} satisfies VisitorConfiguration
+}
+export default configuration

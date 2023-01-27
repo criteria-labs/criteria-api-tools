@@ -14,7 +14,8 @@ const openAPI: any = {
         title: 'person',
         properties: {
           oldRelative: null,
-          newRelative: null
+          newRelative: null,
+          pet: null
         },
         $defs: {
           '04-person': {
@@ -53,6 +54,15 @@ const openAPI: any = {
             }
           }
         }
+      },
+      pet: {
+        title: 'pet',
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string'
+          }
+        }
       }
     }
   }
@@ -60,6 +70,7 @@ const openAPI: any = {
 
 openAPI.components.schemas.person.properties.oldRelative = openAPI.components.schemas.person.$defs['04-person']
 openAPI.components.schemas.person.properties.newRelative = openAPI.components.schemas.person.$defs['similar-person']
+openAPI.components.schemas.person.properties.pet = openAPI.components.schemas.pet
 
 openAPI.components.schemas.person.properties.oldRelative.properties.first =
   openAPI.components.schemas.person.properties.oldRelative.definitions.requiredString

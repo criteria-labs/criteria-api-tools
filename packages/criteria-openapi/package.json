@@ -1,6 +1,6 @@
 {
   "name": "@criteria/openapi",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "TypeScript implementation of the OpenAPI specification.",
   "keywords": [
     "openapi",

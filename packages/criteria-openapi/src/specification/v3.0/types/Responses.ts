@@ -12,7 +12,7 @@ type HTTPStatusCode = `${HTTPStatusCodeClass}${Digit}${Digit}`
 export type Responses<ReferenceType extends Reference | never> = {
   default?: Response<ReferenceType> | ReferenceType
 } & {
-  [Key in HTTPStatusCode]: Response<ReferenceType> | ReferenceType
+  [Key in HTTPStatusCode]?: Response<ReferenceType> | ReferenceType
 } & {
   '1XX'?: Response<ReferenceType> | ReferenceType
   '2XX'?: Response<ReferenceType> | ReferenceType

@@ -26,8 +26,8 @@ export type Schema<ReferenceType extends Reference | never> = Pick<
   type?: JSONSchemaPrimitiveType
 
   allOf?: [Schema<ReferenceType> | ReferenceType, ...Array<Schema<ReferenceType> | ReferenceType>]
-  anyOf?: [Schema<ReferenceType>, ...Array<Schema<ReferenceType> | ReferenceType>]
-  oneOf?: [Schema<ReferenceType>, ...Array<Schema<ReferenceType> | ReferenceType>]
+  anyOf?: [Schema<ReferenceType> | ReferenceType, ...Array<Schema<ReferenceType> | ReferenceType>]
+  oneOf?: [Schema<ReferenceType> | ReferenceType, ...Array<Schema<ReferenceType> | ReferenceType>]
   not?: Schema<ReferenceType> | ReferenceType
 
   items?: Schema<ReferenceType> | ReferenceType

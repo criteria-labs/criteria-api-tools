@@ -15,7 +15,7 @@ export interface Operation<ReferenceType extends Reference | never> {
   operationId?: string
   parameters?: Array<Parameter<ReferenceType> | ReferenceType>
   requestBody?: RequestBody<ReferenceType> | ReferenceType
-  responses: Responses<ReferenceType>
+  responses?: Responses<ReferenceType>
   callbacks?: { [key: string]: Callback<ReferenceType> | ReferenceType }
   deprecated?: boolean
   security?: SecurityRequirement[]

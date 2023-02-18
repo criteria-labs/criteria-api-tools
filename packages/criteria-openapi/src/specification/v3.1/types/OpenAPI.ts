@@ -13,7 +13,7 @@ export interface OpenAPI<ReferenceType extends Reference | never = Reference> {
   info: Info
   jsonSchemaDialect?: string
   servers?: Server[]
-  paths: Paths<ReferenceType>
+  paths?: Paths<ReferenceType>
   webhooks?: { [key: string]: PathItem<ReferenceType> | ReferenceType }
   components?: Components<ReferenceType>
   security?: SecurityRequirement[]

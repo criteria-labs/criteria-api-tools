@@ -14,7 +14,7 @@ export interface Parameter<ReferenceType extends Reference | never> {
   style?: string
   explode?: boolean
   allowReserved?: boolean
-  schema?: Schema<ReferenceType> | ReferenceType
+  schema?: Schema<ReferenceType>
   example?: any
   examples?: { [key: string]: Example | ReferenceType }
 

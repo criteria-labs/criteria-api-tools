@@ -11,7 +11,7 @@ import { Schema } from './Schema'
 import { SecurityScheme } from './SecurityScheme'
 
 export interface Components<ReferenceType extends Reference | never> {
-  schemas?: { [key: string]: Schema<ReferenceType> | ReferenceType }
+  schemas?: { [key: string]: Schema<ReferenceType> }
   responses?: { [key: string]: Response<ReferenceType> | ReferenceType }
   parameters?: { [key: string]: Parameter<ReferenceType> | ReferenceType }
   examples?: { [key: string]: Example | ReferenceType }

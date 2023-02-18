@@ -4,7 +4,7 @@ import { Reference } from './Reference'
 import { Schema } from './Schema'
 
 export interface MediaType<ReferenceType extends Reference | never> {
-  schema?: Schema<ReferenceType> | ReferenceType
+  schema?: Schema<ReferenceType>
   example?: any
   examples?: { [key: string]: Example | ReferenceType }
   encoding?: { [key: string]: Encoding<ReferenceType> }

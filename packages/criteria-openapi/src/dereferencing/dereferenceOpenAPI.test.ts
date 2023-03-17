@@ -139,6 +139,11 @@ describe('dereferenceOpenAPI()', () => {
 
   describe('schemas dereferenced', () => {
     test('schema dereferenced from operation response', () => {
+      const absolute = {
+        $id: 'https://example.com/absolute',
+        title: 'Absolute'
+      }
+
       const document: OpenAPI = {
         openapi: '3.1.0',
         info: {
@@ -146,10 +151,24 @@ describe('dereferenceOpenAPI()', () => {
           version: '1.0.0'
         },
         paths: {
-          '/endpoint': {
-            get: {
+          '/objects/{object}': {
+            post: {
+              requestBody: {
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        absolute: {
+                          $ref: 'https://example.com/absolute'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               responses: {
-                '200': {
+                '201': {
                   description: 'Success',
                   content: {
                     'application/json': {
@@ -161,26 +180,73 @@ describe('dereferenceOpenAPI()', () => {
                 }
               }
             }
+          },
+          '/objects': {
+            get: {
+              responses: {
+                '200': {
+                  description: 'Success',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        type: 'object',
+                        properties: {
+                          data: {
+                            type: 'array',
+                            items: {
+                              $ref: '#/components/schemas/Object'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         components: {
           schemas: {
             Object: {
-              title: 'Object'
+              title: 'Object',
+              type: 'object',
+              properties: {
+                absolute: {
+                  $ref: 'https://example.com/absolute'
+                }
+              }
             }
           }
         }
       }
 
-      const dereferencedDocument = dereferenceOpenAPI(document)
+      const dereferencedDocument = dereferenceOpenAPI(document, {
+        retrieve: (uri: string) => {
+          if (uri === 'https://example.com/absolute') {
+            return absolute
+          }
+          return null
+        }
+      })
 
-      const responseSchema =
-        dereferencedDocument.paths['/endpoint']['get'].responses['200'].content['application/json'].schema
+      const createRequestSchema =
+        dereferencedDocument.paths['/objects/{object}']['post'].requestBody.content['application/json'].schema
+      const createResponseSchema =
+        dereferencedDocument.paths['/objects/{object}']['post'].responses['201'].content['application/json'].schema
+      const listSchema =
+        dereferencedDocument.paths['/objects']['get'].responses['200'].content['application/json'].schema
       const componentSchema = dereferencedDocument.components.schemas.Object
 
-      expect(responseSchema).toBeDefined()
+      expect(createRequestSchema).toBeDefined()
+      expect(createResponseSchema).toBeDefined()
       expect(componentSchema).toBeDefined()
-      expect(responseSchema).toBe(componentSchema)
+      expect(listSchema).toBeDefined()
+
+      expect(createResponseSchema).toBe(componentSchema)
+      expect(listSchema.properties.data.items).toBe(componentSchema)
+
+      expect(createRequestSchema.properties.absolute).toBe(componentSchema.properties.absolute)
     })
   })
 })

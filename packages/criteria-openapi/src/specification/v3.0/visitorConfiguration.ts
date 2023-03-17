@@ -45,6 +45,7 @@ export default {
     }
 
     if (
+      (context.objectType === 'requestBody' && Boolean(jsonPointer.match(/^\/content\/[^/]*$/))) ||
       (context.objectType === 'response' && Boolean(jsonPointer.match(/^\/content\/[^/]*$/))) ||
       (context.objectType === 'parameter' && Boolean(jsonPointer.match(/^\/content\/[^/]*$/))) ||
       (context.objectType === 'header' && Boolean(jsonPointer.match(/^\/content\/[^/]*$/))) ||

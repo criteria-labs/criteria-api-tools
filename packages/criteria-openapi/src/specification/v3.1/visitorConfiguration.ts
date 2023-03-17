@@ -308,7 +308,7 @@ const configuration = (options: Options): VisitorConfiguration => ({
     if (
       (context.objectType === 'openAPI' && Boolean(jsonPointer.match(/^\/components\/responses\/[^/]*$/))) ||
       (context.objectType === 'responses' && jsonPointer === '/default') ||
-      (context.objectType === 'responses' && Boolean(jsonPointer.match(/^\/[1-5](?:\\d{2}|XX)$/))) ||
+      (context.objectType === 'responses' && Boolean(jsonPointer.match(/^\/[1-5](?:\d{2}|XX)$/))) ||
       (context.objectType === 'response' && jsonPointer === '')
     ) {
       return 'response'

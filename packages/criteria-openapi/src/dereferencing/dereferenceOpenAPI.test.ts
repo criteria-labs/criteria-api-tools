@@ -136,4 +136,51 @@ describe('dereferenceOpenAPI()', () => {
       dereferencedDocument.components.schemas.Object.properties.recursive
     )
   })
+
+  describe('schemas dereferenced', () => {
+    test.only('schema dereferenced from operation response', () => {
+      const document: OpenAPI = {
+        openapi: '3.1.0',
+        info: {
+          title: 'Test API',
+          version: '1.0.0'
+        },
+        paths: {
+          '/endpoint': {
+            get: {
+              responses: {
+                '200': {
+                  description: 'Success',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/Object'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        components: {
+          schemas: {
+            Object: {
+              title: 'Object'
+            }
+          }
+        }
+      }
+
+      const dereferencedDocument = dereferenceOpenAPI(document)
+
+      const responseSchema =
+        dereferencedDocument.paths['/endpoint']['get'].responses['200'].content['application/json'].schema
+      const componentSchema = dereferencedDocument.components.schemas.Object
+
+      expect(responseSchema).toBeDefined()
+      expect(componentSchema).toBeDefined()
+      expect(responseSchema).toBe(componentSchema)
+    })
+  })
 })

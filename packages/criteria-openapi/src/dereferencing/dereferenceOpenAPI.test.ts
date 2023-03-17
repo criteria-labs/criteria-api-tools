@@ -138,7 +138,7 @@ describe('dereferenceOpenAPI()', () => {
   })
 
   describe('schemas dereferenced', () => {
-    test.only('schema dereferenced from operation response', () => {
+    test('schema dereferenced from operation response', () => {
       const document: OpenAPI = {
         openapi: '3.1.0',
         info: {

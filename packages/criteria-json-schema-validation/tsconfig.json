@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "target": "es6",
+    "moduleResolution": "node",
     "lib": ["es2021"],
     "esModuleInterop": true,
     "noEmit": false,
     "declaration": true,
-    "resolveJsonModule": true,
     "downlevelIteration": true,
     "outDir": "dist",
     "rootDir": "src"

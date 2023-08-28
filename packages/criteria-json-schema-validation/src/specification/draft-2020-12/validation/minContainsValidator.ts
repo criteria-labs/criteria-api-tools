@@ -5,14 +5,17 @@ import { isJSONArray } from '../../../util/isJSONArray'
 import { assert } from '../../assert'
 import { Output } from '../../output'
 import { Validator } from '../../types'
-import { Cache } from '../cache/Cache'
-import { schemaValidator } from '../schema/schemaValidator'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
 
 export function minContainsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('minContains' in schema)) {
+    return null
+  }
   if (!('contains' in schema)) {
     return null
   }
@@ -20,8 +23,8 @@ export function minContainsValidator(
   const minContains = schema['minContains']
   const contains = schema['contains']
 
-  const containsValidator = schemaValidator(contains, `${schemaLocation}/minContains`, { cache, failFast })
-  return (instance: any, instanceLocation: JSONPointer) => {
+  const containsValidator = context.validatorForSchema(contains, `${schemaLocation}/minContains`)
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true }
     }
@@ -29,7 +32,7 @@ export function minContainsValidator(
     const results: { index: number; output: Output }[] = []
     for (let index = 0; index < instance.length; index++) {
       // TODO: read annotation from contains keyword intead of repeating validation
-      const output = containsValidator(instance[index], `${instanceLocation}/${index}`)
+      const output = containsValidator(instance[index], instanceContext.appendingInstanceLocation(`/${index}`))
       if (output.valid) {
         results.push({ index, output })
         if (results.length >= minContains) {
@@ -46,7 +49,7 @@ export function minContainsValidator(
         results.map((result) => `${result.index}`),
         'and'
       )} instead`,
-      { schemaLocation, schemaKeyword: 'minContains', instanceLocation }
+      { schemaLocation, schemaKeyword: 'minContains', instanceLocation: instanceContext.instanceLocation }
     )
   }
 }

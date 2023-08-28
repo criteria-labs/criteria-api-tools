@@ -1,5 +1,5 @@
 import { matcherHint, printDiffOrStringify, printExpected, printReceived, stringify } from 'jest-matcher-utils'
-import circularEqual from './circularEqual'
+import circularEqual from '../../src/util/circularEqual'
 
 // Omit colon and one or more spaces, so can call getLabelPrinter.
 const EXPECTED_LABEL = 'Expected'

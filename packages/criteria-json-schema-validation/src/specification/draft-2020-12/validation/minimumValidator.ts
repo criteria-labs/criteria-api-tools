@@ -2,16 +2,22 @@ import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import { isJSONNumber } from '../../../util/isJSONNumber'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function minimumValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('minimum' in schema)) {
+    return null
+  }
+
   const minimum = schema['minimum']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONNumber(instance)) {
       return { valid: true }
     }
@@ -22,7 +28,7 @@ export function minimumValidator(
       {
         schemaLocation,
         schemaKeyword: 'minimum',
-        instanceLocation
+        instanceLocation: instanceContext.instanceLocation
       }
     )
   }

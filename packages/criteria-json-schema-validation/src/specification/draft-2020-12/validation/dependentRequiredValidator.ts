@@ -3,25 +3,31 @@ import { JSONPointer } from '../../../util/JSONPointer'
 import { formatList } from '../../../util/formatList'
 import { isJSONObject } from '../../../util/isJSONObject'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
-import { allValidator } from '../compound/allValidator'
+import { Output } from '../../output'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { allValidator } from '../compound/allValidator'
 
 export function dependentRequiredValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('dependentRequired' in schema)) {
+    return null
+  }
+
   const dependentRequired = schema['dependentRequired']
   const propertyValidators: Validator[] = Object.entries(dependentRequired).map(([property, dependencies]) => {
-    return (instance: any, instanceLocation: JSONPointer) => {
-      if (!(property in instance)) {
+    return (instance: any, instanceContext: InstanceContext): Output => {
+      if (!instance.hasOwnProperty(property)) {
         return { valid: true }
       }
 
       const missingProperties = []
       for (const dependency of dependencies) {
-        if (!(dependency in instance)) {
+        if (!instance.hasOwnProperty(dependency)) {
           missingProperties.push(dependency)
         }
       }
@@ -29,16 +35,16 @@ export function dependentRequiredValidator(
       return assert(
         missingProperties.length === 0,
         `Expected ${formatList(missingProperties, 'and')} to be defined when ${property} is defined`,
-        { schemaLocation, schemaKeyword: 'dependentRequired', instanceLocation }
+        { schemaLocation, schemaKeyword: 'dependentRequired', instanceLocation: instanceContext.instanceLocation }
       )
     }
   })
 
-  const propertiesValidators = allValidator(propertyValidators, { failFast })
-  return (instance: any, instanceLocation: JSONPointer) => {
-    if (!isJSONObject(Object)) {
+  const propertiesValidators = allValidator(propertyValidators, context)
+  return (instance: any, instanceContext: InstanceContext): Output => {
+    if (!isJSONObject(instance)) {
       return { valid: true }
     }
-    return propertiesValidators(instance, instanceLocation)
+    return propertiesValidators(instance, instanceContext)
   }
 }

@@ -2,16 +2,22 @@ import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import { isJSONNumber } from '../../../util/isJSONNumber'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function exclusiveMaximumValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('exclusiveMaximum' in schema)) {
+    return null
+  }
+
   const exclusiveMaximum = schema['exclusiveMaximum']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONNumber(instance)) {
       return { valid: true }
     }
@@ -21,7 +27,7 @@ export function exclusiveMaximumValidator(
       {
         schemaLocation,
         schemaKeyword: 'exclusiveMaximum',
-        instanceLocation
+        instanceLocation: instanceContext.instanceLocation
       }
     )
   }

@@ -2,16 +2,22 @@ import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import { isJSONArray } from '../../../util/isJSONArray'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function maxItemsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('maxItems' in schema)) {
+    return null
+  }
+
   const maxItems = schema['maxItems']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true }
     }
@@ -19,7 +25,7 @@ export function maxItemsValidator(
     return assert(
       instance.length <= maxItems,
       `Expected array to contain up to ${maxItems} items but found ${instance.length} instead`,
-      { schemaLocation, schemaKeyword: 'maxItems', instanceLocation }
+      { schemaLocation, schemaKeyword: 'maxItems', instanceLocation: instanceContext.instanceLocation }
     )
   }
 }

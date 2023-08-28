@@ -2,16 +2,22 @@ import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import circularEqual from '../../../util/circularEqual'
 import { formatList } from '../../../util/formatList'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function enumValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('enum' in schema)) {
+    return null
+  }
+
   const enumValues = schema['enum']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     for (const enumValue of enumValues) {
       const equal = circularEqual(instance, enumValue)
       if (equal) {
@@ -34,7 +40,7 @@ export function enumValidator(
       valid: false,
       schemaLocation,
       schemaKeyword: 'enum',
-      instanceLocation,
+      instanceLocation: instanceContext.instanceLocation,
       error
     }
   }

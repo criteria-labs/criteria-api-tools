@@ -6,23 +6,17 @@ import { InvalidOutput, Output } from '../../output'
 import { InstanceContext } from '../InstanceContext'
 import { ValidationContext } from '../ValidationContext'
 
-export function additionalPropertiesValidator(
+export function unevaluatedPropertiesValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
   context: ValidationContext
 ) {
-  if (!('additionalProperties' in schema)) {
+  if (!('unevaluatedProperties' in schema)) {
     return null
   }
 
-  const additionalProperties = schema['additionalProperties']
-  const validator = context.validatorForSchema(additionalProperties, `${schemaLocation}/additionalProperties`)
-
-  const properties = schema['properties'] ?? {}
-  const expectedPropertyNames = Object.keys(properties)
-
-  const patternProperties = schema['patternProperties'] ?? {}
-  const expectedPatterns = Object.keys(patternProperties).map((pattern) => new RegExp(pattern))
+  const unevaluatedProperties = schema['unevaluatedProperties']
+  const validator = context.validatorForSchema(unevaluatedProperties, `${schemaLocation}/unevaluatedProperties`)
 
   const failFast = context.failFast
   return (instance: any, instanceContext: InstanceContext): Output => {
@@ -30,15 +24,25 @@ export function additionalPropertiesValidator(
       return { valid: true }
     }
 
+    const propertiesAnnotationResult = instanceContext.annotationResultForKeyword('properties')
+    const patternPropertiesAnnotationResults = instanceContext.annotationResultForKeyword('patternProperties')
+    const additionalPropertiesAnnotationResult = instanceContext.annotationResultForKeyword('additionalProperties')
+    const unevaluatedPropertiesAnnotationResult = instanceContext.annotationResultForKeyword('unevaluatedProperties')
+
+    const evaluatedProperties = new Set([
+      ...(propertiesAnnotationResult ?? []),
+      ...(patternPropertiesAnnotationResults ?? []),
+      ...(additionalPropertiesAnnotationResult ?? []),
+      ...(unevaluatedPropertiesAnnotationResult ?? [])
+    ])
+
     const outputs: { [name: string]: Output } = {}
     for (const [propertyName, propertyValue] of Object.entries(instance)) {
-      if (expectedPropertyNames.includes(propertyName)) {
-        continue
-      }
-      if (expectedPatterns.some((regexp) => propertyName.match(regexp) !== null)) {
+      if (evaluatedProperties.has(propertyName)) {
         continue
       }
 
+      // unevaluated property
       const output = validator(
         propertyValue,
         instanceContext.appendingInstanceLocation(`/${escapeReferenceToken(propertyName)}`)
@@ -53,32 +57,23 @@ export function additionalPropertiesValidator(
     const invalidOutputs = Object.values(outputs).filter((output) => !output.valid) as InvalidOutput[]
     const valid = invalidOutputs.length === 0
     if (valid) {
-      if (Object.keys(outputs).length > 0) {
-        return {
-          valid: true,
-          schemaLocation,
-          schemaKeyword: 'additionalProperties',
-          instanceLocation: instanceContext.instanceLocation,
-          annotationResults: {
-            additionalProperties: Object.keys(outputs)
-          }
-        }
-      } else {
-        return {
-          valid: true,
-          schemaLocation,
-          schemaKeyword: 'additionalProperties',
-          instanceLocation: instanceContext.instanceLocation
+      return {
+        valid: true,
+        schemaLocation,
+        schemaKeyword: 'unevaluatedProperties',
+        instanceLocation: instanceContext.instanceLocation,
+        annotationResults: {
+          additionalProperties: Object.keys(outputs)
         }
       }
     } else {
       return {
         valid: false,
         schemaLocation,
-        schemaKeyword: 'additionalProperties',
+        schemaKeyword: 'unevaluatedProperties',
         instanceLocation: instanceContext.instanceLocation,
         errors: invalidOutputs
-      }
+      } as any
     }
   }
 }

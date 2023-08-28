@@ -3,23 +3,29 @@ import { JSONPointer } from '../../../util/JSONPointer'
 import { formatList } from '../../../util/formatList'
 import { isJSONObject } from '../../../util/isJSONObject'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function requiredValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('required' in schema)) {
+    return null
+  }
+
   const required = schema['required']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONObject(instance)) {
       return { valid: true }
     }
 
     const missingProperties = []
     for (const property of required) {
-      if (!(property in instance)) {
+      if (!instance.hasOwnProperty(property)) {
         missingProperties.push(property)
       }
     }
@@ -27,7 +33,7 @@ export function requiredValidator(
     return assert(missingProperties.length === 0, `Expected ${formatList(missingProperties, 'and')} to be defined`, {
       schemaLocation,
       schemaKeyword: 'required',
-      instanceLocation
+      instanceLocation: instanceContext.instanceLocation
     })
   }
 }

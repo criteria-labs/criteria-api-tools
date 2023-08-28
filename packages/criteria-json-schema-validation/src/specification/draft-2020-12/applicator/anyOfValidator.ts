@@ -1,29 +1,43 @@
 import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
-import { InvalidOutput, Output, ValidOutput, summarizedOutput } from '../../output'
-import { Cache } from '../cache/Cache'
-import { schemaValidator } from '../schema/schemaValidator'
+import { InvalidOutput, Output, combineAnnotationResults } from '../../output'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
 
 export function anyOfValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ) {
-  const anyOf = schema['anyOf']
-  const validators = anyOf.map((subschema) =>
-    schemaValidator(subschema, `${schemaLocation}/anyOf`, { cache, failFast })
-  )
-  return (instance: any, instanceLocation: JSONPointer): Output => {
-    const invalidOutputs: InvalidOutput[] = []
-    for (let i = 0; i < validators.length; i++) {
-      const validator = validators[i]
-      const output = validator(instance, instanceLocation)
-      if (output.valid) {
-        return { valid: true }
-      }
-      invalidOutputs.push(output as InvalidOutput)
-    }
+  if (!('anyOf' in schema)) {
+    return null
+  }
 
-    return summarizedOutput(invalidOutputs)
+  const anyOf = schema['anyOf']
+  const validators = anyOf.map((subschema, i) => context.validatorForSchema(subschema, `${schemaLocation}/anyOf/${i}`))
+  return (instance: any, instanceContext: InstanceContext): Output => {
+    const outputs = validators.map((validator) =>
+      validator(instance, new InstanceContext(instanceContext.instanceLocation))
+    )
+    const validOutputs = outputs.filter((output) => output.valid)
+    if (validOutputs.length > 0) {
+      return {
+        valid: true,
+        schemaLocation,
+        schemaKeyword: 'anyOf',
+        instanceLocation: instanceContext.instanceLocation,
+        annotationResults: combineAnnotationResults(
+          validOutputs.map((output) => ('annotationResults' in output ? output.annotationResults : {}))
+        )
+      }
+    } else {
+      return {
+        valid: false,
+        schemaLocation,
+        schemaKeyword: 'anyOf',
+        instanceLocation: instanceContext.instanceLocation,
+        errors: outputs as InvalidOutput[]
+      }
+    }
   }
 }

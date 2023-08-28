@@ -2,34 +2,61 @@ import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import { isJSONArray } from '../../../util/isJSONArray'
 import { InvalidOutput, Output } from '../../output'
-import { Cache } from '../cache/Cache'
-import { schemaValidator } from '../schema/schemaValidator'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
 
 export function containsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ) {
+  if (!('contains' in schema)) {
+    return null
+  }
+
   const contains = schema['contains']
-  const validator = schemaValidator(contains, `${schemaLocation}/contains`, { cache, failFast })
-  return (instance: any, instanceLocation: JSONPointer): Output => {
+  const validator = context.validatorForSchema(contains, `${schemaLocation}/contains`)
+
+  let minContains = 1
+  if ('minContains' in schema) {
+    minContains = Math.min(minContains, schema['minContains'])
+  }
+
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true }
     }
 
-    const outputs: InvalidOutput[] = []
+    const outputs: Output[] = []
+    const matchedIndices = []
     for (let index = 0; index < instance.length; index++) {
-      const output = validator(instance[index], `${instanceLocation}/${index}`)
+      const output = validator(instance[index], instanceContext.appendingInstanceLocation(`/${index}`))
+      outputs.push(output)
       if (output.valid) {
-        return { valid: true }
+        matchedIndices.push(index)
       }
-      outputs.push(output as InvalidOutput)
     }
 
-    return {
-      valid: false,
-      error: 'Expected an array item to validate against subschema',
-      errors: outputs
+    const valid = matchedIndices.length >= minContains
+    if (valid) {
+      return {
+        valid: true,
+        schemaLocation,
+        schemaKeyword: 'contains',
+        instanceLocation: instanceContext.instanceLocation,
+        annotationResults: {
+          contains: matchedIndices
+        } as any
+      }
+    } else {
+      return {
+        valid: false,
+        schemaLocation,
+        schemaKeyword: 'contains',
+        instanceLocation: instanceContext.instanceLocation,
+        error: 'Expected array to contain an item that validates against subschema',
+        errors: outputs.filter((output) => !output.valid) as InvalidOutput[]
+      }
     }
   }
 }

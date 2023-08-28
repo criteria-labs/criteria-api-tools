@@ -6,8 +6,10 @@ import { isJSONNumber } from '../../../util/isJSONNumber'
 import { isJSONObject } from '../../../util/isJSONObject'
 import { isJSONString } from '../../../util/isJSONString'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 const formattedType = (primitiveType: JSONSchemaDraft2020_12PrimitiveType): string => {
   switch (primitiveType) {
@@ -71,13 +73,17 @@ const jsonTypePredicate = (primitiveType: JSONSchemaDraft2020_12PrimitiveType): 
 export function typeValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('type' in schema)) {
+    return null
+  }
+
   const type = schema['type']
   if (Array.isArray(type)) {
     const predicates = type.map((candidate) => jsonTypePredicate(candidate))
     const expectations = formatList(type.map(formattedType), 'or')
-    return (instance: unknown, instanceLocation: JSONPointer) => {
+    return (instance: unknown, instanceContext: InstanceContext): Output => {
       for (const predicate of predicates) {
         if (predicate(instance)) {
           return { valid: true }
@@ -88,18 +94,18 @@ export function typeValidator(
         valid: false,
         schemaLocation,
         schemaKeyword: 'type',
-        instanceLocation,
+        instanceLocation: instanceContext.instanceLocation,
         error: `Expected either ${expectations} but found ${formattedTypeOf(instance)} instead`
       }
     }
   } else {
     const predicate = jsonTypePredicate(type)
     const expectation = formattedType(type)
-    return (instance: unknown, instanceLocation: JSONPointer) => {
+    return (instance: unknown, instanceContext: InstanceContext): Output => {
       return assert(predicate(instance), `Expected ${expectation} but found ${formattedTypeOf(instance)} instead`, {
         schemaLocation,
         schemaKeyword: 'type',
-        instanceLocation
+        instanceLocation: instanceContext.instanceLocation
       })
     }
   }

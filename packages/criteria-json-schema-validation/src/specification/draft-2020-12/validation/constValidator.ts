@@ -1,22 +1,41 @@
 import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import circularEqual from '../../../util/circularEqual'
-import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
+import { Output } from '../../output'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
 
 export function constValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('const' in schema)) {
+    return null
+  }
+
   const constValue = schema['const']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     const equal = circularEqual(instance, constValue)
-    return assert(equal, `Expected value to ${constValue} but found ${instance} instead`, {
-      schemaLocation,
-      schemaKeyword: 'const',
-      instanceLocation
-    })
+    if (equal) {
+      return {
+        valid: true,
+        schemaLocation,
+        schemaKeyword: 'const',
+        instanceLocation: instanceContext.instanceLocation,
+        annotationResults: {
+          const: `${instance} = ${constValue}`
+        }
+      }
+    } else {
+      return {
+        valid: false,
+        schemaLocation,
+        schemaKeyword: 'const',
+        instanceLocation: instanceContext.instanceLocation,
+        error: `Expected value to ${constValue} but found ${instance} instead`
+      }
+    }
   }
 }

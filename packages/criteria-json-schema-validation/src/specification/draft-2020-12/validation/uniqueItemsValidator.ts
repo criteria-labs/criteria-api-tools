@@ -4,20 +4,26 @@ import circularEqual from '../../../util/circularEqual'
 import { formatList } from '../../../util/formatList'
 import { isJSONArray } from '../../../util/isJSONArray'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
-import { Validator } from '../../types'
+import { Output } from '../../output'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
 
 export function uniqueItemsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
-): Validator {
+  context: ValidationContext
+) {
+  if (!('uniqueItems' in schema)) {
+    return null
+  }
+
   const uniqueItems = schema['uniqueItems']
   if (!uniqueItems) {
     return null
   }
 
-  return (instance: any, instanceLocation: JSONPointer) => {
+  const failFast = context.failFast
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true }
     }
@@ -32,7 +38,7 @@ export function uniqueItemsValidator(
               valid: false,
               schemaLocation,
               schemaKeyword: 'uniqueItems',
-              instanceLocation,
+              instanceLocation: instanceContext.instanceLocation,
               error: `Expected array items to be unique but found equal items at positions ${i} and ${j} instead`
             }
           }
@@ -50,7 +56,7 @@ export function uniqueItemsValidator(
       {
         schemaLocation,
         schemaKeyword: 'uniqueItems',
-        instanceLocation
+        instanceLocation: instanceContext.instanceLocation
       }
     )
   }

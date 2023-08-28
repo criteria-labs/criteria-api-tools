@@ -1,17 +1,23 @@
 import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
-import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
-import { Validator } from '../../types'
 import { isJSONObject } from '../../../util/isJSONObject'
+import { assert } from '../../assert'
+import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function minPropertiesValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('minProperties' in schema)) {
+    return null
+  }
+
   const minProperties = schema['minProperties']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONObject(instance)) {
       return { valid: true }
     }
@@ -20,7 +26,7 @@ export function minPropertiesValidator(
     return assert(
       count >= minProperties,
       `Expected object to contain at least ${minProperties} properties but found ${count} instead`,
-      { schemaLocation, schemaKeyword: 'minProperties', instanceLocation }
+      { schemaLocation, schemaKeyword: 'minProperties', instanceLocation: instanceContext.instanceLocation }
     )
   }
 }

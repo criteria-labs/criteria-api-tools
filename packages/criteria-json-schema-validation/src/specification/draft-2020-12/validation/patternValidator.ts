@@ -2,17 +2,23 @@ import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import { isJSONString } from '../../../util/isJSONString'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function patternValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('pattern' in schema)) {
+    return null
+  }
+
   const pattern = schema['pattern']
   const regexp = new RegExp(pattern)
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONString(instance)) {
       return { valid: true }
     }
@@ -20,7 +26,7 @@ export function patternValidator(
     return assert(instance.match(regexp), `Expected string to match '${pattern}' but found ${instance} instead`, {
       schemaLocation,
       schemaKeyword: 'pattern',
-      instanceLocation
+      instanceLocation: instanceContext.instanceLocation
     })
   }
 }

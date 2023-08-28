@@ -1,36 +1,59 @@
 import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
-import { Cache } from '../cache/Cache'
-import { schemaValidator } from '../schema/schemaValidator'
-import { Output } from '../../output'
+import { Output, combineAnnotationResults } from '../../output'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
 
-const trueValidator = (instance: unknown, instanceLocation: JSONPointer): Output => {
+const trueValidator = (instance: unknown, instanceContext: InstanceContext): Output => {
   return { valid: true }
 }
 
 export function ifValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ) {
+  if (!('if' in schema)) {
+    return null
+  }
+
   const ifSchema = schema['if']
-  const ifValidator = schemaValidator(ifSchema, `${schemaLocation}/if`, { cache, failFast })
+  const ifValidator = context.validatorForSchema(ifSchema, `${schemaLocation}/if`)
   const thenSchema = schema['then']
   const thenValidator =
-    thenSchema !== undefined
-      ? schemaValidator(thenSchema, `${schemaLocation}/then`, { cache, failFast })
-      : trueValidator
+    thenSchema !== undefined ? context.validatorForSchema(thenSchema, `${schemaLocation}/then`) : trueValidator
   const elseSchema = schema['else']
   const elseValidator =
-    elseSchema !== undefined
-      ? schemaValidator(elseSchema, `${schemaLocation}/else`, { cache, failFast })
-      : trueValidator
-  return (instance: unknown, instanceLocation: JSONPointer) => {
-    const ifOutput = ifValidator(instance, instanceLocation)
+    elseSchema !== undefined ? context.validatorForSchema(elseSchema, `${schemaLocation}/else`) : trueValidator
+  return (instance: unknown, instanceContext: InstanceContext): Output => {
+    const ifOutput = ifValidator(instance, instanceContext.clone())
     if (ifOutput.valid) {
-      return thenValidator(instance, instanceLocation)
+      const thenOutput = thenValidator(instance, instanceContext.clone())
+      if (thenOutput.valid) {
+        return {
+          valid: true,
+          schemaLocation,
+          instanceLocation: instanceContext.instanceLocation,
+          annotationResults: {
+            ...combineAnnotationResults([ifOutput.annotationResults ?? {}, thenOutput.annotationResults ?? {}]),
+            ifOutput
+          }
+        } as any
+      } else {
+        return thenOutput
+      }
     } else {
-      return elseValidator(instance, instanceLocation)
+      const elseOutput = elseValidator(instance, instanceContext.clone())
+      if (elseOutput.valid) {
+        return {
+          valid: true,
+          schemaLocation,
+          instanceLocation: instanceContext.instanceLocation,
+          annotationResults: combineAnnotationResults([elseOutput.annotationResults ?? {}])
+        } as any
+      } else {
+        elseOutput
+      }
     }
   }
 }

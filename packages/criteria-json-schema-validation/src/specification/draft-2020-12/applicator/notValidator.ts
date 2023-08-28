@@ -1,22 +1,39 @@
 import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
-import { schemaValidator } from '../schema/schemaValidator'
+import { ValidationContext } from '../ValidationContext'
+import { InstanceContext } from '../InstanceContext'
+import { Output } from '../../output'
 
 export function notValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ) {
+  if (!('not' in schema)) {
+    return null
+  }
+
   const not = schema['not']
-  const validator = schemaValidator(not, `${schemaLocation}/not`, { cache, failFast })
-  return (instance: unknown, instanceLocation: JSONPointer) => {
-    const output = validator(instance, instanceLocation)
-    return assert(!output.valid, `Expected value to fail validation against not schema`, {
-      schemaLocation,
-      schemaKeyword: 'not',
-      instanceLocation
-    })
+  const validator = context.validatorForSchema(not, `${schemaLocation}/not`)
+  return (instance: unknown, instanceContext: InstanceContext): Output => {
+    const output = validator(instance, new InstanceContext(instanceContext.instanceLocation))
+    if (output.valid) {
+      return {
+        valid: false,
+        schemaLocation,
+        schemaKeyword: 'not',
+        instanceLocation: instanceContext.instanceLocation,
+        error: 'Expected value to fail validation against not schema'
+      }
+    } else {
+      return {
+        valid: true,
+        schemaLocation,
+        schemaKeyword: 'not',
+        instanceLocation: instanceContext.instanceLocation,
+        annotationResults: {}
+      }
+    }
   }
 }

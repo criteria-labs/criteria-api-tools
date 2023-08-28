@@ -2,16 +2,22 @@ import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
 import { JSONPointer } from '../../../util/JSONPointer'
 import { isJSONArray } from '../../../util/isJSONArray'
 import { assert } from '../../assert'
-import { Cache } from '../cache/Cache'
 import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
+import { Output } from '../../output'
 
 export function minItemsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
+  context: ValidationContext
 ): Validator {
+  if (!('minItems' in schema)) {
+    return null
+  }
+
   const minItems = schema['minItems']
-  return (instance: any, instanceLocation: JSONPointer) => {
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true }
     }
@@ -19,7 +25,7 @@ export function minItemsValidator(
     return assert(
       instance.length >= minItems,
       `Expected array to contain at least ${minItems} items but found ${instance.length} instead`,
-      { schemaLocation, schemaKeyword: 'minItems', instanceLocation }
+      { schemaLocation, schemaKeyword: 'minItems', instanceLocation: instanceContext.instanceLocation }
     )
   }
 }

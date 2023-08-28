@@ -4,15 +4,17 @@ import { formatList } from '../../../util/formatList'
 import { isJSONArray } from '../../../util/isJSONArray'
 import { assert } from '../../assert'
 import { Output } from '../../output'
-import { Cache } from '../cache/Cache'
-import { schemaValidator } from '../schema/schemaValidator'
-import { Validator } from '../../types'
+import { InstanceContext } from '../InstanceContext'
+import { ValidationContext } from '../ValidationContext'
 
 export function maxContainsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
-  { cache, failFast }: { cache: Cache; failFast: boolean }
-): Validator {
+  context: ValidationContext
+) {
+  if (!('maxContains' in schema)) {
+    return null
+  }
   if (!('contains' in schema)) {
     return null
   }
@@ -20,8 +22,9 @@ export function maxContainsValidator(
   const maxContains = schema['maxContains']
   const contains = schema['contains']
 
-  const containsValidator = schemaValidator(contains, `${schemaLocation}/maxContains`, { cache, failFast })
-  return (instance: any, instanceLocation: JSONPointer) => {
+  const containsValidator = context.validatorForSchema(contains, `${schemaLocation}/maxContains`)
+  const failFast = context.failFast
+  return (instance: any, instanceContext: InstanceContext): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true }
     }
@@ -29,7 +32,7 @@ export function maxContainsValidator(
     const results: { index: number; output: Output }[] = []
     for (let index = 0; index < instance.length; index++) {
       // TODO: read annotation from contains keyword intead of repeating validation
-      const output = containsValidator(instance[index], `${instanceLocation}/${index}`)
+      const output = containsValidator(instance[index], instanceContext.appendingInstanceLocation(`/${index}`))
       if (output.valid) {
         results.push({ index, output })
         if (results.length > maxContains && failFast) {
@@ -37,7 +40,7 @@ export function maxContainsValidator(
             valid: false,
             schemaLocation,
             schemaKeyword: 'maxContains',
-            instanceLocation,
+            instanceLocation: instanceContext.instanceLocation,
             error: `Expected up to ${maxContains} array items to validate against subschema but found at least ${
               results.length
             } items at indices ${formatList(
@@ -57,7 +60,7 @@ export function maxContainsValidator(
         results.map((result) => `${result.index}`),
         'and'
       )} instead`,
-      { schemaLocation, schemaKeyword: 'maxContains', instanceLocation }
+      { schemaLocation, schemaKeyword: 'maxContains', instanceLocation: instanceContext.instanceLocation }
     )
   }
 }

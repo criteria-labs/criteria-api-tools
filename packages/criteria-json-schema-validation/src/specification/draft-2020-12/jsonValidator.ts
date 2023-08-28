@@ -1,14 +1,29 @@
 import { DereferencedJSONSchemaDraft2020_12 } from '@criteria/json-schema'
-import { Cache } from './cache/Cache'
-import { schemaValidator } from './schema/schemaValidator'
+import { ValidationContext } from './ValidationContext'
+import { InstanceContext } from './InstanceContext'
 
-export function jsonValidator(schema: DereferencedJSONSchemaDraft2020_12, { failFast }: { failFast: boolean }) {
-  const cache = new Cache()
-  const validator = schemaValidator(schema, '', { cache, failFast })
+export function jsonValidator(
+  schema: DereferencedJSONSchemaDraft2020_12,
+  {
+    failFast,
+    defaultMetaSchemaURI,
+    retrieveMetaSchema
+  }: {
+    failFast: boolean
+    defaultMetaSchemaURI?: string
+    retrieveMetaSchema?: (uri: string) => any
+  }
+) {
+  const context = new ValidationContext({
+    failFast,
+    defaultMetaSchemaURI: defaultMetaSchemaURI ?? 'https://json-schema.org/draft/2020-12/schema',
+    retrieveMetaSchema
+  })
+  const validator = context.validatorForSchema(schema, '')
   return (instance: unknown) => {
-    const output = validator(instance, '')
+    const output = validator(instance, new InstanceContext(''))
     if (!output.valid) {
-      throw new Error('Invalid JSON')
+      throw new Error('Invalid JSON ' + JSON.stringify(output, null, '  '))
     }
   }
 }

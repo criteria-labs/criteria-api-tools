@@ -11,7 +11,7 @@ export default function circularEqual(lhs: any, rhs: any): boolean {
       }
       seen.add(lhs)
 
-      if (!(typeof lhs === 'object' && lhs !== null && !ArrayBuffer.isView(lhs))) {
+      if (!(typeof rhs === 'object' && rhs !== null && !ArrayBuffer.isView(rhs))) {
         return false
       }
 

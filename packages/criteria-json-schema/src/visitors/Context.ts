@@ -8,6 +8,7 @@ export interface Context {
 
   // The intial base URI of the schema
   baseURI: URI
+  baseURIIsSchemaID: boolean // ensures resolving id against baseURI is idempotent
   jsonPointerFromBaseURI: JSONPointer
   jsonPointerFromSchema: JSONPointer
 
@@ -20,6 +21,7 @@ export function appendJSONPointer(context: Context, jsonPointer: JSONPointer): C
   return {
     configuration: context.configuration,
     baseURI: context.baseURI,
+    baseURIIsSchemaID: context.baseURIIsSchemaID,
     jsonPointerFromBaseURI: `${context.jsonPointerFromBaseURI}${encodeURIFragment(jsonPointer) as JSONPointer}`,
     jsonPointerFromSchema: `${context.jsonPointerFromSchema}${encodeURIFragment(jsonPointer) as JSONPointer}`,
     resolvedURIs: context.resolvedURIs.filter(uriFragmentIsJSONPointer).map((uri) => {

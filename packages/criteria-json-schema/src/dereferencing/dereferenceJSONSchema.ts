@@ -1,3 +1,4 @@
+import { retrieveBuiltin } from '../retrievers'
 import { memoize } from '../retrievers/memoize'
 import visitorConfiguration2020_12 from '../specification/draft-2020-12/visitorConfiguration'
 import { normalizeURI, resolveURIReference, URI } from '../util/uri'
@@ -21,7 +22,7 @@ export const defaultDefaultConfiguration = visitorConfiguration2020_12 // yes, d
 export function dereferenceJSONSchema(schema: any, options?: Options) {
   const baseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
   const retrieve = memoize((uri: string) => {
-    const document = uri === baseURI ? schema : options?.retrieve(uri) ?? defaultRetrieve(uri)
+    const document = uri === baseURI ? schema : retrieveBuiltin(uri) ?? options?.retrieve(uri) ?? defaultRetrieve(uri)
     if (!document) {
       throw new Error(`Invalid document retrieve at uri '${uri}'`)
     }
@@ -119,7 +120,7 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
     }
   }
 
-  const dereferenceReferenceWithSiblings = (reference: { $ref: string }, context: ReferenceContext) => {
+  const dereferenceReferenceWithSiblings = (reference: { $ref: string }, context: SchemaContext) => {
     // Merging $ref and siblings creates a new unique object,
     // otherwise sibling properties will be applied everywhere the same $ref is used
     // Assume that siblings does not need to be further dereferenced
@@ -157,7 +158,9 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
     // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
     // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
     deferredTasks.push(() => {
-      Object.assign(result, siblings)
+      const siblingsResult = {}
+      context.cloneSiblingsInto(siblingsResult)
+      Object.assign(result, siblingsResult)
       context.configuration.mergeReferencedSchema(result, dereferenced)
     })
 
@@ -175,7 +178,7 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
     dereferencedDocuments[uri] = cloneValues(sourceDocument.value, sourceDocument.context, (value, kind, context) => {
       if (kind === 'schema') {
         if ('$ref' in value || '$dynamicRef' in value) {
-          return dereferenceReferenceWithSiblings(value, context as ReferenceContext)
+          return dereferenceReferenceWithSiblings(value, context as SchemaContext)
         } else {
           return dereferenceSubschema(value, context as SchemaContext)
         }

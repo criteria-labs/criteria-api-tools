@@ -39,7 +39,11 @@ const configuration: VisitorConfiguration = {
 
     let id: string | undefined
     if ('id' in schema && typeof schema.id === 'string') {
-      id = resolveURIReference(schema.id, context.baseURI)
+      if (context.baseURIIsSchemaID) {
+        id = context.baseURI
+      } else {
+        id = resolveURIReference(schema.id, context.baseURI)
+      }
     }
 
     const baseURI = id ?? context.baseURI // id forms the new base uri if present
@@ -62,6 +66,7 @@ const configuration: VisitorConfiguration = {
     return {
       configuration: resolvedConfiguration,
       baseURI,
+      baseURIIsSchemaID: baseURI === id,
       jsonPointerFromBaseURI,
       jsonPointerFromSchema: '',
       resolvedURIs

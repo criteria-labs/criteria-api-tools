@@ -1,5 +1,6 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { appendJSONPointer, Context } from './Context'
+import configuration from '../specification/draft-04/visitorConfiguration'
 
 type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 
@@ -42,8 +43,11 @@ export function visitValues(
 
       if (Array.isArray(value)) {
         return visitArray(value, context)
-      } else if (('$ref' in value || '$dynamicRef' in value) && Object.keys(value).length === 1) {
-        // Will detect references outside of where we would expect a schema
+      } else if (
+        ('$ref' in value || '$dynamicRef' in value) &&
+        Object.keys(value).length === 1 &&
+        configuration.isSubschema(context)
+      ) {
         // Will also detect $dynamicRef outside of 2020-12.
         return visitReference(value, { ...context, jsonPointerFromSchema: '' })
       } else if (context.configuration.isSubschema(context)) {
@@ -52,7 +56,11 @@ export function visitValues(
         return visitObject(value, context)
       }
     } else {
-      return visitPrimitive(value, context)
+      if (typeof value === 'boolean' && context.configuration.isSubschema(context)) {
+        return visitSchema(value, { ...context, jsonPointerFromSchema: '' })
+      } else {
+        return visitPrimitive(value, context)
+      }
     }
   }
 
@@ -96,7 +104,15 @@ export function visitValues(
     return stop
   }
 
-  const visitSchema = (schema: object, context: Context) => {
+  const visitSchema = (schema: object | boolean, context: Context) => {
+    if (typeof schema === 'boolean') {
+      stop = Boolean(visitor(schema, 'schema', context))
+      if (!stop) {
+        stop = leaver && Boolean(visitor(schema, 'schema', context))
+      }
+      return stop
+    }
+
     const resolvedContext = context.configuration.resolveContext(context, schema)
     stop = Boolean(visitor(schema, 'schema', resolvedContext))
     if (!stop) {
@@ -136,6 +152,7 @@ export function visitValues(
     rootContext ?? {
       configuration: defaultConfiguration,
       baseURI: '',
+      baseURIIsSchemaID: false,
       jsonPointerFromBaseURI: '',
       jsonPointerFromSchema: '',
       resolvedURIs: []

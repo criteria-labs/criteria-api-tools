@@ -58,7 +58,7 @@ describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
 
         testCaseSchemaValidator = jsonValidatorDraft2020_12(dereferencedSchema, {
           failFast: false,
-          retrieveMetaSchema: retrieveRemote
+          retrieve: retrieveRemote
         })
       }).not.toThrow()
     })

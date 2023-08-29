@@ -1,6 +1,5 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { appendJSONPointer, Context } from './Context'
-import { VisitorConfiguration } from './visitValues'
 import configuration from '../specification/draft-04/visitorConfiguration'
 
 export type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'

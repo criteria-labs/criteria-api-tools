@@ -23,6 +23,15 @@ const configuration: VisitorConfiguration = {
       Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/))
     )
   },
+  isLiteral: (context: Context): boolean => {
+    const jsonPointer = context.jsonPointerFromSchema
+    return (
+      Boolean(jsonPointer.match(/^\/const(\/.*)?$/)) ||
+      Boolean(jsonPointer.match(/^\/enum\/[\d]+(\/.*)?$/)) ||
+      jsonPointer === '/properties' ||
+      jsonPointer === '/patternProperties'
+    )
+  },
   resolveContext: (context: Context, schema: object) => {
     let resolvedConfiguration = context.configuration
     if ('$schema' in schema && typeof schema.$schema === 'string') {
@@ -39,7 +48,11 @@ const configuration: VisitorConfiguration = {
 
     let id: string | undefined
     if ('id' in schema && typeof schema.id === 'string') {
-      if (context.baseURIIsSchemaID) {
+      if (
+        context.jsonPointerFromBaseURI === '' &&
+        context.jsonPointerFromSchema === '' &&
+        context.baseURIIsResolvedSchemaID
+      ) {
         id = context.baseURI
       } else {
         id = resolveURIReference(schema.id, context.baseURI)
@@ -66,7 +79,7 @@ const configuration: VisitorConfiguration = {
     return {
       configuration: resolvedConfiguration,
       baseURI,
-      baseURIIsSchemaID: baseURI === id,
+      baseURIIsResolvedSchemaID: id ? true : false,
       jsonPointerFromBaseURI,
       jsonPointerFromSchema: '',
       resolvedURIs

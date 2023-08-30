@@ -152,7 +152,7 @@ export class Index {
           context: {
             configuration: parentValue.context.configuration,
             baseURI: parentURI,
-            baseURIIsSchemaID: parentValue.context.baseURIIsSchemaID,
+            baseURIIsResolvedSchemaID: false,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
             resolvedURIs: appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
@@ -181,7 +181,7 @@ export class Index {
           context: {
             configuration: followedParentValue.context.configuration,
             baseURI: parentURI,
-            baseURIIsSchemaID: parentValue.context.baseURIIsSchemaID,
+            baseURIIsResolvedSchemaID: false,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${followedParentValue.context.jsonPointerFromSchema}${remainingPointer}`,
             resolvedURIs: appendJSONPointer(followedParentValue.context, remainingPointer).resolvedURIs
@@ -205,7 +205,7 @@ export function indexDocumentInto(
   const documentContext: Context = {
     configuration: defaultConfiguration,
     baseURI: documentURI,
-    baseURIIsSchemaID: false,
+    baseURIIsResolvedSchemaID: false,
     jsonPointerFromBaseURI: '',
     jsonPointerFromSchema: '',
     resolvedURIs: []

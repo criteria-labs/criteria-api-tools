@@ -5,6 +5,7 @@ import visitorConfiguration from './visitorConfiguration'
 
 interface Options {
   baseURI?: URI
+  mergeRefIntoParent?: boolean
   retrieve?: (uri: URI) => JSONSchema
 }
 

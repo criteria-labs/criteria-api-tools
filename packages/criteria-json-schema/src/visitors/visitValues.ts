@@ -14,6 +14,10 @@ export interface VisitorConfiguration {
   // so we won't mistake the JSON pointer for, say, an array of subschemas.
   isSubschema: (context: Context) => boolean
 
+  // Identifies where we should never dereference a $ref
+  // This is not simply the inverse of isSchema, to still support $ref in non-standard locations
+  isLiteral: (context: Context) => boolean
+
   // Returns the context resolved to the current schema or reference
   resolveContext: (context: Context, schema: object) => Context
 
@@ -46,7 +50,7 @@ export function visitValues(
       } else if (
         ('$ref' in value || '$dynamicRef' in value) &&
         Object.keys(value).length === 1 &&
-        configuration.isSubschema(context)
+        !configuration.isLiteral(context)
       ) {
         // Will also detect $dynamicRef outside of 2020-12.
         return visitReference(value, { ...context, jsonPointerFromSchema: '' })
@@ -152,7 +156,7 @@ export function visitValues(
     rootContext ?? {
       configuration: defaultConfiguration,
       baseURI: '',
-      baseURIIsSchemaID: false,
+      baseURIIsResolvedSchemaID: false,
       jsonPointerFromBaseURI: '',
       jsonPointerFromSchema: '',
       resolvedURIs: []

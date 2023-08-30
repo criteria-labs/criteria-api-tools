@@ -9,6 +9,7 @@ import { Index, indexDocumentInto } from './indexDocumentInto'
 interface Options {
   baseURI?: URI
   retrieve?: (uri: URI) => any
+  mergeRefIntoParent?: boolean
   defaultConfiguration?: VisitorConfiguration
 }
 
@@ -16,6 +17,7 @@ export const defaultBaseURI = ''
 export const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
+export const defaultMergeRefIntoParent = true
 export const defaultDefaultConfiguration = visitorConfiguration2020_12 // yes, defaultDefault...
 
 // TODO: warn on violations of SHOULD directives
@@ -28,6 +30,7 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
     }
     return document
   })
+  const mergeRefIntoParent = options?.mergeRefIntoParent ?? defaultMergeRefIntoParent
   const defaultConfiguration = options?.defaultConfiguration ?? defaultDefaultConfiguration
 
   const index = new Index()
@@ -161,7 +164,13 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
       const siblingsResult = {}
       context.cloneSiblingsInto(siblingsResult)
       Object.assign(result, siblingsResult)
-      context.configuration.mergeReferencedSchema(result, dereferenced)
+
+      // This is optional because it needs to be false for the validation test suite
+      if (mergeRefIntoParent) {
+        context.configuration.mergeReferencedSchema(result, dereferenced)
+      } else {
+        result['$ref'] = dereferenced
+      }
     })
 
     // TODO: can we dereference siblings now?

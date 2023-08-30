@@ -38,7 +38,7 @@ export function cloneValues(
       } else if (
         ('$ref' in value || '$dynamicRef' in value) &&
         Object.keys(value).length === 1 &&
-        configuration.isSubschema(context)
+        !configuration.isLiteral(context)
       ) {
         // Will also detect $dynamicRef outside of 2020-12.
         return cloneReference(value, { ...context, jsonPointerFromSchema: '' })

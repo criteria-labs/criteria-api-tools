@@ -53,6 +53,7 @@ describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
     beforeAll(() => {
       expect(() => {
         dereferencedSchema = dereferenceJSONSchemaDraft2020_12(testCaseSchema, {
+          mergeRefIntoParent: false,
           retrieve: retrieveRemote
         }) as any
 

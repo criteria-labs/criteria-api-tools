@@ -1,11 +1,12 @@
 import { dereferenceJSONSchema as dereferenceJSONSchemaWithConfiguration } from '../../dereferencing/dereferenceJSONSchema'
 import { URI } from '../../util/uri'
+import { ReferenceMergePolicy } from '../../visitors/visitValues'
 import { DereferencedJSONSchemaObject, JSONSchema, JSONSchemaBooleanSchema } from './JSONSchema'
 import visitorConfiguration from './visitorConfiguration'
 
 interface Options {
   baseURI?: URI
-  mergeRefIntoParent?: boolean
+  referenceMergePolicy?: ReferenceMergePolicy
   retrieve?: (uri: URI) => JSONSchema
 }
 

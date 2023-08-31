@@ -3,13 +3,13 @@ import { memoize } from '../retrievers/memoize'
 import visitorConfiguration2020_12 from '../specification/draft-2020-12/visitorConfiguration'
 import { normalizeURI, resolveURIReference, URI } from '../util/uri'
 import { cloneValues, ReferenceContext, SchemaContext } from '../visitors/cloneValues'
-import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
+import { ReferenceMergePolicy, VisitorConfiguration, visitValues } from '../visitors/visitValues'
 import { Index, indexDocumentInto } from './indexDocumentInto'
 
 interface Options {
   baseURI?: URI
   retrieve?: (uri: URI) => any
-  mergeRefIntoParent?: boolean
+  referenceMergePolicy?: ReferenceMergePolicy
   defaultConfiguration?: VisitorConfiguration
 }
 
@@ -17,7 +17,7 @@ export const defaultBaseURI = ''
 export const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
-export const defaultMergeRefIntoParent = true
+export const defaultReferenceMergePolicy = 'by_keyword'
 export const defaultDefaultConfiguration = visitorConfiguration2020_12 // yes, defaultDefault...
 
 // TODO: warn on violations of SHOULD directives
@@ -30,11 +30,11 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
     }
     return document
   })
-  const mergeRefIntoParent = options?.mergeRefIntoParent ?? defaultMergeRefIntoParent
+  const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
   const defaultConfiguration = options?.defaultConfiguration ?? defaultDefaultConfiguration
 
   const index = new Index()
-  indexDocumentInto(index, schema, baseURI, defaultConfiguration, retrieve)
+  indexDocumentInto(index, schema, baseURI, referenceMergePolicy, defaultConfiguration, retrieve)
 
   // Cache of previously dereferenced values by uri
   // Multiple URIs may refer to the same value
@@ -103,14 +103,20 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
           throw new Error(`No schema at uri '${uri}'`) // should never get here
         }
 
-        visitValues(schema.value, schema.context, context.configuration, (value, kind, context) => {
-          if (typeof value === 'object' && '$dynamicAnchor' in value) {
-            if (`#${value.$dynamicAnchor}` === reference.$dynamicRef) {
-              sourceValue = { value, context }
-              return true // stop
+        visitValues(
+          schema.value,
+          schema.context,
+          referenceMergePolicy,
+          context.configuration,
+          (value, kind, context) => {
+            if (typeof value === 'object' && '$dynamicAnchor' in value) {
+              if (`#${value.$dynamicAnchor}` === reference.$dynamicRef) {
+                sourceValue = { value, context }
+                return true // stop
+              }
             }
           }
-        })
+        )
         if (sourceValue) {
           break
         }
@@ -163,14 +169,7 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
     deferredTasks.push(() => {
       const siblingsResult = {}
       context.cloneSiblingsInto(siblingsResult)
-      Object.assign(result, siblingsResult)
-
-      // This is optional because it needs to be false for the validation test suite
-      if (mergeRefIntoParent) {
-        context.configuration.mergeReferencedSchema(result, dereferenced)
-      } else {
-        result['$ref'] = dereferenced
-      }
+      context.configuration.mergeReferencedSchema(result, dereferenced, siblingsResult, referenceMergePolicy)
     })
 
     // TODO: can we dereference siblings now?
@@ -184,19 +183,24 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
   // TODO: should this only clone the root one? can ony be pne dynamic path.
   const dereferencedDocuments = {}
   for (const [uri, sourceDocument] of Object.entries(index.documentsByURI)) {
-    dereferencedDocuments[uri] = cloneValues(sourceDocument.value, sourceDocument.context, (value, kind, context) => {
-      if (kind === 'schema') {
-        if ('$ref' in value || '$dynamicRef' in value) {
-          return dereferenceReferenceWithSiblings(value, context as SchemaContext)
+    dereferencedDocuments[uri] = cloneValues(
+      sourceDocument.value,
+      sourceDocument.context,
+      referenceMergePolicy,
+      (value, kind, context) => {
+        if (kind === 'schema') {
+          if ('$ref' in value || '$dynamicRef' in value) {
+            return dereferenceReferenceWithSiblings(value, context as SchemaContext)
+          } else {
+            return dereferenceSubschema(value, context as SchemaContext)
+          }
+        } else if (kind === 'reference') {
+          return dereferenceReference(value, context as ReferenceContext)
         } else {
-          return dereferenceSubschema(value, context as SchemaContext)
+          return value
         }
-      } else if (kind === 'reference') {
-        return dereferenceReference(value, context as ReferenceContext)
-      } else {
-        return value
       }
-    })
+    )
   }
 
   // Now that the object graph has been fully cloned, perform any post-processing

@@ -10,17 +10,7 @@ import { validationValidators } from './vocabularies/validation'
 // add unevaluated keywords last
 const configuration: ValidatorConfiguration = {
   defaultMetaSchemaURI: 'https://json-schema.org/draft/2020-12/schema',
-  dereferenceJSONSchema: dereferenceJSONSchemaDraft2020_12,
-  validatatorsByKeywordByVocabulary: {
-    'https://json-schema.org/draft/2020-12/vocab/core': coreValidators,
-    'https://json-schema.org/draft/2020-12/vocab/applicator': applicatorValidators,
-    'https://json-schema.org/draft/2020-12/vocab/validation': validationValidators,
-    'https://json-schema.org/draft/2020-12/vocab/meta-data': {},
-    'https://json-schema.org/draft/2020-12/vocab/format-annotation': {},
-    'https://json-schema.org/draft/2020-12/vocab/format-assertion': {},
-    'https://json-schema.org/draft/2020-12/vocab/content': {},
-    'https://json-schema.org/draft/2020-12/vocab/unevaluated': unevaluatedValidators
-  }
+  dereferenceJSONSchema: dereferenceJSONSchemaDraft2020_12
 }
 
 export default configuration

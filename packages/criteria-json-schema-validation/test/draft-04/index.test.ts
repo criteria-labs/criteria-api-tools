@@ -1,20 +1,16 @@
 /* eslint-env jest */
-import {
-  DereferencedJSONSchemaDraft2020_12,
-  JSONSchemaDraft2020_12,
-  dereferenceJSONSchemaDraft2020_12
-} from '@criteria/json-schema'
+import { DereferencedJSONSchemaDraft04, JSONSchemaDraft04, dereferenceJSONSchemaDraft04 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
-import { jsonValidatorDraft2020_12 } from '../../src'
+import { jsonValidatorDraft04 } from '../../src'
 
-const testCasesDirectory = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/tests/draft2020-12')
+const testCasesDirectory = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/tests/draft4')
 const testFiles = fs.readdirSync(testCasesDirectory).filter((filename) => filename.endsWith('.json'))
 let testFilesTable: [string][] = testFiles.map((testFile) => [testFile])
 
 const remotesDirectoryPath = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/remotes')
 
-const retrieveRemote = (uri: string): JSONSchemaDraft2020_12 => {
+const retrieveRemote = (uri: string): JSONSchemaDraft04 => {
   if (uri.startsWith('http://localhost:1234/')) {
     const remotePath = uri.replace('http://localhost:1234', remotesDirectoryPath)
     const remoteContents = fs.readFileSync(remotePath, { encoding: 'utf-8' })
@@ -28,7 +24,7 @@ const retrieveRemote = (uri: string): JSONSchemaDraft2020_12 => {
 // skip dynamicRef tests
 testFilesTable = testFilesTable.filter((testFile) => testFile[0] !== 'dynamicRef.json')
 
-describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
+describe.each(testFilesTable)(`tests/draft04/%s`, (testFilename) => {
   const testFilePath = path.resolve(testCasesDirectory, testFilename)
   const testFileContents = fs.readFileSync(testFilePath, { encoding: 'utf-8' })
   const testCases = JSON.parse(testFileContents)
@@ -47,17 +43,17 @@ describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
   }
 
   describe.each(testCasesTable)('%s', (testCaseDescription, testCaseSchema, testCaseTests) => {
-    let dereferencedSchema: DereferencedJSONSchemaDraft2020_12
+    let dereferencedSchema: DereferencedJSONSchemaDraft04
     let testCaseSchemaValidator
 
     beforeAll(() => {
       expect(() => {
-        dereferencedSchema = dereferenceJSONSchemaDraft2020_12(testCaseSchema, {
-          referenceMergePolicy: 'none',
+        dereferencedSchema = dereferenceJSONSchemaDraft04(testCaseSchema, {
+          referenceMergePolicy: 'overwrite',
           retrieve: retrieveRemote
         }) as any
 
-        testCaseSchemaValidator = jsonValidatorDraft2020_12(dereferencedSchema, {
+        testCaseSchemaValidator = jsonValidatorDraft04(dereferencedSchema, {
           failFast: false,
           retrieve: retrieveRemote
         })

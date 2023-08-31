@@ -6,6 +6,12 @@ import { reduceAnnotationResults } from '../specification/draft-2020-12/vocabula
 import { JSONPointer } from '../util/JSONPointer'
 import { BoundValidator, BoundValidatorWithAnnotationResults } from './BoundValidator'
 import { InvalidOutput, Output } from './Output'
+import { coreValidators as coreValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/core'
+import { coreValidators as coreValidatorsDraft04 } from '../specification/draft-04/vocabularies/core'
+import { validationValidators as validationValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/validation'
+import { validationValidators as validationValidatorsDraft04 } from '../specification/draft-04/vocabularies/validation'
+import { unevaluatedValidators as unevaluatedValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/unevaluated'
+import { applicatorValidators as applicatorValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/applicator'
 
 export type ValidatorContext = {
   failFast: boolean
@@ -21,7 +27,6 @@ export type KeywordValidator = (
 export interface ValidatorConfiguration {
   defaultMetaSchemaURI: string
   dereferenceJSONSchema: (schema: any, options?: { retrieve?: (uri: string) => any }) => any
-  validatatorsByKeywordByVocabulary: Record<string, Record<string, KeywordValidator>>
 }
 
 export interface Options {
@@ -100,20 +105,40 @@ export function jsonValidator(schema: object | boolean, options?: Options): (ins
     // TODO: allow passing handler for custom keywords
     let validatorsByKeyword: { [Keyword in keyof DereferencedJSONSchemaObjectDraft2020_12]: KeywordValidator } = {}
     const metaSchema = metaSchemaForSchema(schema)
-    const vocabularyKeys = Object.keys(metaSchema.$vocabulary ?? {})
-    for (const [vocabularyURI, validators] of Object.entries(configuration.validatatorsByKeywordByVocabulary)) {
-      if (vocabularyKeys.includes(vocabularyURI)) {
-        validatorsByKeyword = {
-          ...validatorsByKeyword,
-          ...validators
+    if ('id' in metaSchema && metaSchema.id === 'http://json-schema.org/draft-04/schema#') {
+      validatorsByKeyword = {
+        ...coreValidatorsDraft04,
+        ...validationValidatorsDraft04
+      }
+    } else {
+      // order is important here due to keyword interdependence
+      // applicator before validation, so maxContains and minContains can access contains annotation results
+      // add unevaluated keywords last
+      const draft2020_12Validators = {
+        'https://json-schema.org/draft/2020-12/vocab/core': coreValidatorsDraft2020_12,
+        'https://json-schema.org/draft/2020-12/vocab/applicator': applicatorValidatorsDraft2020_12,
+        'https://json-schema.org/draft/2020-12/vocab/validation': validationValidatorsDraft2020_12,
+        'https://json-schema.org/draft/2020-12/vocab/meta-data': {},
+        'https://json-schema.org/draft/2020-12/vocab/format-annotation': {},
+        'https://json-schema.org/draft/2020-12/vocab/format-assertion': {},
+        'https://json-schema.org/draft/2020-12/vocab/content': {},
+        'https://json-schema.org/draft/2020-12/vocab/unevaluated': unevaluatedValidatorsDraft2020_12
+      }
+      const vocabularyKeys = Object.keys(metaSchema.$vocabulary ?? {})
+      for (const [vocabularyURI, validators] of Object.entries(draft2020_12Validators)) {
+        if (vocabularyKeys.includes(vocabularyURI)) {
+          validatorsByKeyword = {
+            ...validatorsByKeyword,
+            ...validators
+          }
         }
       }
-    }
-    for (const [vocabularyKey, vocabularyRequired] of Object.entries(metaSchema.$vocabulary ?? {})) {
-      if (!Object.keys(configuration.validatatorsByKeywordByVocabulary).includes(vocabularyKey)) {
-        // unknown vocabulary
-        if (vocabularyRequired) {
-          throw new SchemaError(`Unsupported vocabulary: ${vocabularyKey}`)
+      for (const [vocabularyKey, vocabularyRequired] of Object.entries(metaSchema.$vocabulary ?? {})) {
+        if (!Object.keys(draft2020_12Validators).includes(vocabularyKey)) {
+          // unknown vocabulary
+          if (vocabularyRequired) {
+            throw new SchemaError(`Unsupported vocabulary: ${vocabularyKey}`)
+          }
         }
       }
     }

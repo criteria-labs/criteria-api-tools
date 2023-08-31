@@ -4,6 +4,8 @@ import configuration from '../specification/draft-04/visitorConfiguration'
 
 type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 
+export type ReferenceMergePolicy = 'by_keyword' | 'overwrite' | 'none' | 'default'
+
 export interface VisitorConfiguration {
   // The JSON schema dialect of this configuration
   dialect: string
@@ -14,21 +16,27 @@ export interface VisitorConfiguration {
   // so we won't mistake the JSON pointer for, say, an array of subschemas.
   isSubschema: (context: Context) => boolean
 
-  // Identifies where we should never dereference a $ref
-  // This is not simply the inverse of isSchema, to still support $ref in non-standard locations
-  isLiteral: (context: Context) => boolean
+  // Whether to treat the value as a simple $ref without siblings (even if it has siblings)
+  isSimpleReference: (value: object, context: Context, referenceMergePolicy: ReferenceMergePolicy) => boolean
 
   // Returns the context resolved to the current schema or reference
-  resolveContext: (context: Context, schema: object) => Context
+  resolveContext: (context: Context, schema: object, referenceMergePolicy: ReferenceMergePolicy) => Context
 
   // Applies referencedSchema to target.
   // Called when target contains $ref and sibling properties.
-  mergeReferencedSchema: (target: object, referencedSchema: object) => void
+  // This is parameterized because it needs to be altered for the validation test suite
+  mergeReferencedSchema: (
+    target: object,
+    referencedSchema: object,
+    siblings: object,
+    policy: ReferenceMergePolicy
+  ) => void
 }
 
 export function visitValues(
   root: object,
   rootContext: Context | null,
+  referenceMergePolicy: ReferenceMergePolicy,
   defaultConfiguration: VisitorConfiguration,
   visitor: (value: any, kind: Kind, context: Context) => boolean | void,
   leaver?: (value: any, kind: Kind, context: Context) => boolean | void
@@ -47,12 +55,9 @@ export function visitValues(
 
       if (Array.isArray(value)) {
         return visitArray(value, context)
-      } else if (
-        ('$ref' in value || '$dynamicRef' in value) &&
-        Object.keys(value).length === 1 &&
-        !configuration.isLiteral(context)
-      ) {
+      } else if (configuration.isSimpleReference(value, context, referenceMergePolicy)) {
         // Will also detect $dynamicRef outside of 2020-12.
+
         return visitReference(value, { ...context, jsonPointerFromSchema: '' })
       } else if (context.configuration.isSubschema(context)) {
         return visitSchema(value, { ...context, jsonPointerFromSchema: '' })
@@ -117,7 +122,7 @@ export function visitValues(
       return stop
     }
 
-    const resolvedContext = context.configuration.resolveContext(context, schema)
+    const resolvedContext = context.configuration.resolveContext(context, schema, referenceMergePolicy)
     stop = Boolean(visitor(schema, 'schema', resolvedContext))
     if (!stop) {
       for (const key in schema) {
@@ -133,8 +138,8 @@ export function visitValues(
     return stop
   }
 
-  const visitReference = (reference: { $ref: string }, context: Context) => {
-    const resolvedContext = context.configuration.resolveContext(context, reference)
+  const visitReference = (reference: { $ref: string } | { $dynamicRef: string }, context: Context) => {
+    const resolvedContext = context.configuration.resolveContext(context, reference, referenceMergePolicy)
     stop = Boolean(visitor(reference, 'reference', resolvedContext))
     if (!stop) {
       // recurse into siblings if there are any, otherwise this will just call visitPrimitive with the value of $ref

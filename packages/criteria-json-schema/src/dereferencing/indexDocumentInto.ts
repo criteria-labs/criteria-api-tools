@@ -3,7 +3,7 @@ import { JSONPointer } from '../util/JSONPointer'
 import { resolveURIReference, splitFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
 import { appendJSONPointer, Context } from '../visitors/Context'
-import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
+import { ReferenceMergePolicy, VisitorConfiguration, visitValues } from '../visitors/visitValues'
 
 export interface IndexEntry<T> {
   value: T
@@ -199,6 +199,7 @@ export function indexDocumentInto(
   index: Index,
   document: any,
   documentURI: URI,
+  referenceMergePolicy: ReferenceMergePolicy,
   defaultConfiguration: VisitorConfiguration,
   retrieve: (uri: URI) => any
 ) {
@@ -218,7 +219,7 @@ export function indexDocumentInto(
 
   // Collect external URIs to retrieve
   var unretrievedURIs = new Set<URI>()
-  visitValues(document, documentContext, defaultConfiguration, (value, kind, context) => {
+  visitValues(document, documentContext, referenceMergePolicy, defaultConfiguration, (value, kind, context) => {
     if (kind === 'schema') {
       context.resolvedURIs.forEach((uri) => (index.schemasByURI[uri] = { value, context: { ...context } as any }))
 
@@ -265,6 +266,6 @@ export function indexDocumentInto(
       throw new Error(`Failed to retrieve document at uri '${uri}'`)
     }
 
-    indexDocumentInto(index, externalDocument, uri, defaultConfiguration, retrieve)
+    indexDocumentInto(index, externalDocument, uri, referenceMergePolicy, defaultConfiguration, retrieve)
   })
 }

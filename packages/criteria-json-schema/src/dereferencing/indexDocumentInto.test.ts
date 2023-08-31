@@ -32,7 +32,7 @@ const schema = {
 describe('indexDocumentInto()', () => {
   describe('draft-04', () => {
     const index = new Index()
-    indexDocumentInto(index, schema, '', visitorConfiguration, defaultRetrieve)
+    indexDocumentInto(index, schema, '', 'default', visitorConfiguration, defaultRetrieve)
 
     test('evaluates json pointers', () => {
       expect(index.findValue('http://example.com/root.json').value).toEqual(schema)

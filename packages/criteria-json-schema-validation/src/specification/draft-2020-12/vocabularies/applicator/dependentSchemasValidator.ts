@@ -56,7 +56,7 @@ export function dependentSchemasValidator(
           schemaLocation,
           schemaKeyword: 'dependentSchemas',
           instanceLocation,
-          message: `Expected value to validate against dependent schema for property ${propertyName}`,
+          message: `${(output as InvalidOutput).message} when '${propertyName}' is defined`,
           errors: [output as InvalidOutput]
         }
       }
@@ -74,22 +74,15 @@ export function dependentSchemasValidator(
           .reduce(reduceAnnotationResults, {})
       }
     } else {
-      const propertyNames = Object.keys(invalidOutputs)
-      let message
-      if (propertyNames.length === 1) {
-        message = `Expected value to validate against dependent schema for property ${propertyNames[0]}`
-      } else {
-        message = `Expected value to validate against dependent schema for properties ${formatList(
-          propertyNames,
-          'and'
-        )}`
-      }
       return {
         valid: false,
         schemaLocation,
         schemaKeyword: 'dependentSchemas',
         instanceLocation,
-        message,
+        message: formatList(
+          Object.values(invalidOutputs).map((output) => output.message),
+          'and'
+        ),
         errors: Object.values(invalidOutputs)
       }
     }

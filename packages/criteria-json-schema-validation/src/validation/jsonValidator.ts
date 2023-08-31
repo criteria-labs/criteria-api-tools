@@ -12,6 +12,7 @@ import { validationValidators as validationValidatorsDraft2020_12 } from '../spe
 import { validationValidators as validationValidatorsDraft04 } from '../specification/draft-04/vocabularies/validation'
 import { unevaluatedValidators as unevaluatedValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/unevaluated'
 import { applicatorValidators as applicatorValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/applicator'
+import { formatList } from '../util/formatList'
 
 export type ValidatorContext = {
   failFast: boolean
@@ -71,7 +72,7 @@ export function jsonValidator(schema: object | boolean, options?: Options): (ins
           valid: false,
           schemaLocation,
           instanceLocation,
-          message: `Expected no value but found ${instance}`
+          message: `should not be defined but is ${instance}`
         }
       }
     }
@@ -178,7 +179,10 @@ export function jsonValidator(schema: object | boolean, options?: Options): (ins
             valid: false,
             schemaLocation,
             instanceLocation,
-            message: 'Invalid value',
+            message: formatList(
+              invalidOutputs.map((output) => output.message),
+              'and'
+            ),
             errors: invalidOutputs
           }
         }
@@ -238,7 +242,7 @@ export function jsonValidator(schema: object | boolean, options?: Options): (ins
   return (instance: unknown) => {
     const output = validator(instance, '')
     if (!output.valid) {
-      throw new ValidationError((output as InvalidOutput).message ?? 'Invalid JSON value', { output })
+      throw new ValidationError(`Value ${(output as InvalidOutput).message ?? 'is invalid'}`, { output })
     }
   }
 }

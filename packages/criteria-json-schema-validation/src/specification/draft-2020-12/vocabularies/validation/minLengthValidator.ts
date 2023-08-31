@@ -25,7 +25,9 @@ export function minLengthValidator(
 
     return assert(
       charactersCount >= minLength,
-      `Expected string to contain at least ${minLength} characters but found ${instance.length} instead`,
+      minLength === 1
+        ? `should have at least 1 character but has ${charactersCount} instead`
+        : `should have at least ${minLength} characters but has ${charactersCount} instead`,
       { schemaLocation, schemaKeyword: 'minLength', instanceLocation }
     )
   }

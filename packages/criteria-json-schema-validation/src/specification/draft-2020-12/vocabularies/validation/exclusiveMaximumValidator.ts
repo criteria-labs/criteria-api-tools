@@ -20,14 +20,10 @@ export function exclusiveMaximumValidator(
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(
-      instance < exclusiveMaximum,
-      `Expected number less than ${exclusiveMaximum} but found ${instance} instead`,
-      {
-        schemaLocation,
-        schemaKeyword: 'exclusiveMaximum',
-        instanceLocation
-      }
-    )
+    return assert(instance < exclusiveMaximum, `should be less than ${exclusiveMaximum} but is ${instance} instead`, {
+      schemaLocation,
+      schemaKeyword: 'exclusiveMaximum',
+      instanceLocation
+    })
   }
 }

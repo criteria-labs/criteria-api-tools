@@ -22,7 +22,9 @@ export function minItemsValidator(
 
     return assert(
       instance.length >= minItems,
-      `Expected array to contain at least ${minItems} items but found ${instance.length} instead`,
+      minItems === 1
+        ? `should have at least 1 item but has ${instance.length} instead`
+        : `should have at least ${minItems} items but has ${instance.length} instead`,
       { schemaLocation, schemaKeyword: 'minItems', instanceLocation }
     )
   }

@@ -28,10 +28,17 @@ export function requiredValidator(
       }
     }
 
-    return assert(missingProperties.length === 0, `Expected ${formatList(missingProperties, 'and')} to be defined`, {
-      schemaLocation,
-      schemaKeyword: 'required',
-      instanceLocation
-    })
+    return assert(
+      missingProperties.length === 0,
+      `is missing ${formatList(
+        missingProperties.map((name) => `'${name}'`),
+        'and'
+      )}`,
+      {
+        schemaLocation,
+        schemaKeyword: 'required',
+        instanceLocation
+      }
+    )
   }
 }

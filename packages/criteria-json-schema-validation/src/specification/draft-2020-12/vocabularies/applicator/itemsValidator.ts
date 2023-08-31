@@ -3,6 +3,8 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { InvalidOutput, Output } from '../../../../validation/Output'
+import { format } from 'prettier'
+import { formatList } from '../../../../util/formatList'
 
 export function itemsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
@@ -23,9 +25,13 @@ export function itemsValidator(
     }
 
     const outputs = []
+    const invalidIndices = []
     for (let i = prefixItems.length ?? 0; i < instance.length; i++) {
       const output = validator(instance[i], `${instanceLocation}/${i}`)
       outputs.push(output)
+      if (!output.valid) {
+        invalidIndices.push(i)
+      }
     }
 
     const invalidOutputs = outputs.filter((output) => !output.valid) as InvalidOutput[]
@@ -41,12 +47,21 @@ export function itemsValidator(
         }
       }
     } else {
+      let message
+      if (invalidIndices.length === 1) {
+        message = `has invalid item (item at ${invalidIndices[0]} ${invalidOutputs[0].message})`
+      } else {
+        message = `has invalid items (${formatList(
+          invalidIndices.map((i, offset) => `item at ${i} ${invalidOutputs[offset].message}`),
+          'and'
+        )})`
+      }
       return {
         valid: false,
         schemaLocation,
         schemaKeyword: 'items',
         instanceLocation,
-        message: 'Expected array items to validate against items subschema',
+        message,
         errors: invalidOutputs
       }
     }

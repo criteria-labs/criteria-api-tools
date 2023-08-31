@@ -23,9 +23,7 @@ export function maximumValidator(
 
     return assert(
       exclusiveMaximum ? instance < maximum : instance <= maximum,
-      `Expected number ${
-        exclusiveMaximum ? 'less than' : 'less than or equal to'
-      } ${maximum} but found ${instance} instead`,
+      `should be ${exclusiveMaximum ? 'less than' : 'less than or equal to'} ${maximum} but is ${instance} instead`,
       {
         schemaLocation,
         schemaKeyword: 'maximum',

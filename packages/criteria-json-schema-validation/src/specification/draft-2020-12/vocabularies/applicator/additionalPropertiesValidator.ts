@@ -73,12 +73,22 @@ export function additionalPropertiesValidator(
         }
       }
     } else {
+      const entries: [string, InvalidOutput][] = Object.entries(invalidOutputs)
+      let message
+      if (entries.length === 1) {
+        message = `has invalid property ('${entries[0][0]}' ${entries[0][1].message})`
+      } else {
+        message = `has invalid properties (${formatList(
+          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
+          'and'
+        )})`
+      }
       return {
         valid: false,
         schemaLocation,
         schemaKeyword: 'additionalProperties',
         instanceLocation,
-        message: `Found invalid additional properties ${formatList(Object.keys(invalidOutputs), 'and')}`,
+        message,
         errors: Object.values(invalidOutputs)
       }
     }

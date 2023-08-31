@@ -21,7 +21,7 @@ export function patternValidator(
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(instance.match(regexp), `Expected string to match '${pattern}' but found ${instance} instead`, {
+    return assert(instance.match(regexp), `should match '${pattern}' but is ${instance} instead`, {
       schemaLocation,
       schemaKeyword: 'pattern',
       instanceLocation

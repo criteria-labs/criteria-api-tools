@@ -32,7 +32,9 @@ export function oneOfValidator(
         schemaLocation,
         schemaKeyword: 'oneOf',
         instanceLocation,
-        message: `Expected value to validate against exactly one subschema`
+        message: `should validate against exactly one subschema but validated against ${
+          outputs.filter((output) => output.valid).length
+        }`
       }
     }
   }

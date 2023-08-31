@@ -3,6 +3,7 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { reduceAnnotationResults } from '../reduceAnnotationResults'
 import { InvalidOutput, Output } from '../../../../validation/Output'
+import { formatList } from '../../../../util/formatList'
 
 export function allOfValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
@@ -43,7 +44,10 @@ export function allOfValidator(
         schemaLocation,
         schemaKeyword: 'allOf',
         instanceLocation,
-        message: 'Expected value to validate against all subschemas',
+        message: formatList(
+          invalidOutputs.map((output) => output.message),
+          'and'
+        ),
         errors: invalidOutputs
       }
     }

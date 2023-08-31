@@ -34,7 +34,7 @@ export function anyOfValidator(
         schemaLocation,
         schemaKeyword: 'anyOf',
         instanceLocation,
-        message: 'Expected value to validate against any subschemas',
+        message: 'should validate against any subschema',
         errors: outputs as InvalidOutput[]
       }
     }

@@ -6,12 +6,10 @@ import { constValidator } from './constValidator'
 import { dependenciesValidator } from './dependenciesValidator'
 import { enumValidator } from './enumValidator'
 import { itemsValidator } from './itemsValidator'
-import { maxContainsValidator } from './maxContainsValidator'
 import { maxItemsValidator } from './maxItemsValidator'
 import { maxLengthValidator } from './maxLengthValidator'
 import { maxPropertiesValidator } from './maxPropertiesValidator'
 import { maximumValidator } from './maximumValidator'
-import { minContainsValidator } from './minContainsValidator'
 import { minItemsValidator } from './minItemsValidator'
 import { minLengthValidator } from './minLengthValidator'
 import { minPropertiesValidator } from './minPropertiesValidator'
@@ -44,8 +42,6 @@ export const validationValidators = {
   additionalItems: additionalItemsValidator,
   maxItems: maxItemsValidator,
   minItems: minItemsValidator,
-  maxContains: maxContainsValidator,
-  minContains: minContainsValidator,
   uniqueItems: uniqueItemsValidator,
   properties: propertiesValidator,
   patternProperties: patternPropertiesValidator,

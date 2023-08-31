@@ -20,14 +20,10 @@ export function minimumValidator(
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(
-      instance >= minimum,
-      `Expected number greater than or equal to ${minimum} but found ${instance} instead`,
-      {
-        schemaLocation,
-        schemaKeyword: 'minimum',
-        instanceLocation
-      }
-    )
+    return assert(instance >= minimum, `should be greater than or equal to ${minimum} but is ${instance} instead`, {
+      schemaLocation,
+      schemaKeyword: 'minimum',
+      instanceLocation
+    })
   }
 }

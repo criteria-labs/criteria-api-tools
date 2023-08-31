@@ -75,12 +75,12 @@ export function unevaluatedItemsValidator(
     } else {
       let message
       if (invalidIndices.length === 1) {
-        message = `Invalid unevaluated item at index ${invalidIndices[0]}`
+        message = `has invalid item (item at ${invalidIndices[0]} ${invalidOutputs[0].message})`
       } else {
-        message = `Invalid unevaluated items at indices ${formatList(
-          invalidIndices.map((i) => `${i}`),
+        message = `has invalid items (${formatList(
+          invalidIndices.map((i, offset) => `item at ${i} ${invalidOutputs[offset].message}`),
           'and'
-        )}`
+        )})`
       }
       return {
         valid: false,

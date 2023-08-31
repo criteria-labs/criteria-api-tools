@@ -53,7 +53,7 @@ export function containsValidator(
         schemaLocation,
         schemaKeyword: 'contains',
         instanceLocation,
-        message: 'Expected array to contain an item that validates against subschema',
+        message: 'should have an item that validates against subschema',
         errors: outputs.filter((output) => !output.valid) as InvalidOutput[]
       }
     }

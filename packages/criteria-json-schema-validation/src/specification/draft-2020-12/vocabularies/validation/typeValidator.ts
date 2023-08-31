@@ -93,14 +93,14 @@ export function typeValidator(
         schemaLocation,
         schemaKeyword: 'type',
         instanceLocation,
-        message: `Expected either ${expectations} but found ${formattedTypeOf(instance)} instead`
+        message: `should be either ${expectations} but is ${formattedTypeOf(instance)} instead`
       }
     }
   } else {
     const predicate = jsonTypePredicate(type)
     const expectation = formattedType(type)
     return (instance: unknown, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
-      return assert(predicate(instance), `Expected ${expectation} but found ${formattedTypeOf(instance)} instead`, {
+      return assert(predicate(instance), `should be ${expectation} but is ${formattedTypeOf(instance)} instead`, {
         schemaLocation,
         schemaKeyword: 'type',
         instanceLocation

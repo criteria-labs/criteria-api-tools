@@ -23,8 +23,14 @@ export function minPropertiesValidator(
     const count = Object.keys(instance).length
     return assert(
       count >= minProperties,
-      `Expected object to contain at least ${minProperties} properties but found ${count} instead`,
-      { schemaLocation, schemaKeyword: 'minProperties', instanceLocation }
+      minProperties === 1
+        ? `should have at least 1 property but has ${count} instead`
+        : `should have at least ${minProperties} properties but has ${count} instead`,
+      {
+        schemaLocation,
+        schemaKeyword: 'minProperties',
+        instanceLocation
+      }
     )
   }
 }

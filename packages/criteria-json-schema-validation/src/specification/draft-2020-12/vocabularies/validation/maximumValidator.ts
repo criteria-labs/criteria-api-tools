@@ -20,14 +20,10 @@ export function maximumValidator(
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(
-      instance <= maximum,
-      `Expected number less than or equal to ${maximum} but found ${instance} instead`,
-      {
-        schemaLocation,
-        schemaKeyword: 'maximum',
-        instanceLocation
-      }
-    )
+    return assert(instance <= maximum, `should be less than or equal to ${maximum} but is ${instance} instead`, {
+      schemaLocation,
+      schemaKeyword: 'maximum',
+      instanceLocation
+    })
   }
 }

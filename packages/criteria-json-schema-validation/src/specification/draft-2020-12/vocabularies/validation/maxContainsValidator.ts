@@ -6,6 +6,18 @@ import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
 
+const formatErrorMessage = (maxContains: number, indices: number[]) => {
+  const maxContainsString = maxContains === 1 ? '1 item' : `${maxContains} items`
+  const indicesString =
+    indices.length === 1
+      ? `${indices[0]}`
+      : formatList(
+          indices.map((index) => `${index}`),
+          'and'
+        )
+  return `should have up to ${maxContainsString} that validate against subschema but has ${indices.length} at ${indicesString} instead`
+}
+
 export function maxContainsValidator(
   schema: DereferencedJSONSchemaObjectDraft2020_12,
   schemaLocation: JSONPointer,
@@ -27,13 +39,10 @@ export function maxContainsValidator(
 
     const containsAnnotationResult = annotationResults['contains'] // array of matched indices
     const count = Array.isArray(containsAnnotationResult) ? containsAnnotationResult.length : 0
-    return assert(
-      count <= maxContains,
-      `Expected up to ${maxContains} array items to validate against subschema but found ${count} items at indices ${formatList(
-        containsAnnotationResult.map((index) => `${index}`),
-        'and'
-      )} instead`,
-      { schemaLocation, schemaKeyword: 'maxContains', instanceLocation }
-    )
+    return assert(count <= maxContains, formatErrorMessage(maxContains, containsAnnotationResult), {
+      schemaLocation,
+      schemaKeyword: 'maxContains',
+      instanceLocation
+    })
   }
 }

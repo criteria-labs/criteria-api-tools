@@ -39,7 +39,10 @@ export function dependentRequiredValidator(
 
       const output = assert(
         missingProperties.length === 0,
-        `Expected ${formatList(missingProperties, 'and')} to be defined when ${propertyName} is defined`,
+        `is mising ${formatList(
+          missingProperties.map((missingProperty) => `'${missingProperty}'`),
+          'and'
+        )}`,
         { schemaLocation, schemaKeyword: 'dependentRequired', instanceLocation }
       )
       if (output.valid) {
@@ -62,19 +65,15 @@ export function dependentRequiredValidator(
         instanceLocation
       }
     } else {
-      const propertyNames = Object.keys(invalidOutputs)
-      let message
-      if (propertyNames.length === 1) {
-        message = `Expected dependent properties to be defined for property ${propertyNames[0]}`
-      } else {
-        message = `Expected dependent properties to be defined for properties ${formatList(propertyNames, 'and')}`
-      }
       return {
         valid: false,
         schemaLocation,
         schemaKeyword: 'dependentRequired',
         instanceLocation,
-        message,
+        message: formatList(
+          Object.values(invalidOutputs).map((output) => output.message),
+          'and'
+        ),
         errors: Object.values(invalidOutputs)
       }
     }

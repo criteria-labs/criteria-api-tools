@@ -38,7 +38,7 @@ export function uniqueItemsValidator(
               schemaLocation,
               schemaKeyword: 'uniqueItems',
               instanceLocation,
-              message: `Expected array items to be unique but found equal items at positions ${i} and ${j} instead`
+              message: `should have unique items but items at ${i} and ${j} are equal instead`
             }
           }
           matchingPairs.push([i, j])
@@ -48,8 +48,8 @@ export function uniqueItemsValidator(
 
     return assert(
       matchingPairs.length === 0,
-      `Expected array items to be unique but found matching pairs ${formatList(
-        matchingPairs.map((pair) => `[${pair[0]}, ${pair[1]}]`),
+      `should have unique items but ${formatList(
+        matchingPairs.map((pair) => `items at ${pair[0]} and ${pair[1]} are equal`),
         'and'
       )} instead`,
       {

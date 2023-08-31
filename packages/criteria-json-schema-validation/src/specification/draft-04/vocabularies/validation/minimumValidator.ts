@@ -23,9 +23,9 @@ export function minimumValidator(
 
     return assert(
       exclusiveMinimum ? instance > minimum : instance >= minimum,
-      `Expected number ${
+      `should be ${
         exclusiveMinimum ? 'greater than' : 'greater than or equal to'
-      } ${minimum} but found ${instance} instead`,
+      } ${minimum} but is ${instance} instead`,
       {
         schemaLocation,
         schemaKeyword: 'minimum',

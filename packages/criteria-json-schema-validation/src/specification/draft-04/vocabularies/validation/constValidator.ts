@@ -32,7 +32,7 @@ export function constValidator(
         schemaLocation,
         schemaKeyword: 'const',
         instanceLocation,
-        message: `Expected value to ${constValue} but found ${instance} instead`
+        message: `should be ${constValue} but is ${instance} instead`
       }
     }
   }

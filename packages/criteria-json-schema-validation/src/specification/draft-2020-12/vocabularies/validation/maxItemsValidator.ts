@@ -22,7 +22,9 @@ export function maxItemsValidator(
 
     return assert(
       instance.length <= maxItems,
-      `Expected array to contain up to ${maxItems} items but found ${instance.length} instead`,
+      maxItems === 1
+        ? `should have up to 1 item but has ${instance.length} instead`
+        : `should have up to ${maxItems} items but has ${instance.length} instead`,
       { schemaLocation, schemaKeyword: 'maxItems', instanceLocation }
     )
   }

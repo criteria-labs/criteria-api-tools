@@ -32,7 +32,10 @@ export function dependenciesValidator(
           }
           return assert(
             missingProperties.length === 0,
-            `Expected ${formatList(missingProperties, 'and')} to be defined when ${propertyName} is defined`,
+            `is missing ${formatList(
+              missingProperties.map((missingProperty) => `'${missingProperty}'`),
+              'and'
+            )}`,
             { schemaLocation, schemaKeyword: 'dependencies', instanceLocation }
           )
         }
@@ -68,14 +71,7 @@ export function dependenciesValidator(
       }
 
       if (!output.valid && failFast) {
-        return {
-          valid: false,
-          schemaLocation,
-          schemaKeyword: 'dependencies',
-          instanceLocation,
-          message: `Expected value to validate against dependent schema for property ${propertyName}`,
-          errors: [output as InvalidOutput]
-        }
+        return output
       }
     }
 
@@ -91,22 +87,15 @@ export function dependenciesValidator(
           .reduce(reduceAnnotationResults, {})
       }
     } else {
-      const propertyNames = Object.keys(invalidOutputs)
-      let message
-      if (propertyNames.length === 1) {
-        message = `Expected value to validate against dependent schema for property ${propertyNames[0]}`
-      } else {
-        message = `Expected value to validate against dependent schema for properties ${formatList(
-          propertyNames,
-          'and'
-        )}`
-      }
       return {
         valid: false,
         schemaLocation,
         schemaKeyword: 'dependentSchemas',
         instanceLocation,
-        message,
+        message: formatList(
+          Object.values(invalidOutputs).map((output) => output.message),
+          'and'
+        ),
         errors: Object.values(invalidOutputs)
       }
     }

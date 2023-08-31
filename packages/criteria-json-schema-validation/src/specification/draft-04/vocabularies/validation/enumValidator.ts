@@ -25,14 +25,14 @@ export function enumValidator(
 
     let message
     if (enumValues.length === 0) {
-      message = `Expected no value but found ${instance} instead`
+      message = `should not be defined but is ${instance} instead`
     } else if (enumValues.length === 1) {
-      message = `Expected ${enumValues[0]} but found ${instance} instead`
+      message = `should be ${enumValues[0]} but is ${instance} instead`
     } else {
-      message = `Expected one of ${formatList(
+      message = `should be one of ${formatList(
         enumValues.map((value) => `${value}`),
         'or'
-      )} but found ${instance} instead`
+      )} but is ${instance} instead`
     }
     return {
       valid: false,

@@ -68,12 +68,15 @@ export function unevaluatedPropertiesValidator(
         }
       }
     } else {
-      const propertyNames = Object.keys(invalidOutputs)
+      const entries: [string, InvalidOutput][] = Object.entries(invalidOutputs)
       let message
-      if (propertyNames.length === 1) {
-        message = `Invalid unevaluated property ${propertyNames[0]}`
+      if (entries.length === 1) {
+        message = `has invalid property ('${entries[0][0]}' ${entries[0][1].message})`
       } else {
-        message = `Invalid unevaluated properties ${formatList(propertyNames, 'and')}`
+        message = `has invalid properties (${formatList(
+          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
+          'and'
+        )})`
       }
       return {
         valid: false,

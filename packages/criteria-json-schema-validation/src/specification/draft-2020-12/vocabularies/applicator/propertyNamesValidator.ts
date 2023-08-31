@@ -42,12 +42,15 @@ export function propertyNamesValidator(
         instanceLocation
       }
     } else {
-      const propertyNames = Object.keys(invalidOutputs)
+      const entries = Object.keys(invalidOutputs)
       let message
-      if (propertyNames.length === 1) {
-        message = `Invalid property name ${propertyNames[0]}`
+      if (entries.length === 1) {
+        message = `has invalid property name ('${entries[0][0]}' ${entries[0][1]})`
       } else {
-        message = `Invalid property names ${formatList(propertyNames, 'and')}`
+        message = `has invalid property names (${formatList(
+          entries.map((entry) => `'${entry[0]}' ${entry[1]}`),
+          'and'
+        )})`
       }
       return {
         valid: false,

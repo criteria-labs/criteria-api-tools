@@ -22,7 +22,7 @@ export function exclusiveMinimumValidator(
 
     return assert(
       instance > exclusiveMinimum,
-      `Expected number greater than ${exclusiveMinimum} but found ${instance} instead`,
+      `should be greater than ${exclusiveMinimum} but is ${instance} instead`,
       { schemaLocation, schemaKeyword: 'exclusiveMinimum', instanceLocation }
     )
   }

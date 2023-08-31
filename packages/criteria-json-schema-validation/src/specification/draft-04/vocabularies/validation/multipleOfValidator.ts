@@ -22,7 +22,7 @@ export function multipleOfValidator(
 
     return assert(
       multipleOf !== 0 ? Number.isInteger(instance / multipleOf) : false,
-      `Expected number to be a multiple of ${multipleOf} but found ${instance} instead`,
+      `should be a multiple of ${multipleOf} but is ${instance} instead`,
       { schemaLocation, schemaKeyword: 'multipleOf', instanceLocation }
     )
   }

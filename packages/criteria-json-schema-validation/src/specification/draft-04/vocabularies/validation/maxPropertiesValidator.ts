@@ -23,7 +23,9 @@ export function maxPropertiesValidator(
     const count = Object.keys(instance).length
     return assert(
       count <= maxProperties,
-      `Expected object to contain up to ${maxProperties} properties but found ${count} instead`,
+      maxProperties === 1
+        ? `should have up to 1 property but has ${count} instead`
+        : `should have up to ${maxProperties} properties but has ${count} instead`,
       { schemaLocation, schemaKeyword: 'maxProperties', instanceLocation }
     )
   }

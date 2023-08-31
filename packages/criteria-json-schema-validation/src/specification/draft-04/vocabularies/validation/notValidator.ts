@@ -22,7 +22,7 @@ export function notValidator(
         schemaLocation,
         schemaKeyword: 'not',
         instanceLocation,
-        message: 'Expected value to fail validation against not schema'
+        message: 'should not validate against subschema'
       }
     } else {
       return {

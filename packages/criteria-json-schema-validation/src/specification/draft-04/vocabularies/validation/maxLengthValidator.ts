@@ -25,7 +25,9 @@ export function maxLengthValidator(
 
     return assert(
       charactersCount <= maxLength,
-      `Expected string to contain up to ${maxLength} characters but found ${instance.length} instead`,
+      maxLength === 1
+        ? `should have up to 1 character but has ${instance.length} instead`
+        : `should have up to ${maxLength} characters but has ${instance.length} instead`,
       { schemaLocation, schemaKeyword: 'maxLength', instanceLocation }
     )
   }

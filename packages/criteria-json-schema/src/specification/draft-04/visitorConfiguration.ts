@@ -1,6 +1,6 @@
 import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context } from '../../visitors/Context'
-import { VisitorConfiguration } from '../../visitors/visitValues'
+import { ReferenceMergePolicy, VisitorConfiguration } from '../../visitors/visitValues'
 import visitorConfigurationDraft2020_12 from '../draft-2020-12/visitorConfiguration'
 
 const configuration: VisitorConfiguration = {
@@ -23,23 +23,57 @@ const configuration: VisitorConfiguration = {
       Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/))
     )
   },
-  resolveContext: (context: Context, schema: object) => {
+  isSimpleReference: (value: object, context: Context, policy: ReferenceMergePolicy) => {
+    const jsonPointer = context.jsonPointerFromSchema
+    const isLiteral =
+      Boolean(jsonPointer.match(/^\/const(\/.*)?$/)) ||
+      Boolean(jsonPointer.match(/^\/enum\/[\d]+(\/.*)?$/)) ||
+      jsonPointer === '/properties' ||
+      jsonPointer === '/patternProperties'
+
+    if (policy === 'overwrite' || policy === 'none') {
+      return ('$ref' in value || '$dynamicRef' in value) && !isLiteral
+    } else {
+      return ('$ref' in value || '$dynamicRef' in value) && Object.keys(value).length === 1 && !isLiteral
+    }
+  },
+  resolveContext: (context: Context, schema: object, policy: ReferenceMergePolicy) => {
+    if (policy === 'overwrite' || policy === 'none') {
+      // $ref or $dynamicRef prevents sibling keywords $schema and id from being read
+      if ('$ref' in schema) {
+        schema = { $ref: schema['$ref'] }
+      } else if ('$dynamicRef' in schema) {
+        schema = { $dynamicRef: schema['$dynamicRef'] }
+      }
+    }
+
     let resolvedConfiguration = context.configuration
     if ('$schema' in schema && typeof schema.$schema === 'string') {
       switch (schema.$schema) {
         case 'http://json-schema.org/draft-04/schema#':
           resolvedConfiguration = configuration
+          break
         case 'https://json-schema.org/draft/2020-12/schema':
           resolvedConfiguration = visitorConfigurationDraft2020_12
+          break
         default:
           // Warn that $schema not recognized
           resolvedConfiguration = context.configuration
+          break
       }
     }
 
     let id: string | undefined
     if ('id' in schema && typeof schema.id === 'string') {
-      id = resolveURIReference(schema.id, context.baseURI)
+      if (
+        context.jsonPointerFromBaseURI === '' &&
+        context.jsonPointerFromSchema === '' &&
+        context.baseURIIsResolvedSchemaID
+      ) {
+        id = context.baseURI
+      } else {
+        id = resolveURIReference(schema.id, context.baseURI)
+      }
     }
 
     const baseURI = id ?? context.baseURI // id forms the new base uri if present
@@ -62,15 +96,34 @@ const configuration: VisitorConfiguration = {
     return {
       configuration: resolvedConfiguration,
       baseURI,
+      baseURIIsResolvedSchemaID: id ? true : false,
       jsonPointerFromBaseURI,
       jsonPointerFromSchema: '',
       resolvedURIs
     }
   },
-  mergeReferencedSchema: (target: object, referencedSchema: object) => {
-    // Reapply siblings so that referencedSchema does not override sibling properties
-    const { ...siblings } = target
-    Object.assign(target, referencedSchema, siblings)
+  mergeReferencedSchema: (target: object, referencedSchema: object, siblings: object, policy: ReferenceMergePolicy) => {
+    switch (policy) {
+      case 'by_keyword': {
+        // Reapply siblings so that referencedSchema does not override sibling properties
+        Object.assign(target, referencedSchema, siblings)
+        break
+      }
+      case 'overwrite':
+        // Ignore siblings
+        Object.assign(target, referencedSchema)
+        break
+      case 'none':
+        // none is not valid for Draft 04 schemas, same effect as overwite
+        Object.assign(target, referencedSchema)
+        break
+      case 'default':
+      default: {
+        // default is to merge
+        Object.assign(target, referencedSchema, siblings)
+        break
+      }
+    }
   }
 }
 

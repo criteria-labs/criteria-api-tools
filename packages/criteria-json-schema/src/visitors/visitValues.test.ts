@@ -22,7 +22,7 @@ describe('visitValues()', () => {
 
     test('detects kinds', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration04, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration04, (value, kind, context) => {
         visited.push({ kind, baseURI: context.baseURI, jsonPointer: context.jsonPointerFromBaseURI })
       })
       expect(visited).toEqual([
@@ -39,14 +39,14 @@ describe('visitValues()', () => {
     })
     test('continues by default', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration04, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration04, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
       })
       expect(visited).toEqual(['', '/items', '', '/id', '/properties', '/properties/foo', '/properties/bar', '', '/id'])
     })
     test('stopping does not visit children or next siblings', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration04, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration04, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return value.id === '#first'
       })
@@ -54,7 +54,7 @@ describe('visitValues()', () => {
     })
     test('stopping while visiting children does not visit remaining children', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration04, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration04, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return context.jsonPointerFromBaseURI === '/properties/foo'
       })
@@ -62,7 +62,7 @@ describe('visitValues()', () => {
     })
     test('stops on truthy value', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration04, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration04, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return 1 as any
       })
@@ -70,7 +70,7 @@ describe('visitValues()', () => {
     })
     test('continues on falsy', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration04, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration04, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return null
       })
@@ -95,7 +95,7 @@ describe('visitValues()', () => {
 
     test('detects kinds', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration2020_12, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration2020_12, (value, kind, context) => {
         visited.push({ kind, baseURI: context.baseURI, jsonPointer: context.jsonPointerFromBaseURI })
       })
       expect(visited).toEqual([
@@ -114,7 +114,7 @@ describe('visitValues()', () => {
     })
     test('continues by default', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration2020_12, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration2020_12, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
       })
       expect(visited).toEqual([
@@ -133,7 +133,7 @@ describe('visitValues()', () => {
     })
     test('stopping does not visit children or next siblings', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration2020_12, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration2020_12, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return value.$anchor === 'first'
       })
@@ -141,7 +141,7 @@ describe('visitValues()', () => {
     })
     test('stopping while visiting children does not visit remaining children', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration2020_12, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration2020_12, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return context.jsonPointerFromBaseURI === '/properties/foo'
       })
@@ -149,7 +149,7 @@ describe('visitValues()', () => {
     })
     test('stops on truthy value', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration2020_12, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration2020_12, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return 1 as any
       })
@@ -157,7 +157,7 @@ describe('visitValues()', () => {
     })
     test('continues on falsy', () => {
       const visited = []
-      visitValues(schema, null, visitorConfiguration2020_12, (value, kind, context) => {
+      visitValues(schema, null, 'default', visitorConfiguration2020_12, (value, kind, context) => {
         visited.push(context.jsonPointerFromBaseURI)
         return null
       })

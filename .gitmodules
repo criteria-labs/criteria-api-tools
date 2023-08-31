@@ -1,0 +1,3 @@
+[submodule "packages/criteria-json-schema-validation/test/__fixtures__/json-schema-test-suite"]
+	path = packages/criteria-json-schema-validation/test/__fixtures__/json-schema-test-suite
+	url = git@github.com:json-schema-org/JSON-Schema-Test-Suite.git

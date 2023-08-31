@@ -3,7 +3,7 @@ import { JSONPointer } from '../util/JSONPointer'
 import { resolveURIReference, splitFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
 import { appendJSONPointer, Context } from '../visitors/Context'
-import { VisitorConfiguration, visitValues } from '../visitors/visitValues'
+import { ReferenceMergePolicy, VisitorConfiguration, visitValues } from '../visitors/visitValues'
 
 export interface IndexEntry<T> {
   value: T
@@ -117,7 +117,7 @@ export class Index {
 
       // If parent was a reference the resolved URIs may be different than what we started with.
       // Try to apply the remaining JSON pointer to the last (most specific) resolved URI of the parent.
-      const parentResolvedURI = parentValue.context.resolvedURIs.filter((uri) => uriFragmentIsJSONPointer).at(-1)
+      const parentResolvedURI = parentValue.context.resolvedURIs.filter((uri) => uriFragmentIsJSONPointer(uri)).at(-1)
       const transferredURI = parentResolvedURI ? `${parentResolvedURI}${remainingPointer}` : undefined
       if (transferredURI && transferredURI !== uri) {
         const transferredValue = this.findValue(transferredURI, seenReferences)
@@ -152,6 +152,7 @@ export class Index {
           context: {
             configuration: parentValue.context.configuration,
             baseURI: parentURI,
+            baseURIIsResolvedSchemaID: false,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${parentValue.context.jsonPointerFromSchema}${remainingPointer}`,
             resolvedURIs: appendJSONPointer(parentValue.context, remainingPointer).resolvedURIs
@@ -180,6 +181,7 @@ export class Index {
           context: {
             configuration: followedParentValue.context.configuration,
             baseURI: parentURI,
+            baseURIIsResolvedSchemaID: false,
             jsonPointerFromBaseURI: remainingPointer,
             jsonPointerFromSchema: `${followedParentValue.context.jsonPointerFromSchema}${remainingPointer}`,
             resolvedURIs: appendJSONPointer(followedParentValue.context, remainingPointer).resolvedURIs
@@ -197,12 +199,14 @@ export function indexDocumentInto(
   index: Index,
   document: any,
   documentURI: URI,
+  referenceMergePolicy: ReferenceMergePolicy,
   defaultConfiguration: VisitorConfiguration,
   retrieve: (uri: URI) => any
 ) {
   const documentContext: Context = {
     configuration: defaultConfiguration,
     baseURI: documentURI,
+    baseURIIsResolvedSchemaID: false,
     jsonPointerFromBaseURI: '',
     jsonPointerFromSchema: '',
     resolvedURIs: []
@@ -215,21 +219,23 @@ export function indexDocumentInto(
 
   // Collect external URIs to retrieve
   var unretrievedURIs = new Set<URI>()
-  visitValues(document, documentContext, defaultConfiguration, (value, kind, context) => {
+  visitValues(document, documentContext, referenceMergePolicy, defaultConfiguration, (value, kind, context) => {
     if (kind === 'schema') {
       context.resolvedURIs.forEach((uri) => (index.schemasByURI[uri] = { value, context: { ...context } as any }))
 
       // References with sibling properties
-      if ('$ref' in value) {
-        let uri = resolveURIReference(value.$ref, context.baseURI)
-        const { absoluteURI } = splitFragment(uri)
-        // Don't retrieve yet, because it may resolve to a nested schema with an id
-        unretrievedURIs.add(absoluteURI)
-      }
-      if ('$dynamicRef' in value) {
-        context.resolvedURIs.forEach(
-          (uri) => (index.dynamicReferencesByURI[uri] = { value, context: { ...context } as any })
-        )
+      if (typeof value === 'object') {
+        if ('$ref' in value) {
+          let uri = resolveURIReference(value.$ref, context.baseURI)
+          const { absoluteURI } = splitFragment(uri)
+          // Don't retrieve yet, because it may resolve to a nested schema with an id
+          unretrievedURIs.add(absoluteURI)
+        }
+        if ('$dynamicRef' in value) {
+          context.resolvedURIs.forEach(
+            (uri) => (index.dynamicReferencesByURI[uri] = { value, context: { ...context } as any })
+          )
+        }
       }
     } else if (kind === 'reference') {
       if ('$ref' in value) {
@@ -260,6 +266,6 @@ export function indexDocumentInto(
       throw new Error(`Failed to retrieve document at uri '${uri}'`)
     }
 
-    indexDocumentInto(index, externalDocument, uri, defaultConfiguration, retrieve)
+    indexDocumentInto(index, externalDocument, uri, referenceMergePolicy, defaultConfiguration, retrieve)
   })
 }

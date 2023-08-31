@@ -1,11 +1,12 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { appendJSONPointer, Context } from './Context'
-import { VisitorConfiguration } from './visitValues'
+import { ReferenceMergePolicy } from './visitValues'
 
 export type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 export type ReferenceContext = Context & { clone: (value: any, context: Context) => any }
 export type SchemaContext = ReferenceContext & {
   cloneInto: (target: object) => void
+  cloneSiblingsInto: (target: object) => void
 }
 export type ContextForKind<K extends Kind> = K extends 'schema'
   ? SchemaContext
@@ -22,6 +23,7 @@ export type ContextForKind<K extends Kind> = K extends 'schema'
 export function cloneValues(
   root: object,
   rootContext: Context,
+  referenceMergePolicy: ReferenceMergePolicy,
   cloner: <Kind extends 'object' | 'array' | 'primitive' | 'schema' | 'reference'>(
     value: any,
     kind: Kind,
@@ -34,8 +36,7 @@ export function cloneValues(
 
       if (Array.isArray(value)) {
         return cloneArray(value, context)
-      } else if (('$ref' in value || '$dynamicRef' in value) && Object.keys(value).length === 1) {
-        // Will detect references outside of where we would expect a schema
+      } else if (context.configuration.isSimpleReference(value, context, referenceMergePolicy)) {
         // Will also detect $dynamicRef outside of 2020-12.
         return cloneReference(value, { ...context, jsonPointerFromSchema: '' })
       } else if (context.configuration.isSubschema(context)) {
@@ -67,18 +68,26 @@ export function cloneValues(
   }
 
   const cloneSubschema = (schema: object, context: Context) => {
-    const resolvedContext = context.configuration.resolveContext(context, schema)
+    const resolvedContext = context.configuration.resolveContext(context, schema, referenceMergePolicy)
 
     const cloneInto = (target: object) => {
       for (const key in schema) {
         target[key] = cloneValue(schema[key], appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`))
       }
     }
-    return cloner(schema, 'schema', { ...resolvedContext, cloneInto, clone: cloneValue })
+    const cloneSiblingsInto = (target: object) => {
+      for (const key in schema) {
+        if (key === '$ref') {
+          continue
+        }
+        target[key] = cloneValue(schema[key], appendJSONPointer(resolvedContext, `/${escapeReferenceToken(key)}`))
+      }
+    }
+    return cloner(schema, 'schema', { ...resolvedContext, cloneInto, cloneSiblingsInto, clone: cloneValue })
   }
 
-  const cloneReference = (reference: { $ref: string }, context: Context) => {
-    const resolvedContext = context.configuration.resolveContext(context, reference)
+  const cloneReference = (reference: { $ref: string } | { $dynamicRef: string }, context: Context) => {
+    const resolvedContext = context.configuration.resolveContext(context, reference, referenceMergePolicy)
     return cloner(reference, 'reference', { ...resolvedContext, clone: cloneValue })
   }
 

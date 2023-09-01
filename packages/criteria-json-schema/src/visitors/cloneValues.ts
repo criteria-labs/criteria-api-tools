@@ -50,11 +50,46 @@ export function cloneValues(
   }
 
   const cloneObject = (object: object, context: Context) => {
-    const result: any = {}
-    for (const key in object) {
-      result[key] = cloneValue(object[key], appendJSONPointer(context, `/${escapeReferenceToken(key)}`))
+    // __proto__ can only be set as an own property by parsing a JSON string,
+    // otherwise it becomes the object's prototype
+    const prepareTarget = (object: object) => {
+      if (!object.hasOwnProperty('__proto__')) {
+        return {}
+      }
+      const proto = object['__proto__']
+      if (typeof proto === 'object' && proto !== null && !ArrayBuffer.isView(proto)) {
+        if (Array.isArray(proto)) {
+          return JSON.parse(`{ "__proto__": [] }`)
+        } else {
+          const protoTarget = prepareTarget(proto)
+          return JSON.parse(`{ "__proto__": ${JSON.stringify(protoTarget)} }`)
+        }
+      } else {
+        const clonedProto = cloneValue(proto, appendJSONPointer(context, `/__proto__`))
+        return JSON.parse(`{ "__proto__": ${JSON.stringify(clonedProto)} }`)
+      }
     }
-    return result
+
+    const cloneObjectInto = (target: object, object: object) => {
+      for (const key in object) {
+        if (key === '__proto__') {
+          const proto = object['__proto__']
+          if (typeof proto === 'object' && proto !== null && !ArrayBuffer.isView(proto)) {
+            if (Array.isArray(proto)) {
+              target['__proto__'].push(...cloneValue(proto, appendJSONPointer(context, `/__proto__`)))
+            } else {
+              cloneObjectInto(target['__proto__'], proto)
+            }
+          }
+        } else {
+          target[key] = cloneValue(object[key], appendJSONPointer(context, `/${escapeReferenceToken(key)}`))
+        }
+      }
+    }
+
+    const target = prepareTarget(object)
+    cloneObjectInto(target, object)
+    return target
   }
 
   const cloneArray = (array: any[], context: Context) => {

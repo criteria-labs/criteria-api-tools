@@ -38,14 +38,6 @@ describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
     testCase.tests
   ])
 
-  // Can't figure out how to get JS runtime to treat __proto__ as an own property and not the object prototype
-  // So skip these tests
-  if (testFilename === 'properties.json') {
-    testCasesTable = testCasesTable.filter(
-      (testCase) => testCase[0] !== 'properties whose names are Javascript object property names'
-    )
-  }
-
   describe.each(testCasesTable)('%s', (testCaseDescription, testCaseSchema, testCaseTests) => {
     let dereferencedSchema: DereferencedJSONSchemaDraft2020_12
     let testCaseSchemaValidator

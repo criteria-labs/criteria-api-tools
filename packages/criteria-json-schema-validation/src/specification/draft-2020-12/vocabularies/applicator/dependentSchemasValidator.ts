@@ -36,8 +36,8 @@ export function dependentSchemasValidator(
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    let validOutputs: { [name: string]: ValidOutput } = {}
-    let invalidOutputs: { [name: string]: InvalidOutput } = {}
+    let validOutputs = new Map<string, ValidOutput>()
+    let invalidOutputs = new Map<string, InvalidOutput>()
     for (const [propertyName, validator] of propertyValidators) {
       if (!instance.hasOwnProperty(propertyName)) {
         continue
@@ -45,9 +45,9 @@ export function dependentSchemasValidator(
 
       const output = validator(instance, instanceLocation)
       if (output.valid) {
-        validOutputs[propertyName] = output
+        validOutputs.set(propertyName, output)
       } else {
-        invalidOutputs[propertyName] = output as InvalidOutput
+        invalidOutputs.set(propertyName, output as InvalidOutput)
       }
 
       if (!output.valid && failFast) {
@@ -62,14 +62,14 @@ export function dependentSchemasValidator(
       }
     }
 
-    const valid = Object.keys(invalidOutputs).length === 0
+    const valid = invalidOutputs.size === 0
     if (valid) {
       return {
         valid: true,
         schemaLocation,
         schemaKeyword: 'dependentSchemas',
         instanceLocation,
-        annotationResults: Object.values(validOutputs)
+        annotationResults: Array.from(validOutputs.values())
           .map((output) => output.annotationResults ?? {})
           .reduce(reduceAnnotationResults, {})
       }
@@ -80,7 +80,7 @@ export function dependentSchemasValidator(
         schemaKeyword: 'dependentSchemas',
         instanceLocation,
         message: formatList(
-          Object.values(invalidOutputs).map((output) => output.message),
+          Array.from(invalidOutputs.values()).map((output) => output.message),
           'and'
         ),
         errors: Object.values(invalidOutputs)

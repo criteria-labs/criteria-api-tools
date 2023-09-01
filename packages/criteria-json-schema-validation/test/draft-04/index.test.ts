@@ -21,9 +21,6 @@ const retrieveRemote = (uri: string): JSONSchemaDraft04 => {
   }
 }
 
-// skip dynamicRef tests
-testFilesTable = testFilesTable.filter((testFile) => testFile[0] !== 'dynamicRef.json')
-
 describe.each(testFilesTable)(`tests/draft04/%s`, (testFilename) => {
   const testFilePath = path.resolve(testCasesDirectory, testFilename)
   const testFileContents = fs.readFileSync(testFilePath, { encoding: 'utf-8' })
@@ -33,14 +30,6 @@ describe.each(testFilesTable)(`tests/draft04/%s`, (testFilename) => {
     testCase.schema,
     testCase.tests
   ])
-
-  // Can't figure out how to get JS runtime to treat __proto__ as an own property and not the object prototype
-  // So skip these tests
-  if (testFilename === 'properties.json') {
-    testCasesTable = testCasesTable.filter(
-      (testCase) => testCase[0] !== 'properties whose names are Javascript object property names'
-    )
-  }
 
   describe.each(testCasesTable)('%s', (testCaseDescription, testCaseSchema, testCaseTests) => {
     let dereferencedSchema: DereferencedJSONSchemaDraft04

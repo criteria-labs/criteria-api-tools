@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "uri-js": "^4.4.1",
-    "@criteria/json-schema": "^0.3.0",
+    "@criteria/json-schema": "^0.3.1",
     "@criteria/json-pointer": "^0.1.0"
   }
 }

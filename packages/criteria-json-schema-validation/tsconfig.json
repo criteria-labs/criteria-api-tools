@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "lib": ["es2021"],
     "esModuleInterop": true,
     "noEmit": false,

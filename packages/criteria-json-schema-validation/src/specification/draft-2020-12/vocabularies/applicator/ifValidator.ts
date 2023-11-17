@@ -52,7 +52,7 @@ export function ifValidator(
           annotationResults: elseOutput.annotationResults
         }
       } else {
-        elseOutput
+        return elseOutput
       }
     }
   }

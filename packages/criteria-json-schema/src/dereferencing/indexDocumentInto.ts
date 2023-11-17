@@ -1,5 +1,5 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
-import { JSONPointer } from '../util/JSONPointer'
+import { isJSONPointer, JSONPointer } from '../util/JSONPointer'
 import { resolveURIReference, splitFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
 import { appendJSONPointer, Context } from '../visitors/Context'
@@ -15,12 +15,16 @@ export class Index {
   documentsByURI: { [uri: URI]: IndexEntry<any> }
   schemasByURI: { [uri: URI]: IndexEntry<any> }
   referencesByURI: { [uri: URI]: IndexEntry<{ $ref: string }> }
-  dynamicReferencesByURI: { [uri: URI]: IndexEntry<{ $dynamicRef: string }> } // used by draft 2020-12
+
+  // used by draft 2020-12
+  dynamicSchemasByURI: { [uri: URI]: IndexEntry<any> }
+  dynamicReferencesByURI: { [uri: URI]: IndexEntry<{ $dynamicRef: string }> }
 
   constructor() {
     this.documentsByURI = {}
     this.schemasByURI = {}
     this.referencesByURI = {}
+    this.dynamicSchemasByURI = {}
     this.dynamicReferencesByURI = {}
   }
 
@@ -193,6 +197,24 @@ export class Index {
     // TODO: error message should contain URI reference ($ref), not resolved URI
     throw new Error(`Invalid uri ${uri}`)
   }
+
+  findDynamicValue(
+    uri: URI,
+    dynamicScope: URI[],
+    seenReferences: Set<{ $ref: string } | { $dynamicRef: string }> = new Set()
+  ): IndexEntry<any> {
+    if (uri in this.dynamicSchemasByURI) {
+      const fragment = splitFragment(uri).fragment
+      for (const dynamicScopeURI of dynamicScope) {
+        const outerURI = resolveURIReference(`#${fragment}`, splitFragment(dynamicScopeURI).absoluteURI)
+        const schema = this.dynamicSchemasByURI[outerURI]
+        if (schema) {
+          return schema
+        }
+      }
+    }
+    return this.findValue(uri, seenReferences)
+  }
 }
 
 export function indexDocumentInto(
@@ -222,6 +244,13 @@ export function indexDocumentInto(
   visitValues(document, documentContext, referenceMergePolicy, defaultConfiguration, (value, kind, context) => {
     if (kind === 'schema') {
       context.resolvedURIs.forEach((uri) => (index.schemasByURI[uri] = { value, context: { ...context } as any }))
+
+      // Index schemas where URI fragment is created by "$dynamicAnchor"
+      if (typeof value === 'object' && '$dynamicAnchor' in value) {
+        context.resolvedURIs
+          .filter((uri) => splitFragment(uri).fragment === value.$dynamicAnchor)
+          .forEach((uri) => (index.dynamicSchemasByURI[uri] = { value, context: { ...context } as any }))
+      }
 
       // References with sibling properties
       if (typeof value === 'object') {

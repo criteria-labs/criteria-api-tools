@@ -1,6 +1,5 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { appendJSONPointer, Context } from './Context'
-import configuration from '../specification/draft-04/visitorConfiguration'
 
 type Kind = 'object' | 'array' | 'primitive' | 'schema' | 'reference'
 
@@ -55,7 +54,7 @@ export function visitValues(
 
       if (Array.isArray(value)) {
         return visitArray(value, context)
-      } else if (configuration.isSimpleReference(value, context, referenceMergePolicy)) {
+      } else if (context.configuration.isSimpleReference(value, context, referenceMergePolicy)) {
         // Will also detect $dynamicRef outside of 2020-12.
 
         return visitReference(value, { ...context, jsonPointerFromSchema: '' })

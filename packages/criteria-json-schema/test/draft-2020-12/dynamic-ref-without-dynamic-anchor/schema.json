@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/dynamicRef-without-dynamicAnchor",
+  "$defs": {
+    "foo": {
+      "$dynamicAnchor": "items",
+      "type": "string"
+    },
+    "list": {
+      "$id": "list",
+      "type": "array",
+      "items": { "$dynamicRef": "#items" },
+      "$defs": {
+        "items": {
+          "$comment": "This is only needed to give the reference somewhere to resolve to when it behaves like $ref",
+          "$anchor": "items"
+        }
+      }
+    }
+  },
+  "$ref": "list"
+}

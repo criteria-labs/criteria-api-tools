@@ -1,7 +1,8 @@
 import { retrieveBuiltin } from '../retrievers'
 import { memoize } from '../retrievers/memoize'
 import visitorConfiguration2020_12 from '../specification/draft-2020-12/visitorConfiguration'
-import { normalizeURI, resolveURIReference, URI } from '../util/uri'
+import { isJSONPointer } from '../util/JSONPointer'
+import { normalizeURI, resolveURIReference, splitFragment, URI } from '../util/uri'
 import { cloneValues, ReferenceContext, SchemaContext } from '../visitors/cloneValues'
 import { ReferenceMergePolicy, VisitorConfiguration, visitValues } from '../visitors/visitValues'
 import { Index, indexDocumentInto } from './indexDocumentInto'
@@ -94,36 +95,17 @@ export function dereferenceJSONSchema(schema: any, options?: Options) {
       return context.clone(sourceValue.value, sourceValue.context)
     }
     if ('$dynamicRef' in reference) {
-      // starting from outermost dynamic context, see if any lexical children have the dynamic anchor
-      let sourceValue
-      for (const dynamicContext of dynamicPath) {
-        const uri = dynamicContext.resolvedURIs[dynamicContext.resolvedURIs.length - 1]
-        let schema = index.schemasByURI[uri] ?? index.referencesByURI[uri] ?? index.dynamicReferencesByURI[uri]
-        if (!schema) {
-          throw new Error(`No schema at uri '${uri}'`) // should never get here
-        }
+      const uri = resolveURIReference(reference.$dynamicRef, context.baseURI)
 
-        visitValues(
-          schema.value,
-          schema.context,
-          referenceMergePolicy,
-          context.configuration,
-          (value, kind, context) => {
-            if (typeof value === 'object' && '$dynamicAnchor' in value) {
-              if (`#${value.$dynamicAnchor}` === reference.$dynamicRef) {
-                sourceValue = { value, context }
-                return true // stop
-              }
-            }
-          }
-        )
-        if (sourceValue) {
-          break
-        }
-      }
+      dynamicPath.push(context)
+      let sourceValue = index.findDynamicValue(
+        uri,
+        dynamicPath.map((c) => c.baseURI)
+      )
+      dynamicPath.pop()
 
       if (!sourceValue) {
-        throw new Error(`Invalid dynamic ref '${reference.$dynamicRef}'`)
+        throw new Error(`Invalid uri ${uri}`)
       }
       return context.clone(sourceValue.value, sourceValue.context)
     }

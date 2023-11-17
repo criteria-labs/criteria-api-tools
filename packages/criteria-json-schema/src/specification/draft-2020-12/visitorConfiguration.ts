@@ -80,8 +80,14 @@ const configuration: VisitorConfiguration = {
       $anchor = resolveURIReference(`#${schema.$anchor}`, $id ?? context.baseURI)
     }
 
-    const baseURI = $anchor ?? $id ?? context.baseURI // $anchor or $id forms the new base uri if present
-    const jsonPointerFromBaseURI = $id || $anchor ? '' : context.jsonPointerFromBaseURI // json pointer is either restarting from new root if id, or continues from previous base uri
+    // Resolve $dynamicAnchor against $id
+    let $dynamicAnchor: string | undefined
+    if ('$dynamicAnchor' in schema && typeof schema.$dynamicAnchor === 'string') {
+      $dynamicAnchor = resolveURIReference(`#${schema.$dynamicAnchor}`, $id ?? context.baseURI)
+    }
+
+    const baseURI = $anchor ?? $dynamicAnchor ?? $id ?? context.baseURI // $anchor, $dynamicAnchor or $id forms the new base uri if present
+    const jsonPointerFromBaseURI = $id || $dynamicAnchor || $anchor ? '' : context.jsonPointerFromBaseURI // json pointer is either restarting from new root if id, or continues from previous base uri
     const resolvedURIs = context.resolvedURIs
     if ($id) {
       resolvedURIs.push($id)
@@ -92,7 +98,10 @@ const configuration: VisitorConfiguration = {
     if ($anchor) {
       resolvedURIs.push($anchor)
     }
-    if (!$id && !$anchor && jsonPointerFromBaseURI === '') {
+    if ($dynamicAnchor) {
+      resolvedURIs.push($dynamicAnchor)
+    }
+    if (!$id && !$dynamicAnchor && !$anchor && jsonPointerFromBaseURI === '') {
       // If no id fall back to the base URI if this is the root schema of the document
       resolvedURIs.push(baseURI)
       if (!hasFragment(baseURI)) {
@@ -103,7 +112,7 @@ const configuration: VisitorConfiguration = {
     return {
       configuration: resolvedConfiguration,
       baseURI,
-      baseURIIsResolvedSchemaID: $id || $anchor ? true : false,
+      baseURIIsResolvedSchemaID: $id || $dynamicAnchor || $anchor ? true : false,
       jsonPointerFromBaseURI,
       jsonPointerFromSchema: '',
       resolvedURIs

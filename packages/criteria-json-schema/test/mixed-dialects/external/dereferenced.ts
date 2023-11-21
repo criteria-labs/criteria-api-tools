@@ -6,7 +6,7 @@ const schema: any = {
   properties: {
     oldRelative: {
       $schema: 'http://json-schema.org/draft-04/schema#',
-      $id: 'https://example.com/04-person.json',
+      id: 'https://example.com/04-person.json',
       type: 'object',
       title: 'person',
       properties: {

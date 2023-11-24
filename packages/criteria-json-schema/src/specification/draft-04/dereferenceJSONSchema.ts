@@ -1,15 +1,18 @@
-import { dereferenceJSONSchema as dereferenceJSONSchemaWithConfiguration } from '../../dereferencing/dereferenceJSONSchema'
+import { dereferenceJSONSchema as dereferenceJSONSchemaWithDefaultMetaSchemaURI } from '../../dereferencing/dereferenceJSONSchema'
 import { URI } from '../../util/uri'
-import { ReferenceMergePolicy } from '../../visitors/visitValues'
 import { DereferencedJSONSchema, JSONSchema } from './JSONSchema'
-import visitorConfiguration from './visitorConfiguration'
+import { ReferenceMergePolicy } from './mergeReferenceInto'
+import { metaSchemaURI } from './metaSchemaURI'
 
-interface Options {
+export interface Options {
   baseURI?: URI
   referenceMergePolicy?: ReferenceMergePolicy
   retrieve?: (uri: URI) => JSONSchema
 }
 
 export function dereferenceJSONSchema(schema: JSONSchema, options?: Options): DereferencedJSONSchema {
-  return dereferenceJSONSchemaWithConfiguration(schema, { ...options, defaultConfiguration: visitorConfiguration })
+  return dereferenceJSONSchemaWithDefaultMetaSchemaURI(schema, {
+    ...options,
+    defaultMetaSchemaURI: metaSchemaURI
+  })
 }

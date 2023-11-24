@@ -1,192 +1,290 @@
-import { retrieveBuiltin } from '../retrievers'
-import { memoize } from '../retrievers/memoize'
-import visitorConfiguration2020_12 from '../specification/draft-2020-12/visitorConfiguration'
-import { isJSONPointer } from '../util/JSONPointer'
-import { normalizeURI, resolveURIReference, splitFragment, URI } from '../util/uri'
-import { cloneValues, ReferenceContext, SchemaContext } from '../visitors/cloneValues'
-import { ReferenceMergePolicy, VisitorConfiguration, visitValues } from '../visitors/visitValues'
-import { Index, indexDocumentInto } from './indexDocumentInto'
+import { evaluateJSONPointer } from '@criteria/json-pointer'
+import { memoize, retrieveBuiltin } from '../retrievers'
+import { mergeReferenceInto as mergeReferenceIntoDraft04 } from '../specification/draft-04/mergeReferenceInto'
+import { visitSubschemas as visitSubschemasDraft04 } from '../specification/draft-04/visitSubschemas'
+import { mergeReferenceInto as mergeReferenceIntoDraft2020_12 } from '../specification/draft-2020-12/mergeReferenceInto'
+import { metaSchemaURI as metaSchemaURIDraft2020_12 } from '../specification/draft-2020-12/metaSchemaURI'
+import {
+  isPlainKeyword,
+  visitSubschemas as visitSubschemasDraft2020_12
+} from '../specification/draft-2020-12/visitSubschemas'
+import { JSONPointer } from '../util/JSONPointer'
+import { URI, normalizeURI, resolveURIReference } from '../util/uri'
+import { SchemaIndex } from './SchemaIndex'
 
-interface Options {
-  baseURI?: URI
-  retrieve?: (uri: URI) => any
-  referenceMergePolicy?: ReferenceMergePolicy
-  defaultConfiguration?: VisitorConfiguration
-}
-
+// default options
 export const defaultBaseURI = ''
 export const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
 export const defaultReferenceMergePolicy = 'by_keyword'
-export const defaultDefaultConfiguration = visitorConfiguration2020_12 // yes, defaultDefault...
+export const defaultDefaultMetaSchemaURI = metaSchemaURIDraft2020_12 // yes, defaultDefault...
 
-// TODO: warn on violations of SHOULD directives
-export function dereferenceJSONSchema(schema: any, options?: Options) {
-  const baseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
+export type ReferenceMergePolicy = 'by_keyword' | 'overwrite' | 'none' | 'default'
+
+export interface DereferencedJSONSchemaOptions {
+  baseURI?: URI
+  referenceMergePolicy?: ReferenceMergePolicy
+  retrieve?: (uri: URI) => any
+  defaultMetaSchemaURI?: URI
+}
+
+export function dereferenceJSONSchema(rootSchema: any, options: DereferencedJSONSchemaOptions) {
+  const rootBaseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
   const retrieve = memoize((uri: string) => {
-    const document = uri === baseURI ? schema : retrieveBuiltin(uri) ?? options?.retrieve(uri) ?? defaultRetrieve(uri)
+    const document =
+      uri === rootBaseURI ? rootSchema : retrieveBuiltin(uri) ?? options?.retrieve(uri) ?? defaultRetrieve(uri)
     if (!document) {
       throw new Error(`Invalid document retrieve at uri '${uri}'`)
     }
     return document
   })
   const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
-  const defaultConfiguration = options?.defaultConfiguration ?? defaultDefaultConfiguration
+  const defaultMetaSchemaURI = options?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
 
-  const index = new Index()
-  indexDocumentInto(index, schema, baseURI, referenceMergePolicy, defaultConfiguration, retrieve)
-
-  // Cache of previously dereferenced values by uri
-  // Multiple URIs may refer to the same value
-  const dereferencedByURI: { [uri: URI]: any } = {}
-
-  // Maintains reference equality from the source schema
-  // Important when the passed in schema is already dereferenced instead of JSON
-  const dereferencedBySource = new Map()
-
-  // tasks to execute once all values have been dereferenced
-  const deferredTasks: Array<() => void> = []
-
-  // This is used to follow $dynamicRef references
-  const dynamicPath = []
-
-  const dereferenceSubschema = (schema: any, context: SchemaContext) => {
-    if (dereferencedBySource.has(schema)) {
-      return dereferencedBySource.get(schema)
-    }
-
-    for (const uri of context.resolvedURIs) {
-      const result = dereferencedByURI[uri]
-      if (result) {
-        return result
-      }
-    }
-
-    const result = {}
-    dereferencedBySource.set(schema, result)
-    context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
-    dynamicPath.push(context)
-    context.cloneInto(result)
-    dynamicPath.pop()
-    return result
-  }
-
-  const dereferenceReference = (reference: { $ref: string } | { $dynamicRef: string }, context: ReferenceContext) => {
-    for (const uri of context.resolvedURIs) {
-      const result = dereferencedByURI[uri]
-      if (result) {
-        return result
-      }
-    }
-
-    if ('$ref' in reference) {
-      // Keep following references until we find a concrete value
-      // It was important to index all known schemas first so that we can follow all references to their conclusion
-      const uri = resolveURIReference(reference.$ref, context.baseURI)
-
-      dynamicPath.push(context)
-      const sourceValue = index.findValue(uri)
-      dynamicPath.pop()
-
-      if (!sourceValue) {
-        throw new Error(`Invalid uri ${uri}`)
-      }
-      return context.clone(sourceValue.value, sourceValue.context)
-    }
-    if ('$dynamicRef' in reference) {
-      const uri = resolveURIReference(reference.$dynamicRef, context.baseURI)
-
-      dynamicPath.push(context)
-      let sourceValue = index.findDynamicValue(
-        uri,
-        dynamicPath.map((c) => c.baseURI)
-      )
-      dynamicPath.pop()
-
-      if (!sourceValue) {
-        throw new Error(`Invalid uri ${uri}`)
-      }
-      return context.clone(sourceValue.value, sourceValue.context)
+  const visitSubschemas = (metaSchemaURI: string) => {
+    switch (metaSchemaURI) {
+      case 'https://json-schema.org/draft/2020-12/schema':
+        return visitSubschemasDraft2020_12
+      case 'http://json-schema.org/draft-04/schema#':
+        return visitSubschemasDraft04
+      default:
+        return visitSubschemas(defaultMetaSchemaURI)
     }
   }
 
-  const dereferenceReferenceWithSiblings = (reference: { $ref: string }, context: SchemaContext) => {
-    // Merging $ref and siblings creates a new unique object,
-    // otherwise sibling properties will be applied everywhere the same $ref is used
-    // Assume that siblings does not need to be further dereferenced
+  const mergeReferenceInto = (metaSchemaURI: string) => {
+    switch (metaSchemaURI) {
+      case 'https://json-schema.org/draft/2020-12/schema':
+        return mergeReferenceIntoDraft2020_12
+      case 'http://json-schema.org/draft-04/schema#':
+        return mergeReferenceIntoDraft04
+      default:
+        return mergeReferenceInto(defaultMetaSchemaURI)
+    }
+  }
 
-    for (const uri of context.resolvedURIs) {
-      const result = dereferencedByURI[uri]
-      if (result) {
-        return result
+  // Index root schema
+  const index = new SchemaIndex()
+  index.addDocument(rootSchema, rootBaseURI, (location) => location === '', {
+    cloned: true,
+    retrieve,
+    defaultMetaSchemaURI
+  })
+
+  const dereferenceReference = (reference: { $ref: string }) => {
+    const baseURI = index.baseURIForSchema(reference)
+    const uri = resolveURIReference(reference.$ref, baseURI)
+    return index.find(uri, { followReferences: true })
+  }
+
+  const dereferenceDynamicReference = (dynamicReference: { $dynamicRef: string }) => {
+    const baseURI = index.baseURIForSchema(dynamicReference)
+    const uri = resolveURIReference(dynamicReference.$dynamicRef, baseURI)
+    return index.find(uri, { followReferences: true })
+  }
+
+  const dereferenceNonStandardReference = (reference: { $ref: string }, parentSchema: any) => {
+    const baseURI = index.baseURIForSchema(parentSchema)
+    const uri = resolveURIReference(reference.$ref, baseURI)
+    return index.find(uri, { followReferences: true })
+  }
+
+  const references = new Map<
+    { $ref: any },
+    {
+      metaSchemaURI: string
+      parent: any
+      key: string
+      dereferencedValue: any
+    }
+  >()
+  const dynamicReferences = new Map<
+    { $dynamicRef: any },
+    {
+      document: any
+      path: JSONPointer[]
+      parent: any
+      key: string
+      dereferencedValue: any
+    }
+  >()
+
+  const collected = new Set()
+  const collectReferences = (subschema: object | boolean, path: JSONPointer[], document: any) => {
+    if (typeof subschema !== 'object') {
+      return
+    }
+
+    if (collected.has(subschema)) {
+      return
+    }
+    collected.add(subschema)
+
+    if ('$ref' in subschema && typeof subschema.$ref === 'string') {
+      const dereferencedValue = dereferenceReference(subschema as { $ref: string })
+      subschema.$ref = dereferencedValue // TODO: can these lines be removed??
+
+      const jsonPointer = path.join('')
+      if (jsonPointer === '') {
+        // flattened = subschema.$ref
+      } else {
+        const i = jsonPointer.lastIndexOf('/')
+        const parentJSONPointer = jsonPointer.slice(0, i) as JSONPointer
+        const key = jsonPointer.slice(i + 1)
+        const parent = evaluateJSONPointer(parentJSONPointer, document)
+
+        references.set(subschema as { $ref: any }, {
+          metaSchemaURI: index.metaSchemaURIForSchema(parent),
+          parent,
+          key,
+          dereferencedValue
+        })
       }
+
+      collectReferences(dereferencedValue, [...path, '/$ref'], document)
+    }
+
+    if ('$dynamicRef' in subschema && typeof subschema.$dynamicRef === 'string') {
+      const dereferencedValue = dereferenceDynamicReference(subschema as { $dynamicRef: string })
+      subschema.$dynamicRef = dereferencedValue
+
+      const jsonPointer = path.join('')
+      if (jsonPointer === '') {
+        // flattened = subschema.$ref
+      } else {
+        const i = jsonPointer.lastIndexOf('/')
+        const parentJSONPointer = jsonPointer.slice(0, i) as JSONPointer
+        const key = jsonPointer.slice(i + 1)
+        const parent = evaluateJSONPointer(parentJSONPointer, document)
+
+        dynamicReferences.set(subschema as { $dynamicRef: any }, {
+          document,
+          path,
+          parent,
+          key,
+          dereferencedValue
+        })
+      }
+
+      collectReferences(dereferencedValue, [...path, '/$dynamicRef'], document)
+    }
+
+    // detect $refs in non-standard locations
+    // TODO: create visitProperties() (excluding subschemas)
+    // TODO: this is a fluke that definitions is counted as a plain keyword, it is incorrectly assuming 2020_12
+    for (const keyword in subschema) {
+      if (isPlainKeyword(keyword)) {
+        const value = subschema[keyword]
+        if (
+          typeof value === 'object' &&
+          '$ref' in value &&
+          typeof value.$ref === 'string' &&
+          Object.keys(value).length === 1 // don't support $ref with siblings in non-standard locations
+        ) {
+          const dereferencedValue = dereferenceNonStandardReference(value as { $ref: string }, subschema)
+          // subschema[keyword] = dereferencedValue
+          subschema[keyword].$ref = dereferencedValue
+
+          references.set(value, {
+            metaSchemaURI: index.metaSchemaURIForSchema(subschema),
+            parent: subschema,
+            key: keyword,
+            dereferencedValue
+          })
+        }
+      }
+    }
+  }
+
+  for (const documentURI of index.documentURIs()) {
+    const indexedDocument = index.find(documentURI, { followReferences: false })
+    visitSubschemas(defaultMetaSchemaURI)(
+      indexedDocument,
+      (location) => location === '',
+      (subschema, path) => {
+        collectReferences(subschema, path, indexedDocument)
+      }
+    )
+  }
+
+  const mergeReferenceWithSiblings = ({
+    metaSchemaURI,
+    reference,
+    dereferencedValue
+  }: {
+    metaSchemaURI: string
+    reference: { $ref: any }
+    dereferencedValue: any
+  }) => {
+    if (references.has(dereferencedValue)) {
+      dereferencedValue = mergeReferenceWithSiblings({
+        reference: dereferencedValue,
+        ...references.get(dereferencedValue)
+      })
+      // reference['$ref'] = dereferencedValue
     }
 
     const { $ref, ...siblings } = reference
-
-    // Since references with siblings are treated as unique merged objects, we may still get cycles here
-    // If we detect a cycle, we still have to apply sibling properties
-    if (dereferencedBySource.has(reference)) {
-      const result = dereferencedBySource.get(reference)
-      context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
-      return result
-    }
-
-    const result = {}
-    dereferencedBySource.set(reference, result)
-
-    dynamicPath.push(context)
-    const dereferenced = dereferenceReference(
-      { $ref },
-      {
-        ...context,
-        resolvedURIs: [] // do not pass through since these point to a new unique merge object, not the referenced object
-      }
-    )
-    dynamicPath.pop()
-
-    // If there is a cyclic references, the object in `dereferenced` may still be being constructed.
-    // If we assigned it's properties now, we will miss any properties that haven't been dereferenced yet.
-    deferredTasks.push(() => {
-      const siblingsResult = {}
-      context.cloneSiblingsInto(siblingsResult)
-      context.configuration.mergeReferencedSchema(result, dereferenced, siblingsResult, referenceMergePolicy)
-    })
-
-    // TODO: can we dereference siblings now?
-
-    dereferencedBySource.set(reference, result)
-    context.resolvedURIs.forEach((uri) => (dereferencedByURI[uri] = result))
-    return result
+    const target = {}
+    mergeReferenceInto(metaSchemaURI)(target, dereferencedValue, siblings, referenceMergePolicy)
+    return target
   }
 
-  // Actually clone the schema
-  // TODO: should this only clone the root one? can ony be pne dynamic path.
-  const dereferencedDocuments = {}
-  for (const [uri, sourceDocument] of Object.entries(index.documentsByURI)) {
-    dereferencedDocuments[uri] = cloneValues(
-      sourceDocument.value,
-      sourceDocument.context,
-      referenceMergePolicy,
-      (value, kind, context) => {
-        if (kind === 'schema') {
-          if ('$ref' in value || '$dynamicRef' in value) {
-            return dereferenceReferenceWithSiblings(value, context as SchemaContext)
-          } else {
-            return dereferenceSubschema(value, context as SchemaContext)
-          }
-        } else if (kind === 'reference') {
-          return dereferenceReference(value, context as ReferenceContext)
-        } else {
-          return value
+  // merge $ref into parent
+  references.forEach(({ metaSchemaURI, parent, key, dereferencedValue }, reference) => {
+    if (Object.keys(reference).length === 1) {
+      parent[key] = dereferencedValue
+    } else {
+      // detect $ref to self
+      if (reference === dereferencedValue) {
+        delete reference['$ref']
+        parent[key] = reference
+        return
+      }
+
+      parent[key] = mergeReferenceWithSiblings({ metaSchemaURI, reference, dereferencedValue })
+    }
+  })
+
+  // replace dynamic anchors with outermost value
+  dynamicReferences.forEach(({ document, path, parent, key, dereferencedValue }, reference) => {
+    let outermost = document
+    for (const jsonPointer of ['', ...path]) {
+      outermost =
+        jsonPointer === '$ref' && !('$ref' in outermost) ? outermost : evaluateJSONPointer(jsonPointer, outermost)
+
+      if (
+        typeof outermost === 'object' &&
+        '$dynamicAnchor' in outermost &&
+        outermost.$dynamicAnchor === dereferencedValue.$dynamicAnchor
+      ) {
+        dereferencedValue = outermost
+        break
+      }
+
+      if (typeof outermost === 'object' && '$id' in outermost) {
+        const outermostBaseURI = index.baseURIForSchema(outermost) ?? index.baseURIForSchema(document)
+        const outermostURI = resolveURIReference(outermost.$id, outermostBaseURI)
+        const anchorURI = resolveURIReference(`#${dereferencedValue.$dynamicAnchor}`, outermostURI)
+        const outermostAnchor = index.find(anchorURI, { followReferences: false })
+        if (outermostAnchor) {
+          dereferencedValue = outermostAnchor
+          break
         }
       }
-    )
+    }
+
+    parent[key] = dereferencedValue
+  })
+
+  const uri =
+    typeof rootSchema === 'object' && '$id' in rootSchema
+      ? resolveURIReference(rootSchema.$id, rootBaseURI)
+      : rootBaseURI
+  const indexedSchema = index.find(uri, { followReferences: false })
+  if (typeof indexedSchema === 'object' && '$ref' in indexedSchema && Object.keys(indexedSchema).length === 1) {
+    return indexedSchema.$ref
   }
-
-  // Now that the object graph has been fully cloned, perform any post-processing
-  deferredTasks.forEach((task) => task())
-
-  return dereferencedDocuments[baseURI]
+  return indexedSchema
 }

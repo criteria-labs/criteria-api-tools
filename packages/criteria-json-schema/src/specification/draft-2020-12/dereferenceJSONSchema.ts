@@ -1,18 +1,12 @@
-import { dereferenceJSONSchema as dereferenceJSONSchemaWithDefaultMetaSchemaURI } from '../../dereferencing/dereferenceJSONSchema'
-import { URI } from '../../util/uri'
-import { DereferencedJSONSchemaObject, JSONSchema, JSONSchemaBooleanSchema } from './JSONSchema'
-import { ReferenceMergePolicy } from './mergeReferenceInto'
-import { metaSchemaURI } from './metaSchemaURI'
-
-export interface Options {
-  baseURI?: URI
-  referenceMergePolicy?: ReferenceMergePolicy
-  retrieve?: (uri: URI) => JSONSchema
-}
+import {
+  DereferenceOptions,
+  dereferenceJSONSchema as dereferenceJSONSchemaWithDefaultMetaSchemaURI
+} from '../../dereferencing/dereferenceJSONSchema'
+import { DereferencedJSONSchemaObject, JSONSchema, JSONSchemaBooleanSchema, metaSchemaURI } from './JSONSchema'
 
 export function dereferenceJSONSchema<T extends JSONSchema>(
   schema: T,
-  options?: Options
+  options?: Omit<DereferenceOptions, 'defaultMetaSchemaURI'>
 ): T extends JSONSchemaBooleanSchema ? JSONSchemaBooleanSchema : DereferencedJSONSchemaObject {
   return dereferenceJSONSchemaWithDefaultMetaSchemaURI(schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
 }

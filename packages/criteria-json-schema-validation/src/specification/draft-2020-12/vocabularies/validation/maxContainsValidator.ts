@@ -1,10 +1,10 @@
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { assert } from '../../../../validation/assert'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { assert } from '../../../../validation/assert'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 const formatErrorMessage = (maxContains: number, indices: number[]) => {
   const maxContainsString = maxContains === 1 ? '1 item' : `${maxContains} items`
@@ -18,11 +18,7 @@ const formatErrorMessage = (maxContains: number, indices: number[]) => {
   return `should have up to ${maxContainsString} that validate against subschema but has ${indices.length} at ${indicesString} instead`
 }
 
-export function maxContainsValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function maxContainsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('maxContains' in schema)) {
     return null
   }
@@ -31,7 +27,7 @@ export function maxContainsValidator(
   }
 
   const maxContains = schema['maxContains']
-
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

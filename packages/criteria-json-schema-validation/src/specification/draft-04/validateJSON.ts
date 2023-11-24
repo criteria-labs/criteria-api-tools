@@ -1,11 +1,12 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
+import { ValidateOptions } from '../../validation/jsonValidator'
 import { jsonValidator } from './jsonValidator'
 
-interface Options {
-  failFast?: boolean
-}
-
-export function validateJSON(instance: unknown, schema: DereferencedJSONSchemaDraft04, options?: Options) {
+export function validateJSON(
+  instance: unknown,
+  schema: JSONSchema,
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>
+) {
   const validator = jsonValidator(schema, options)
   validator(instance)
 }

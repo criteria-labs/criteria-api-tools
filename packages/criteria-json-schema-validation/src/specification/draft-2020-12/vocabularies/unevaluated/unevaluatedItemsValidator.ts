@@ -1,13 +1,13 @@
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
+import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { InvalidOutput, Output } from '../../../../validation/Output'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
-import { formatList } from '../../../../util/formatList'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function unevaluatedItemsValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
+  schema: JSONSchemaObject,
+  schemaPath: JSONPointer[],
   context: ValidatorContext
 ) {
   if (!('unevaluatedItems' in schema)) {
@@ -15,9 +15,10 @@ export function unevaluatedItemsValidator(
   }
 
   const unevaluatedItems = schema['unevaluatedItems']
-  const validator = context.validatorForSchema(unevaluatedItems, `${schemaLocation}/unevaluatedItems`)
+  const validator = context.validatorForSchema(unevaluatedItems, [...schemaPath, '/unevaluatedItems'])
 
   const failFast = context.failFast
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

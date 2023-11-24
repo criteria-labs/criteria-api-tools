@@ -1,7 +1,7 @@
 /* eslint-env jest */
-import { metaSchemaURI as metaSchemaURIDraft04 } from '../specification/draft-04/metaSchemaURI'
+import { metaSchemaURI as metaSchemaURIDraft04 } from '../specification/draft-04/JSONSchema'
 import { SchemaIndex } from './SchemaIndex'
-import { defaultRetrieve } from './dereferenceJSONSchema'
+import { defaultRetrieve } from './indexSchema'
 
 const schema = {
   id: 'http://example.com/root.json',
@@ -32,12 +32,12 @@ const schema = {
 describe('SchemaIndex', () => {
   describe('addDocument()', () => {
     describe('draft-04', () => {
-      const index = new SchemaIndex()
-      index.addDocument(schema, '', (location) => location === '', {
+      const index = new SchemaIndex({
         cloned: true,
         retrieve: defaultRetrieve,
         defaultMetaSchemaURI: metaSchemaURIDraft04
       })
+      index.addDocument(schema, '', '')
 
       test('evaluates json pointers', () => {
         expect(index.find('http://example.com/root.json')).toEqual(schema)

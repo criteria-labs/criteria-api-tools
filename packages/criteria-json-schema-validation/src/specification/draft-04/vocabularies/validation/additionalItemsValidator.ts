@@ -1,15 +1,11 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { isJSONArray } from '../../../../util/isJSONArray'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
-import { InvalidOutput, Output } from '../../../../validation/Output'
 import { formatList } from '../../../../util/formatList'
+import { isJSONArray } from '../../../../util/isJSONArray'
+import { InvalidOutput, Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function additionalItemsValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function additionalItemsValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('additionalItems' in schema)) {
     return null
   }
@@ -22,9 +18,10 @@ export function additionalItemsValidator(
   }
 
   const additionalItems = schema['additionalItems']
-  const validator = context.validatorForSchema(additionalItems, `${schemaLocation}/additionalItems`)
+  const validator = context.validatorForSchema(additionalItems, [...schemaPath, '/additionalItems'])
 
   const items = schema['items'] ?? []
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

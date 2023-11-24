@@ -1,15 +1,15 @@
-import { DereferencedJSONSchemaDraft04, JSONSchemaDraft04PrimitiveType } from '@criteria/json-schema'
+import { JSONSchema, JSONSchemaPrimitiveType } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { isJSONString } from '../../../../util/isJSONString'
+import { Output } from '../../../../validation/Output'
 import { assert } from '../../../../validation/assert'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
-import { InvalidOutput, Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-const formattedType = (primitiveType: JSONSchemaDraft04PrimitiveType): string => {
+const formattedType = (primitiveType: JSONSchemaPrimitiveType): string => {
   switch (primitiveType) {
     case 'array':
       return 'an array'
@@ -49,7 +49,7 @@ const formattedTypeOf = (instance: unknown): string => {
   return `a ${typeof instance}`
 }
 
-const jsonTypePredicate = (primitiveType: JSONSchemaDraft04PrimitiveType): ((instance: unknown) => boolean) => {
+const jsonTypePredicate = (primitiveType: JSONSchemaPrimitiveType): ((instance: unknown) => boolean) => {
   switch (primitiveType) {
     case 'array':
       return isJSONArray
@@ -68,11 +68,7 @@ const jsonTypePredicate = (primitiveType: JSONSchemaDraft04PrimitiveType): ((ins
   }
 }
 
-export function typeValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function typeValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('type' in schema)) {
     return null
   }
@@ -81,6 +77,7 @@ export function typeValidator(
   if (Array.isArray(type)) {
     const predicates = type.map((candidate) => jsonTypePredicate(candidate))
     const expectations = formatList(type.map(formattedType), 'or')
+    const schemaLocation = schemaPath.join('') as JSONPointer
     return (instance: unknown, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
       for (const predicate of predicates) {
         if (predicate(instance)) {
@@ -99,6 +96,7 @@ export function typeValidator(
   } else {
     const predicate = jsonTypePredicate(type)
     const expectation = formattedType(type)
+    const schemaLocation = schemaPath.join('') as JSONPointer
     return (instance: unknown, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
       return assert(predicate(instance), `should be ${expectation} but is ${formattedTypeOf(instance)} instead`, {
         schemaLocation,

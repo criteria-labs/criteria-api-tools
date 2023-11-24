@@ -1,44 +1,25 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
-import { memoize, retrieveBuiltin } from '../retrievers'
 import { mergeReferenceInto as mergeReferenceIntoDraft04 } from '../specification/draft-04/mergeReferenceInto'
 import { visitSubschemas as visitSubschemasDraft04 } from '../specification/draft-04/visitSubschemas'
 import { mergeReferenceInto as mergeReferenceIntoDraft2020_12 } from '../specification/draft-2020-12/mergeReferenceInto'
-import { metaSchemaURI as metaSchemaURIDraft2020_12 } from '../specification/draft-2020-12/metaSchemaURI'
 import {
   isPlainKeyword,
   visitSubschemas as visitSubschemasDraft2020_12
 } from '../specification/draft-2020-12/visitSubschemas'
 import { JSONPointer } from '../util/JSONPointer'
-import { URI, normalizeURI, resolveURIReference } from '../util/uri'
-import { SchemaIndex } from './SchemaIndex'
+import { resolveURIReference } from '../util/uri'
+import { IndexOptions, defaultDefaultMetaSchemaURI, indexSchema } from './indexSchema'
 
 // default options
-export const defaultBaseURI = ''
-export const defaultRetrieve = (uri: URI): any => {
-  throw new Error(`Cannot retrieve URI '${uri}'`)
-}
 export const defaultReferenceMergePolicy = 'by_keyword'
-export const defaultDefaultMetaSchemaURI = metaSchemaURIDraft2020_12 // yes, defaultDefault...
 
 export type ReferenceMergePolicy = 'by_keyword' | 'overwrite' | 'none' | 'default'
 
-export interface DereferencedJSONSchemaOptions {
-  baseURI?: URI
+export type DereferenceOptions = IndexOptions & {
   referenceMergePolicy?: ReferenceMergePolicy
-  retrieve?: (uri: URI) => any
-  defaultMetaSchemaURI?: URI
 }
 
-export function dereferenceJSONSchema(rootSchema: any, options: DereferencedJSONSchemaOptions) {
-  const rootBaseURI = normalizeURI(options?.baseURI ?? defaultBaseURI)
-  const retrieve = memoize((uri: string) => {
-    const document =
-      uri === rootBaseURI ? rootSchema : retrieveBuiltin(uri) ?? options?.retrieve(uri) ?? defaultRetrieve(uri)
-    if (!document) {
-      throw new Error(`Invalid document retrieve at uri '${uri}'`)
-    }
-    return document
-  })
+export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptions) {
   const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
   const defaultMetaSchemaURI = options?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
 
@@ -65,11 +46,11 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferencedJSON
   }
 
   // Index root schema
-  const index = new SchemaIndex()
-  index.addDocument(rootSchema, rootBaseURI, (location) => location === '', {
+  const index = indexSchema(rootSchema, {
     cloned: true,
-    retrieve,
-    defaultMetaSchemaURI
+    baseURI: options?.baseURI,
+    retrieve: options.retrieve,
+    defaultMetaSchemaURI: options.defaultMetaSchemaURI
   })
 
   const dereferenceReference = (reference: { $ref: string }) => {
@@ -199,13 +180,9 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferencedJSON
 
   for (const documentURI of index.documentURIs()) {
     const indexedDocument = index.find(documentURI, { followReferences: false })
-    visitSubschemas(defaultMetaSchemaURI)(
-      indexedDocument,
-      (location) => location === '',
-      (subschema, path) => {
-        collectReferences(subschema, path, indexedDocument)
-      }
-    )
+    visitSubschemas(defaultMetaSchemaURI)(indexedDocument, (subschema, path) => {
+      collectReferences(subschema, path, indexedDocument)
+    })
   }
 
   const mergeReferenceWithSiblings = ({
@@ -278,11 +255,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferencedJSON
     parent[key] = dereferencedValue
   })
 
-  const uri =
-    typeof rootSchema === 'object' && '$id' in rootSchema
-      ? resolveURIReference(rootSchema.$id, rootBaseURI)
-      : rootBaseURI
-  const indexedSchema = index.find(uri, { followReferences: false })
+  const indexedSchema = index.root()
   if (typeof indexedSchema === 'object' && '$ref' in indexedSchema && Object.keys(indexedSchema).length === 1) {
     return indexedSchema.$ref
   }

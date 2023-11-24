@@ -26,7 +26,6 @@ function appendJSONPointer(path: JSONPointer[], jsonPointer: JSONPointer): JSONP
 
 export function visitSubschemas(
   document: JSONSchema,
-  isSubschema: (location: JSONPointer) => boolean,
   visitor: (subschema: JSONSchema, path: JSONPointer[]) => boolean | void
 ) {
   // detects circular references
@@ -135,25 +134,7 @@ export function visitSubschemas(
     return stop
   }
 
-  if (isSubschema('')) {
-    visitSubschema(document, [''])
-  } else {
-    if (typeof document === 'object' && document !== null && !ArrayBuffer.isView(document)) {
-      if (Array.isArray(document)) {
-        for (let index = 0; index < document.length; index++) {
-          if (isSubschema(`/${index}`)) {
-            visitSubschema(document[index], [`/${index}`])
-          }
-        }
-      } else {
-        for (const key in document) {
-          if (isSubschema(`/${escapeReferenceToken(key)}`)) {
-            visitSubschema(document[key], [`/${escapeReferenceToken(key)}`])
-          }
-        }
-      }
-    }
-  }
+  visitSubschema(document, [''])
 }
 
 export function visitReferences(object: object, visitor: (parent, key) => void) {

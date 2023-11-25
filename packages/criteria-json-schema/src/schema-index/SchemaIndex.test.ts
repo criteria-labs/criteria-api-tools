@@ -1,7 +1,7 @@
 /* eslint-env jest */
+import { retrieveUsingLookup } from '../retrievers'
 import { metaSchemaURI as metaSchemaURIDraft04 } from '../specification/draft-04/JSONSchema'
 import { SchemaIndex } from './SchemaIndex'
-import { defaultRetrieve } from './indexSchema'
 
 const schema = {
   id: 'http://example.com/root.json',
@@ -31,13 +31,42 @@ const schema = {
 
 describe('SchemaIndex', () => {
   describe('addDocument()', () => {
+    describe('indexes all schemas', () => {
+      describe('ref within remote ref', () => {
+        const documents = {
+          '': {
+            $ref: 'http://localhost:1234/subSchemas.json#/refToInteger'
+          },
+          'http://localhost:1234/subSchemas.json': {
+            integer: {
+              type: 'integer'
+            },
+            refToInteger: {
+              $ref: '#/integer'
+            }
+          }
+        }
+        const index = new SchemaIndex({
+          cloned: false,
+          retrieve: retrieveUsingLookup(documents),
+          defaultMetaSchemaURI: metaSchemaURIDraft04
+        })
+        index.addDocument(documents[''], '', '', '')
+
+        expect(index.baseURIForDocument(documents[''])).toBeDefined()
+        expect(index.baseURIForDocument(documents['http://localhost:1234/subSchemas.json'])).toBeDefined()
+
+        expect(index.baseURIForSchema(documents[''])).toBeDefined()
+        expect(index.baseURIForSchema(documents['http://localhost:1234/subSchemas.json'].integer)).toBeDefined()
+        expect(index.baseURIForSchema(documents['http://localhost:1234/subSchemas.json'].refToInteger)).toBeDefined()
+      })
+    })
     describe('draft-04', () => {
       const index = new SchemaIndex({
         cloned: true,
-        retrieve: defaultRetrieve,
         defaultMetaSchemaURI: metaSchemaURIDraft04
       })
-      index.addDocument(schema, '', '')
+      index.addDocument(schema, '', '', '')
 
       test('evaluates json pointers', () => {
         expect(index.find('http://example.com/root.json')).toEqual(schema)

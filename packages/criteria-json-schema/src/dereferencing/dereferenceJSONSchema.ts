@@ -1,27 +1,33 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
+import { SchemaIndex, SchemaIndexConfiguration } from '../schema-index/SchemaIndex'
 import { mergeReferenceInto as mergeReferenceIntoDraft04 } from '../specification/draft-04/mergeReferenceInto'
 import { visitSubschemas as visitSubschemasDraft04 } from '../specification/draft-04/visitSubschemas'
 import { mergeReferenceInto as mergeReferenceIntoDraft2020_12 } from '../specification/draft-2020-12/mergeReferenceInto'
-import {
-  isPlainKeyword,
-  visitSubschemas as visitSubschemasDraft2020_12
-} from '../specification/draft-2020-12/visitSubschemas'
+import { visitSubschemas as visitSubschemasDraft2020_12 } from '../specification/draft-2020-12/visitSubschemas'
 import { JSONPointer } from '../util/JSONPointer'
-import { resolveURIReference } from '../util/uri'
-import { IndexOptions, defaultDefaultMetaSchemaURI, indexSchema } from './indexSchema'
+import { URI, resolveURIReference } from '../util/uri'
+import { visitJSONReferences } from '../util/visitJSONReferences'
 
 // default options
 export const defaultReferenceMergePolicy = 'by_keyword'
 
 export type ReferenceMergePolicy = 'by_keyword' | 'overwrite' | 'none' | 'default'
 
-export type DereferenceOptions = IndexOptions & {
+export type DereferenceOptions = SchemaIndexConfiguration & {
+  baseURI?: URI
   referenceMergePolicy?: ReferenceMergePolicy
 }
 
 export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptions) {
+  // Index root schema
+  const index = new SchemaIndex({
+    cloned: true,
+    retrieve: options?.retrieve,
+    defaultMetaSchemaURI: options.defaultMetaSchemaURI
+  })
+  index.addDocument(rootSchema, options.baseURI ?? '', '', '')
+
   const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
-  const defaultMetaSchemaURI = options?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
 
   const visitSubschemas = (metaSchemaURI: string) => {
     switch (metaSchemaURI) {
@@ -30,7 +36,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
       case 'http://json-schema.org/draft-04/schema#':
         return visitSubschemasDraft04
       default:
-        return visitSubschemas(defaultMetaSchemaURI)
+        return visitSubschemas(index.defaultMetaSchemaURI)
     }
   }
 
@@ -41,20 +47,14 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
       case 'http://json-schema.org/draft-04/schema#':
         return mergeReferenceIntoDraft04
       default:
-        return mergeReferenceInto(defaultMetaSchemaURI)
+        return mergeReferenceInto(index.defaultMetaSchemaURI)
     }
   }
 
-  // Index root schema
-  const index = indexSchema(rootSchema, {
-    cloned: true,
-    baseURI: options?.baseURI,
-    retrieve: options.retrieve,
-    defaultMetaSchemaURI: options.defaultMetaSchemaURI
-  })
-
   const dereferenceReference = (reference: { $ref: string }) => {
-    const baseURI = index.baseURIForSchema(reference)
+    // $refs that we encounter might actually be JSON references,
+    // if the document was never indexed as a schema itself
+    const baseURI = index.baseURIForSchema(reference) ?? index.baseURIForJSONReference(reference)
     const uri = resolveURIReference(reference.$ref, baseURI)
     return index.find(uri, { followReferences: true })
   }
@@ -65,8 +65,8 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
     return index.find(uri, { followReferences: true })
   }
 
-  const dereferenceNonStandardReference = (reference: { $ref: string }, parentSchema: any) => {
-    const baseURI = index.baseURIForSchema(parentSchema)
+  const dereferenceJSONReference = (reference: { $ref: string }) => {
+    const baseURI = index.baseURIForJSONReference(reference)
     const uri = resolveURIReference(reference.$ref, baseURI)
     return index.find(uri, { followReferences: true })
   }
@@ -150,38 +150,40 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
 
       collectReferences(dereferencedValue, [...path, '/$dynamicRef'], document)
     }
+  }
 
-    // detect $refs in non-standard locations
-    // TODO: create visitProperties() (excluding subschemas)
-    // TODO: this is a fluke that definitions is counted as a plain keyword, it is incorrectly assuming 2020_12
-    for (const keyword in subschema) {
-      if (isPlainKeyword(keyword)) {
-        const value = subschema[keyword]
-        if (
-          typeof value === 'object' &&
-          '$ref' in value &&
-          typeof value.$ref === 'string' &&
-          Object.keys(value).length === 1 // don't support $ref with siblings in non-standard locations
-        ) {
-          const dereferencedValue = dereferenceNonStandardReference(value as { $ref: string }, subschema)
-          // subschema[keyword] = dereferencedValue
-          subschema[keyword].$ref = dereferencedValue
-
-          references.set(value, {
-            metaSchemaURI: index.metaSchemaURIForSchema(subschema),
-            parent: subschema,
-            key: keyword,
-            dereferencedValue
-          })
-        }
-      }
+  for (const documentURI of index.documentURIs()) {
+    const indexedDocument = index.find(documentURI, { followReferences: false })
+    if (typeof indexedDocument === 'object') {
+      const info = index.infoForDocument(indexedDocument)
+      visitSubschemas(info.metaSchemaURI)(indexedDocument, info.locationFromNearestSchema, (subschema, path) => {
+        collectReferences(subschema, path, indexedDocument)
+      })
     }
   }
 
   for (const documentURI of index.documentURIs()) {
     const indexedDocument = index.find(documentURI, { followReferences: false })
-    visitSubschemas(defaultMetaSchemaURI)(indexedDocument, (subschema, path) => {
-      collectReferences(subschema, path, indexedDocument)
+    visitJSONReferences(indexedDocument, (reference, location) => {
+      if (collected.has(reference)) {
+        return
+      }
+      collected.add(reference)
+
+      // will only visit $refs that are still strings, i.e. non-standards refs
+      const dereferencedValue = dereferenceJSONReference(reference)
+      reference.$ref = dereferencedValue
+
+      const i = location.lastIndexOf('/')
+      const parent = evaluateJSONPointer(location.slice(0, i) as JSONPointer, indexedDocument)
+      const key = location.slice(i + 1)
+
+      references.set(reference, {
+        metaSchemaURI: index.metaSchemaURIForSchema(indexedDocument),
+        parent,
+        key,
+        dereferencedValue
+      })
     })
   }
 
@@ -208,8 +210,23 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
     return target
   }
 
-  // merge $ref into parent
-  references.forEach(({ metaSchemaURI, parent, key, dereferencedValue }, reference) => {
+  const mergeReference = ({
+    metaSchemaURI,
+    reference,
+    dereferencedValue,
+    parent,
+    key
+  }: {
+    metaSchemaURI: string
+    reference: { $ref: any }
+    dereferencedValue: any
+    parent: object
+    key: string
+  }) => {
+    if (!('$ref' in reference)) {
+      return
+    }
+
     if (Object.keys(reference).length === 1) {
       parent[key] = dereferencedValue
     } else {
@@ -217,11 +234,26 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
       if (reference === dereferencedValue) {
         delete reference['$ref']
         parent[key] = reference
+
         return
       }
 
+      references.forEach((otherReferenceInfo, otherReference) => {
+        if (otherReference === reference) {
+          return
+        }
+        if (otherReferenceInfo.parent === dereferencedValue) {
+          mergeReference({ ...otherReferenceInfo, reference: otherReference })
+        }
+      })
+
       parent[key] = mergeReferenceWithSiblings({ metaSchemaURI, reference, dereferencedValue })
     }
+  }
+
+  // merge $ref into parent
+  references.forEach(({ metaSchemaURI, parent, key, dereferencedValue }, reference) => {
+    mergeReference({ metaSchemaURI, reference, dereferencedValue, parent, key })
   })
 
   // replace dynamic anchors with outermost value
@@ -255,7 +287,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
     parent[key] = dereferencedValue
   })
 
-  const indexedSchema = index.root()
+  const indexedSchema = index.rootDocument()
   if (typeof indexedSchema === 'object' && '$ref' in indexedSchema && Object.keys(indexedSchema).length === 1) {
     return indexedSchema.$ref
   }

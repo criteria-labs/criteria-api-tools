@@ -1,4 +1,4 @@
-import { DereferenceOptions, IndexOptions, indexSchema, memoize, retrieveBuiltin } from '@criteria/json-schema'
+import { DereferenceOptions, SchemaIndex } from '@criteria/json-schema'
 import { ValidationError } from '../errors/ValidationError'
 import { InvalidOutput } from './Output'
 import { booleanValidator } from './booleanValidator'
@@ -26,14 +26,14 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
   const failFast = options.failFast ?? defaultFailFast
 
   // Index root schema
-  const index = indexSchema(schema, {
+  const index = new SchemaIndex({
     cloned: false,
-    baseURI: options?.baseURI,
     retrieve: options?.retrieve,
     defaultMetaSchemaURI: options.defaultMetaSchemaURI
   })
+  index.addDocument(schema, options?.baseURI ?? '', '', '')
 
-  const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory(index.configuration.retrieve)
+  const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory(index.retrieve)
   const boundValidatorForSchema = validatorBinder(index, {
     failFast,
     validatorsForMetaSchemaURI

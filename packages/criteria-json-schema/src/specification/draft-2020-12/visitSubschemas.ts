@@ -1,8 +1,9 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { JSONPointer } from '../../util/JSONPointer'
 import { JSONSchema } from './JSONSchema'
+import { visitObjects } from '../../util/visitObjects'
 
-function isSubschema(jsonPointer: JSONPointer) {
+export function isSubschema(jsonPointer: JSONPointer) {
   return (
     jsonPointer === '' ||
     Boolean(jsonPointer.match(/^\/\$defs\/[^/]*$/)) ||
@@ -37,6 +38,7 @@ function appendJSONPointer(path: JSONPointer[], jsonPointer: JSONPointer): JSONP
 
 export function visitSubschemas(
   document: JSONSchema,
+  initialLocation: JSONPointer,
   visitor: (subschema: JSONSchema, path: JSONPointer[]) => boolean | void
 ) {
   // detects circular references
@@ -183,7 +185,13 @@ export function visitSubschemas(
     return stop
   }
 
-  visitSubschema(document, [''])
+  visitObjects(document, (object, location, visitChildren) => {
+    if (isSubschema(`${initialLocation}${location}`)) {
+      visitSubschema(object, [location])
+    } else {
+      visitChildren()
+    }
+  })
 }
 
 export function isPlainKeyword(keyword: string) {

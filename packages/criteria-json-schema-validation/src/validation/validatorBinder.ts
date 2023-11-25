@@ -57,7 +57,7 @@ export function validatorBinder(
     }
     cache.set(schema, indirectValidator)
 
-    const metaSchemaURI = index.findInfo2(schema)?.metaSchemaURI
+    const metaSchemaURI = index.infoForValue(schema)?.metaSchemaURI
     const vocabularyValidators = validatorsForMetaSchemaURI(metaSchemaURI)
 
     let isChildDynamic = false

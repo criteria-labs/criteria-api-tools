@@ -83,6 +83,19 @@ export class SchemaIndex {
     return this.contextsByDocument.get(document)
   }
 
+  infoForValue(value: any) {
+    if (this.contextsBySchema.has(value)) {
+      return this.contextsBySchema.get(value)
+    }
+    if (this.contextsByDocument.has(value)) {
+      return this.contextsByDocument.get(value)
+    }
+    if (this.contextsByJSONReference.has(value)) {
+      return this.contextsByJSONReference.get(value)
+    }
+    return undefined
+  }
+
   baseURIForSchema(schema: object): URI {
     return this.contextsBySchema.get(schema)?.baseURI
   }
@@ -100,7 +113,7 @@ export class SchemaIndex {
   }
 
   dereferenceReference(reference: URI, schema: object, path: JSONPointer[]): object {
-    const baseURI = this.findInfo2(schema)?.baseURI
+    const baseURI = this.baseURIForSchema(schema)
     const uri = resolveURIReference(reference, baseURI)
     return this.find(uri, { followReferences: false })
   }
@@ -156,14 +169,9 @@ export class SchemaIndex {
   }
 
   findInfo(value: any, document: any, location: JSONPointer | null) {
-    if (this.contextsBySchema.has(value)) {
-      return this.contextsBySchema.get(value)
-    }
-    if (this.contextsByDocument.has(value)) {
-      return this.contextsByJSONReference.get(value)
-    }
-    if (this.contextsByJSONReference.has(value)) {
-      return this.contextsByJSONReference.get(value)
+    const info = this.infoForValue(value)
+    if (info) {
+      return info
     }
 
     if (!location || !isJSONPointer(location)) {
@@ -174,19 +182,6 @@ export class SchemaIndex {
     const parentLocation = location.slice(0, i) as JSONPointer
     const parentValue = evaluateJSONPointer(parentLocation, document)
     return this.findInfo(parentValue, document, parentLocation)
-  }
-
-  findInfo2(value: any) {
-    if (this.contextsBySchema.has(value)) {
-      return this.contextsBySchema.get(value)
-    }
-    if (this.contextsByDocument.has(value)) {
-      return this.contextsByDocument.get(value)
-    }
-    if (this.contextsByJSONReference.has(value)) {
-      return this.contextsByJSONReference.get(value)
-    }
-    return undefined
   }
 
   find(uri: URI, options?: { followReferences: boolean; _uris?: Set<URI> }): any {
@@ -243,7 +238,7 @@ export class SchemaIndex {
       const container = this.find(absoluteURI, options)
       const evaluatedValue = evaluateJSONPointer(fragment, container)
       if (evaluatedValue !== undefined) {
-        const baseURI = this.findInfo2(container)?.baseURI
+        const baseURI = this.infoForValue(container)?.baseURI
         return followReferences ? followReference(evaluatedValue, baseURI) : evaluatedValue
       }
 
@@ -259,7 +254,7 @@ export class SchemaIndex {
         let parent = this.find(parentURI, options)
         const evaluatedValue = evaluateJSONPointer(remainingFragment, parent) // try evaluating against siblings of $ref
         if (evaluatedValue !== undefined) {
-          const info = this.findInfo2(parent)
+          const info = this.infoForValue(parent)
           return options?.followReferences === true ? followReference(evaluatedValue, info?.baseURI) : evaluatedValue
         }
 
@@ -267,7 +262,7 @@ export class SchemaIndex {
           if (typeof parent.$ref == 'object') {
             parent = parent.$ref
           } else {
-            const info = this.findInfo2(parent)
+            const info = this.infoForValue(parent)
             const parentRefURI = resolveURIReference(parent.$ref, info.baseURI)
             parent = this.find(parentRefURI, options)
           }
@@ -275,7 +270,7 @@ export class SchemaIndex {
           const evaluatedValue = evaluateJSONPointer(remainingFragment, parent)
 
           if (evaluatedValue !== undefined) {
-            const info = this.findInfo2(parent)
+            const info = this.infoForValue(parent)
             return options?.followReferences === true ? followReference(evaluatedValue, info?.baseURI) : evaluatedValue
           }
         }

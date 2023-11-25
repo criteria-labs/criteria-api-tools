@@ -1,24 +1,20 @@
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { isJSONArray } from '../../../../util/isJSONArray'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
-import { InvalidOutput, Output } from '../../../../validation/Output'
 import { formatList } from '../../../../util/formatList'
+import { isJSONArray } from '../../../../util/isJSONArray'
+import { InvalidOutput, Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function prefixItemsValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function prefixItemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('prefixItems' in schema)) {
     return null
   }
 
   const prefixItems = schema['prefixItems']
   const prefixItemValidators = prefixItems.map((subschema, i) =>
-    context.validatorForSchema(subschema, `${schemaLocation}/prefixItems/${i}`)
+    context.validatorForSchema(subschema, [...schemaPath, `/prefixItems/${i}`])
   )
-
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

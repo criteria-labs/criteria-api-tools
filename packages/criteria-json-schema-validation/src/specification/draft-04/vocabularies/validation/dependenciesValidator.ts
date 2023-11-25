@@ -1,19 +1,15 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
-import { reduceAnnotationResults } from '../reduceAnnotationResults'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { BoundValidator } from '../../../../validation/BoundValidator'
+import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
 import { assert } from '../../../../validation/assert'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
+import { reduceAnnotationResults } from '../reduceAnnotationResults'
 
-export function dependenciesValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function dependenciesValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('dependencies' in schema)) {
     return null
   }
@@ -41,16 +37,17 @@ export function dependenciesValidator(
         }
         return [propertyName, validator]
       } else {
-        const subschemaValidator = context.validatorForSchema(
-          dependentPropertiesOrSubschema,
-          `${schemaLocation}/dependencies/${escapeReferenceToken(propertyName)}`
-        )
+        const subschemaValidator = context.validatorForSchema(dependentPropertiesOrSubschema, [
+          ...schemaPath,
+          `/dependencies/${escapeReferenceToken(propertyName)}`
+        ])
         return [propertyName, subschemaValidator]
       }
     }
   )
 
   const failFast = context.failFast
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONObject(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

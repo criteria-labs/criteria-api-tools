@@ -1,17 +1,13 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { isJSONObject } from '../../../../util/isJSONObject'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
 import { formatList } from '../../../../util/formatList'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
+import { isJSONObject } from '../../../../util/isJSONObject'
 import { BoundValidator } from '../../../../validation/BoundValidator'
+import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function patternPropertiesValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function patternPropertiesValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('patternProperties' in schema)) {
     return null
   }
@@ -20,14 +16,15 @@ export function patternPropertiesValidator(
   const patternValidators: [string, RegExp, BoundValidator][] = Object.keys(patternProperties).map((pattern) => {
     const regexp = new RegExp(pattern)
     const subschema = patternProperties[pattern]
-    const subschemaValidator = context.validatorForSchema(
-      subschema,
-      `${schemaLocation}/patternProperties/${escapeReferenceToken(pattern)}`
-    )
+    const subschemaValidator = context.validatorForSchema(subschema, [
+      ...schemaPath,
+      `/patternProperties/${escapeReferenceToken(pattern)}`
+    ])
     return [pattern, regexp, subschemaValidator]
   })
 
   const failFast = context.failFast
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONObject(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

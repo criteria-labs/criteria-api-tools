@@ -1,12 +1,6 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
-import { jsonValidator as jsonValidatorWithConfiguration } from '../../validation/jsonValidator'
-import validatorConfiguration from './validatorConfiguration'
+import { JSONSchema, metaSchemaURI } from '@criteria/json-schema/draft-04'
+import { ValidateOptions, jsonValidator as jsonValidatorWithDefaultMetaSchemaURI } from '../../validation/jsonValidator'
 
-interface Options {
-  failFast?: boolean
-  retrieve?: (uri: string) => any
-}
-
-export function jsonValidator(schema: DereferencedJSONSchemaDraft04, options?: Options) {
-  return jsonValidatorWithConfiguration(schema, { ...options, configuration: validatorConfiguration })
+export function jsonValidator(schema: JSONSchema, options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>) {
+  return jsonValidatorWithDefaultMetaSchemaURI(schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
 }

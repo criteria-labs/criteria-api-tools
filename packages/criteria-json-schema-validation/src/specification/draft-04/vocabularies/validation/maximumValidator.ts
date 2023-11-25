@@ -1,21 +1,18 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONNumber } from '../../../../util/isJSONNumber'
-import { assert } from '../../../../validation/assert'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { assert } from '../../../../validation/assert'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function maximumValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function maximumValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('maximum' in schema)) {
     return null
   }
 
   const maximum = schema['maximum']
   const exclusiveMaximum = schema['exclusiveMaximum'] ?? false
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONNumber(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

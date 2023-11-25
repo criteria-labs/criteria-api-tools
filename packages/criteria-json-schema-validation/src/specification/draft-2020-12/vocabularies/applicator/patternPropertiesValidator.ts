@@ -1,15 +1,15 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { isJSONObject } from '../../../../util/isJSONObject'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
 import { formatList } from '../../../../util/formatList'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
+import { isJSONObject } from '../../../../util/isJSONObject'
 import { BoundValidator } from '../../../../validation/BoundValidator'
+import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function patternPropertiesValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
+  schema: JSONSchemaObject,
+  schemaPath: JSONPointer[],
   context: ValidatorContext
 ) {
   if (!('patternProperties' in schema)) {
@@ -20,14 +20,15 @@ export function patternPropertiesValidator(
   const patternValidators: [string, RegExp, BoundValidator][] = Object.keys(patternProperties).map((pattern) => {
     const regexp = new RegExp(pattern)
     const subschema = patternProperties[pattern]
-    const subschemaValidator = context.validatorForSchema(
-      subschema,
-      `${schemaLocation}/patternProperties/${escapeReferenceToken(pattern)}`
-    )
+    const subschemaValidator = context.validatorForSchema(subschema, [
+      ...schemaPath,
+      `/patternProperties/${escapeReferenceToken(pattern)}`
+    ])
     return [pattern, regexp, subschemaValidator]
   })
 
   const failFast = context.failFast
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONObject(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

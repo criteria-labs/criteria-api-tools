@@ -1,22 +1,19 @@
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
-import { reduceAnnotationResults } from '../reduceAnnotationResults'
-import { InvalidOutput, Output } from '../../../../validation/Output'
 import { formatList } from '../../../../util/formatList'
+import { InvalidOutput, Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
+import { reduceAnnotationResults } from '../reduceAnnotationResults'
 
-export function allOfValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function allOfValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('allOf' in schema)) {
     return null
   }
 
   const allOf = schema['allOf']
-  const validators = allOf.map((subschema, i) => context.validatorForSchema(subschema, `${schemaLocation}/allOf/${i}`))
+  const validators = allOf.map((subschema, i) => context.validatorForSchema(subschema, [...schemaPath, `/allOf/${i}`]))
   const failFast = context.failFast
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     const outputs = []
     for (let i = 0; i < validators.length; i++) {

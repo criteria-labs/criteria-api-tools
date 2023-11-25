@@ -1,20 +1,17 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import circularEqual from '../../../../util/circularEqual'
 import { formatList } from '../../../../util/formatList'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function enumValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function enumValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('enum' in schema)) {
     return null
   }
 
   const enumValues = schema['enum']
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     for (const enumValue of enumValues) {
       const equal = circularEqual(instance, enumValue)

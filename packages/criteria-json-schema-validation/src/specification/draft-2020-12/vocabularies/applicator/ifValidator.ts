@@ -1,32 +1,30 @@
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 import { reduceAnnotationResults } from '../reduceAnnotationResults'
 
-export function ifValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function ifValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('if' in schema)) {
     return null
   }
+
+  const schemaLocation = schemaPath.join('') as JSONPointer
 
   const trueValidator = (instance: unknown, instanceLocation: JSONPointer): Output => {
     return { valid: true, schemaLocation, instanceLocation }
   }
 
   const ifSchema = schema['if']
-  const ifValidator = context.validatorForSchema(ifSchema, `${schemaLocation}/if`)
+  const ifValidator = context.validatorForSchema(ifSchema, [...schemaPath, '/if'])
 
   const thenSchema = schema['then']
   const thenValidator =
-    thenSchema !== undefined ? context.validatorForSchema(thenSchema, `${schemaLocation}/then`) : trueValidator
+    thenSchema !== undefined ? context.validatorForSchema(thenSchema, [...schemaPath, '/then']) : trueValidator
 
   const elseSchema = schema['else']
   const elseValidator =
-    elseSchema !== undefined ? context.validatorForSchema(elseSchema, `${schemaLocation}/else`) : trueValidator
+    elseSchema !== undefined ? context.validatorForSchema(elseSchema, [...schemaPath, '/else']) : trueValidator
 
   return (instance: unknown, instanceLocation: JSONPointer): Output => {
     const ifOutput = ifValidator(instance, instanceLocation)
@@ -52,7 +50,7 @@ export function ifValidator(
           annotationResults: elseOutput.annotationResults
         }
       } else {
-        elseOutput
+        return elseOutput
       }
     }
   }

@@ -1,20 +1,17 @@
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { assert } from '../../../../validation/assert'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { assert } from '../../../../validation/assert'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function maxItemsValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function maxItemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('maxItems' in schema)) {
     return null
   }
 
   const maxItems = schema['maxItems']
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

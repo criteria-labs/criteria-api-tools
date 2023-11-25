@@ -27,7 +27,7 @@ export function splitFragment(uri: URI): { absoluteURI: URI; fragment: string } 
   const { fragment, ...restComponents } = parse(uri)
   return {
     absoluteURI: normalize(serialize(restComponents)),
-    fragment: fragment
+    fragment: decodeURIComponent(fragment)
   }
 }
 

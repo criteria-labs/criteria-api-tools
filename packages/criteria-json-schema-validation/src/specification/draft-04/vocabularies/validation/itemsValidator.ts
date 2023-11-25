@@ -1,15 +1,11 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { isJSONArray } from '../../../../util/isJSONArray'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
-import { InvalidOutput, Output } from '../../../../validation/Output'
 import { formatList } from '../../../../util/formatList'
+import { isJSONArray } from '../../../../util/isJSONArray'
+import { InvalidOutput, Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function itemsValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function itemsValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('items' in schema)) {
     return null
   }
@@ -17,8 +13,9 @@ export function itemsValidator(
   const items = schema['items']
   if (Array.isArray(items)) {
     const itemValidators = items.map((subschema, i) =>
-      context.validatorForSchema(subschema, `${schemaLocation}/items/${i}`)
+      context.validatorForSchema(subschema, [...schemaPath, `/items/${i}`])
     )
+    const schemaLocation = schemaPath.join('') as JSONPointer
     return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
       if (!isJSONArray(instance)) {
         return { valid: true, schemaLocation, instanceLocation }
@@ -68,7 +65,8 @@ export function itemsValidator(
       }
     }
   } else {
-    const validator = context.validatorForSchema(items, `${schemaLocation}/items`)
+    const validator = context.validatorForSchema(items, [...schemaPath, '/items'])
+    const schemaLocation = schemaPath.join('') as JSONPointer
     return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
       if (!isJSONArray(instance)) {
         return { valid: true, schemaLocation, instanceLocation }

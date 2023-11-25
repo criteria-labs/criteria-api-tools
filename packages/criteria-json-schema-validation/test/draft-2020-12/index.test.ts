@@ -1,9 +1,5 @@
 /* eslint-env jest */
-import {
-  DereferencedJSONSchemaDraft2020_12,
-  JSONSchemaDraft2020_12,
-  dereferenceJSONSchemaDraft2020_12
-} from '@criteria/json-schema'
+import { JSONSchemaDraft2020_12 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
 import { jsonValidatorDraft2020_12 } from '../../src'
@@ -25,9 +21,6 @@ const retrieveRemote = (uri: string): JSONSchemaDraft2020_12 => {
   }
 }
 
-// skip dynamicRef tests
-testFilesTable = testFilesTable.filter((testFile) => testFile[0] !== 'dynamicRef.json')
-
 describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
   const testFilePath = path.resolve(testCasesDirectory, testFilename)
   const testFileContents = fs.readFileSync(testFilePath, { encoding: 'utf-8' })
@@ -39,17 +32,11 @@ describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
   ])
 
   describe.each(testCasesTable)('%s', (testCaseDescription, testCaseSchema, testCaseTests) => {
-    let dereferencedSchema: DereferencedJSONSchemaDraft2020_12
     let testCaseSchemaValidator
 
     beforeAll(() => {
       expect(() => {
-        dereferencedSchema = dereferenceJSONSchemaDraft2020_12(testCaseSchema, {
-          referenceMergePolicy: 'none',
-          retrieve: retrieveRemote
-        }) as any
-
-        testCaseSchemaValidator = jsonValidatorDraft2020_12(dereferencedSchema, {
+        testCaseSchemaValidator = jsonValidatorDraft2020_12(testCaseSchema, {
           failFast: false,
           retrieve: retrieveRemote
         })

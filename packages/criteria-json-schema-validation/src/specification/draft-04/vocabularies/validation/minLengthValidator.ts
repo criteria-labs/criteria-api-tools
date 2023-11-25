@@ -1,20 +1,17 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONString } from '../../../../util/isJSONString'
-import { assert } from '../../../../validation/assert'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { assert } from '../../../../validation/assert'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function minLengthValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function minLengthValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('minLength' in schema)) {
     return null
   }
 
   const minLength = schema['minLength']
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONString(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

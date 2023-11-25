@@ -1,5 +1,5 @@
 export default {
-  id: 'http://example.net/root.json',
+  $id: 'http://example.net/root.json',
   items: {
     type: 'array',
     items: {

@@ -1,5 +1,7 @@
+import { $dynamicRefValidator } from './$dynamicRefValidator'
 import { $refValidator } from './$refValidator'
 
 export const coreValidators = {
-  $ref: $refValidator
+  $ref: $refValidator,
+  $dynamicRef: $dynamicRefValidator
 }

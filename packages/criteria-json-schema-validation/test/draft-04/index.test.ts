@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { DereferencedJSONSchemaDraft04, JSONSchemaDraft04, dereferenceJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchemaDraft04 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
 import { jsonValidatorDraft04 } from '../../src'
@@ -32,19 +32,14 @@ describe.each(testFilesTable)(`tests/draft04/%s`, (testFilename) => {
   ])
 
   describe.each(testCasesTable)('%s', (testCaseDescription, testCaseSchema, testCaseTests) => {
-    let dereferencedSchema: DereferencedJSONSchemaDraft04
     let testCaseSchemaValidator
 
     beforeAll(() => {
       expect(() => {
-        dereferencedSchema = dereferenceJSONSchemaDraft04(testCaseSchema, {
-          referenceMergePolicy: 'overwrite',
-          retrieve: retrieveRemote
-        }) as any
-
-        testCaseSchemaValidator = jsonValidatorDraft04(dereferencedSchema, {
+        testCaseSchemaValidator = jsonValidatorDraft04(testCaseSchema, {
           failFast: false,
-          retrieve: retrieveRemote
+          retrieve: retrieveRemote,
+          referenceMergePolicy: 'none'
         })
       }).not.toThrow()
     })

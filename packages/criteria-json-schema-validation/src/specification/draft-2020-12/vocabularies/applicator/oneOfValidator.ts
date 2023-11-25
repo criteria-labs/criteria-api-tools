@@ -1,19 +1,16 @@
-import { DereferencedJSONSchemaObjectDraft2020_12 } from '@criteria/json-schema'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function oneOfValidator(
-  schema: DereferencedJSONSchemaObjectDraft2020_12,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function oneOfValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('oneOf' in schema)) {
     return null
   }
 
   const oneOf = schema['oneOf']
-  const validators = oneOf.map((subschema, i) => context.validatorForSchema(subschema, `${schemaLocation}/oneOf/${i}`))
+  const validators = oneOf.map((subschema, i) => context.validatorForSchema(subschema, [...schemaPath, `/oneOf/${i}`]))
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     const outputs = validators.map((validator) => validator(instance, instanceLocation))
     const valid = outputs.filter((output) => output.valid).length === 1

@@ -1,17 +1,13 @@
-import { DereferencedJSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import circularEqual from '../../../../util/circularEqual'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { assert } from '../../../../validation/assert'
-import { ValidatorContext } from '../../../../validation/jsonValidator'
 import { Output } from '../../../../validation/Output'
+import { assert } from '../../../../validation/assert'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-export function uniqueItemsValidator(
-  schema: DereferencedJSONSchemaDraft04,
-  schemaLocation: JSONPointer,
-  context: ValidatorContext
-) {
+export function uniqueItemsValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('uniqueItems' in schema)) {
     return null
   }
@@ -22,6 +18,7 @@ export function uniqueItemsValidator(
   }
 
   const failFast = context.failFast
+  const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }

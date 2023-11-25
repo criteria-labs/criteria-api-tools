@@ -1,7 +1,7 @@
 /* eslint-env jest */
-import { dereferenceJSONSchema } from '../../../src/specification/draft-04'
-import schema from './schema.json'
+import { dereferenceJSONSchema } from '../../../src/specification/draft-04/dereferenceJSONSchema'
 import dereferenced from './dereferenced'
+import schema from './schema.json'
 
 describe('Schema with internal $refs', () => {
   test('dereferenceJSONSchema()', () => {

@@ -1,4 +1,5 @@
 import { JSONPointer } from '../util/JSONPointer'
+import { format } from '../util/format'
 import { BoundValidator } from './BoundValidator'
 
 export function booleanValidator(schema: boolean, schemaPath: JSONPointer[]): BoundValidator {
@@ -10,7 +11,7 @@ export function booleanValidator(schema: boolean, schemaPath: JSONPointer[]): Bo
       valid: false,
       schemaLocation,
       instanceLocation,
-      message: `should not be defined but is ${instance}`
+      message: `should not be defined but is ${format(instance)}`
     })
   }
 }

@@ -1,5 +1,6 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
+import { format } from '../../../../util/format'
 import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { Output } from '../../../../validation/Output'
 import { assert } from '../../../../validation/assert'
@@ -19,7 +20,7 @@ export function multipleOfValidator(schema: JSONSchemaObject, schemaPath: JSONPo
 
     return assert(
       multipleOf !== 0 ? Number.isInteger(instance / multipleOf) : false,
-      `should be a multiple of ${multipleOf} but is ${instance} instead`,
+      `should be a multiple of ${multipleOf} but is ${format(instance)} instead`,
       { schemaLocation, schemaKeyword: 'multipleOf', instanceLocation }
     )
   }

@@ -1,6 +1,7 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import circularEqual from '../../../../util/circularEqual'
+import { format } from '../../../../util/format'
 import { formatList } from '../../../../util/formatList'
 import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
@@ -22,14 +23,14 @@ export function enumValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[
 
     let message
     if (enumValues.length === 0) {
-      message = `should not be defined but is ${instance} instead`
+      message = `should not be defined but is ${format(instance)} instead`
     } else if (enumValues.length === 1) {
-      message = `should be ${enumValues[0]} but is ${instance} instead`
+      message = `should be ${format(enumValues[0])} but is ${format(instance)} instead`
     } else {
       message = `should be one of ${formatList(
-        enumValues.map((value) => `${value}`),
+        enumValues.map((value) => format(value)),
         'or'
-      )} but is ${instance} instead`
+      )} but is ${format(instance)} instead`
     }
     return {
       valid: false,

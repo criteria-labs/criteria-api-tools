@@ -1,6 +1,7 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import circularEqual from '../../../../util/circularEqual'
+import { format } from '../../../../util/format'
 import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
@@ -29,7 +30,7 @@ export function constValidator(schema: JSONSchemaObject, schemaPath: JSONPointer
         schemaLocation,
         schemaKeyword: 'const',
         instanceLocation,
-        message: `should be ${constValue} but is ${instance} instead`
+        message: `should be ${format(constValue)} but is ${format(instance)} instead`
       }
     }
   }

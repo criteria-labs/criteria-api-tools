@@ -77,10 +77,10 @@ export function patternPropertiesValidator(schema: JSONSchema, schemaPath: JSONP
       const entries = Array.from(invalidOutputs.entries())
       let message
       if (entries.length === 1) {
-        message = `has invalid property ('${entries[0][0]}' ${entries[0][1]})`
+        message = `has an invalid property ('${entries[0][0]}' ${entries[0][1].message})`
       } else {
         message = `has invalid properties (${formatList(
-          entries.map((entry) => `'${entry[0]}' ${entry[1]}`),
+          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
           'and'
         )})`
       }

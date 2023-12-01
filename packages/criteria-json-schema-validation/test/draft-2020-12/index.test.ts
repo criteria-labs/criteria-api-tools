@@ -57,6 +57,11 @@ describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
             testCaseSchemaValidator(testData)
           }).toThrow()
         })
+        test('validateJSON() returns correct error message', () => {
+          expect(() => {
+            testCaseSchemaValidator(testData)
+          }).toThrowErrorMatchingSnapshot()
+        })
       }
     })
   })

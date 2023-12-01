@@ -1,5 +1,6 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
+import { format } from '../../../../util/format'
 import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { Output } from '../../../../validation/Output'
 import { assert } from '../../../../validation/assert'
@@ -17,10 +18,14 @@ export function minimumValidator(schema: JSONSchemaObject, schemaPath: JSONPoint
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(instance >= minimum, `should be greater than or equal to ${minimum} but is ${instance} instead`, {
-      schemaLocation,
-      schemaKeyword: 'minimum',
-      instanceLocation
-    })
+    return assert(
+      instance >= minimum,
+      `should be greater than or equal to ${minimum} but is ${format(instance)} instead`,
+      {
+        schemaLocation,
+        schemaKeyword: 'minimum',
+        instanceLocation
+      }
+    )
   }
 }

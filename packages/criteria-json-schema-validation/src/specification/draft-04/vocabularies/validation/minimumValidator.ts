@@ -4,6 +4,7 @@ import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { Output } from '../../../../validation/Output'
 import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
+import { format } from '../../../../util/format'
 
 export function minimumValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('minimum' in schema)) {
@@ -20,9 +21,9 @@ export function minimumValidator(schema: JSONSchema, schemaPath: JSONPointer[], 
 
     return assert(
       exclusiveMinimum ? instance > minimum : instance >= minimum,
-      `should be ${
-        exclusiveMinimum ? 'greater than' : 'greater than or equal to'
-      } ${minimum} but is ${instance} instead`,
+      `should be ${exclusiveMinimum ? 'greater than' : 'greater than or equal to'} ${minimum} but is ${format(
+        instance
+      )} instead`,
       {
         schemaLocation,
         schemaKeyword: 'minimum',

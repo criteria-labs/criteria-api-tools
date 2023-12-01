@@ -1,5 +1,6 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
+import { format } from '../../../../util/format'
 import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { Output } from '../../../../validation/Output'
 import { assert } from '../../../../validation/assert'
@@ -21,10 +22,14 @@ export function exclusiveMaximumValidator(
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(instance < exclusiveMaximum, `should be less than ${exclusiveMaximum} but is ${instance} instead`, {
-      schemaLocation,
-      schemaKeyword: 'exclusiveMaximum',
-      instanceLocation
-    })
+    return assert(
+      instance < exclusiveMaximum,
+      `should be less than ${exclusiveMaximum} but is ${format(instance)} instead`,
+      {
+        schemaLocation,
+        schemaKeyword: 'exclusiveMaximum',
+        instanceLocation
+      }
+    )
   }
 }

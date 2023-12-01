@@ -1,5 +1,6 @@
 import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
+import { format } from '../../../../util/format'
 import { isJSONString } from '../../../../util/isJSONString'
 import { Output } from '../../../../validation/Output'
 import { assert } from '../../../../validation/assert'
@@ -18,7 +19,7 @@ export function patternValidator(schema: JSONSchema, schemaPath: JSONPointer[], 
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(instance.match(regexp), `should match '${pattern}' but is ${instance} instead`, {
+    return assert(instance.match(regexp), `should match '${pattern}' but is ${format(instance)} instead`, {
       schemaLocation,
       schemaKeyword: 'pattern',
       instanceLocation

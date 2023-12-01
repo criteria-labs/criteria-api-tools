@@ -42,10 +42,10 @@ export function propertyNamesValidator(schema: JSONSchemaObject, schemaPath: JSO
       const entries = Array.from(invalidOutputs.entries())
       let message
       if (entries.length === 1) {
-        message = `has invalid property name ('${entries[0][0]}' ${entries[0][1]})`
+        message = `has an invalid property name ('${entries[0][0]}' ${entries[0][1].message})`
       } else {
-        message = `has invalid property names (${formatList(
-          entries.map((entry) => `'${entry[0]}' ${entry[1]}`),
+        message = `has an invalid property names (${formatList(
+          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
           'and'
         )})`
       }

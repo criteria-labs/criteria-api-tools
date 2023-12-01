@@ -24,13 +24,14 @@ export function oneOfValidator(schema: JSONSchemaObject, schemaPath: JSONPointer
         annotationResults: 'annotationResults' in validOutput ? validOutput.annotationResults : {}
       }
     } else {
+      const validCount = outputs.filter((output) => output.valid).length
       return {
         valid: false,
         schemaLocation,
         schemaKeyword: 'oneOf',
         instanceLocation,
         message: `should validate against exactly one subschema but validated against ${
-          outputs.filter((output) => output.valid).length
+          validCount === 0 ? 'none' : validCount
         }`
       }
     }

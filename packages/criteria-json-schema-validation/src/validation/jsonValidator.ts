@@ -18,7 +18,7 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
     return (instance: unknown) => {
       const output = validator(instance, '')
       if (!output.valid) {
-        throw new ValidationError(`Value ${(output as InvalidOutput).message ?? 'is invalid'}`, { output })
+        throw new ValidationError(`The value ${(output as InvalidOutput).message ?? 'is invalid'}`, { output })
       }
     }
   }
@@ -43,7 +43,7 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
   return (instance: unknown) => {
     const output = boundValidator(instance, '')
     if (!output.valid) {
-      throw new ValidationError(`Value ${(output as InvalidOutput).message ?? 'is invalid'}`, { output })
+      throw new ValidationError(`The value ${(output as InvalidOutput).message ?? 'is invalid'}`, { output })
     }
   }
 }

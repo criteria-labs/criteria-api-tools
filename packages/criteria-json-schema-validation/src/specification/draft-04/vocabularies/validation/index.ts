@@ -5,6 +5,7 @@ import { anyOfValidator } from './anyOfValidator'
 import { constValidator } from './constValidator'
 import { dependenciesValidator } from './dependenciesValidator'
 import { enumValidator } from './enumValidator'
+import { formatValidator } from './formatValidator'
 import { itemsValidator } from './itemsValidator'
 import { maxItemsValidator } from './maxItemsValidator'
 import { maxLengthValidator } from './maxLengthValidator'
@@ -49,5 +50,6 @@ export const validationValidators = {
   allOf: allOfValidator,
   anyOf: anyOfValidator,
   oneOf: oneOfValidator,
-  not: notValidator
+  not: notValidator,
+  format: formatValidator
 }

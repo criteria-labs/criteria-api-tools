@@ -1,0 +1,503 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tests/draft04/additionalItems.json additionalItems as schema additional items do not match schema validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 3 should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/additionalItems.json additionalItems does not look in applicators, invalid case items defined in allOf are not examined validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 1 should be a boolean but is a string instead)"`;
+
+exports[`tests/draft04/additionalItems.json array of items with no additionalItems permitted additional items are not permitted validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 3 should not be defined but is 4)"`;
+
+exports[`tests/draft04/additionalItems.json items validation adjusts the starting index for additionalItems wrong type of second item validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 1 should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/additionalProperties.json additionalProperties being false does not allow other properties an additional property is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('quux' should not be defined but is 'boom')"`;
+
+exports[`tests/draft04/additionalProperties.json additionalProperties can exist by itself an additional invalid property is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should be a boolean but is an integer instead)"`;
+
+exports[`tests/draft04/additionalProperties.json additionalProperties does not look in applicators properties defined in allOf are not examined validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should be a boolean but is an integer instead)"`;
+
+exports[`tests/draft04/additionalProperties.json additionalProperties with schema an additional invalid property is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('quux' should be a boolean but is an integer instead)"`;
+
+exports[`tests/draft04/additionalProperties.json non-ASCII pattern with additionalProperties not matching the pattern is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('élmény' should not be defined but is 2)"`;
+
+exports[`tests/draft04/allOf.json allOf combined with anyOf, oneOf allOf: false, anyOf: false, oneOf: false validateJSON() returns correct error message 1`] = `"The value should be a multiple of 2 but is 1 instead, should validate against any subschema and should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/allOf.json allOf combined with anyOf, oneOf allOf: false, anyOf: false, oneOf: true validateJSON() returns correct error message 1`] = `"The value should be a multiple of 2 but is 5 instead and should validate against any subschema"`;
+
+exports[`tests/draft04/allOf.json allOf combined with anyOf, oneOf allOf: false, anyOf: true, oneOf: false validateJSON() returns correct error message 1`] = `"The value should be a multiple of 2 but is 3 instead and should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/allOf.json allOf combined with anyOf, oneOf allOf: false, anyOf: true, oneOf: true validateJSON() returns correct error message 1`] = `"The value should be a multiple of 2 but is 15 instead"`;
+
+exports[`tests/draft04/allOf.json allOf combined with anyOf, oneOf allOf: true, anyOf: false, oneOf: false validateJSON() returns correct error message 1`] = `"The value should validate against any subschema and should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/allOf.json allOf combined with anyOf, oneOf allOf: true, anyOf: false, oneOf: true validateJSON() returns correct error message 1`] = `"The value should validate against any subschema"`;
+
+exports[`tests/draft04/allOf.json allOf combined with anyOf, oneOf allOf: true, anyOf: true, oneOf: false validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/allOf.json allOf mismatch first validateJSON() returns correct error message 1`] = `"The value is missing 'foo'"`;
+
+exports[`tests/draft04/allOf.json allOf mismatch second validateJSON() returns correct error message 1`] = `"The value is missing 'bar'"`;
+
+exports[`tests/draft04/allOf.json allOf simple types mismatch one validateJSON() returns correct error message 1`] = `"The value should be less than or equal to 30 but is 35 instead"`;
+
+exports[`tests/draft04/allOf.json allOf with base schema mismatch base schema validateJSON() returns correct error message 1`] = `"The value is missing 'bar'"`;
+
+exports[`tests/draft04/allOf.json allOf with base schema mismatch both validateJSON() returns correct error message 1`] = `"The value is missing 'foo' and is missing 'baz'"`;
+
+exports[`tests/draft04/allOf.json allOf with base schema mismatch first allOf validateJSON() returns correct error message 1`] = `"The value is missing 'foo'"`;
+
+exports[`tests/draft04/allOf.json allOf with base schema mismatch second allOf validateJSON() returns correct error message 1`] = `"The value is missing 'baz'"`;
+
+exports[`tests/draft04/allOf.json allOf with the first empty schema string is invalid validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/allOf.json allOf with the last empty schema string is invalid validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/allOf.json allOf wrong type validateJSON() returns correct error message 1`] = `"The value has an invalid property ('bar' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/allOf.json nested allOf, to check validation semantics anything non-null is invalid validateJSON() returns correct error message 1`] = `"The value should be null but is an integer instead"`;
+
+exports[`tests/draft04/anyOf.json anyOf complex types neither anyOf valid (complex) validateJSON() returns correct error message 1`] = `"The value should validate against any subschema"`;
+
+exports[`tests/draft04/anyOf.json anyOf neither anyOf valid validateJSON() returns correct error message 1`] = `"The value should validate against any subschema"`;
+
+exports[`tests/draft04/anyOf.json anyOf with base schema both anyOf invalid validateJSON() returns correct error message 1`] = `"The value should validate against any subschema"`;
+
+exports[`tests/draft04/anyOf.json anyOf with base schema mismatch base schema validateJSON() returns correct error message 1`] = `"The value should be a string but is an integer instead"`;
+
+exports[`tests/draft04/anyOf.json nested anyOf, to check validation semantics anything non-null is invalid validateJSON() returns correct error message 1`] = `"The value should validate against any subschema"`;
+
+exports[`tests/draft04/default.json the default keyword does not do anything if the property is missing an explicit property value is checked against maximum (failing) validateJSON() returns correct error message 1`] = `"The value has an invalid property ('alpha' should be less than or equal to 3 but is 5 instead)"`;
+
+exports[`tests/draft04/definitions.json validate definition against metaschema invalid definition schema validateJSON() returns correct error message 1`] = `"The value has an invalid property ('definitions' has an invalid property ('foo' has an invalid property ('type' should validate against any subschema)))"`;
+
+exports[`tests/draft04/dependencies.json dependencies missing dependency validateJSON() returns correct error message 1`] = `"The value is missing 'foo'"`;
+
+exports[`tests/draft04/dependencies.json dependencies with escaped characters invalid object 1 validateJSON() returns correct error message 1`] = `
+"The value is missing 'foo
+bar'"
+`;
+
+exports[`tests/draft04/dependencies.json dependencies with escaped characters invalid object 2 validateJSON() returns correct error message 1`] = `"The value should have at least 4 properties but has 2 instead"`;
+
+exports[`tests/draft04/dependencies.json dependencies with escaped characters invalid object 3 validateJSON() returns correct error message 1`] = `"The value is missing 'foo"bar'"`;
+
+exports[`tests/draft04/dependencies.json dependencies with escaped characters invalid object 4 validateJSON() returns correct error message 1`] = `"The value is missing 'foo'bar'"`;
+
+exports[`tests/draft04/dependencies.json dependent subschema incompatible with root matches both validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should not be defined but is 1)"`;
+
+exports[`tests/draft04/dependencies.json dependent subschema incompatible with root matches root validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should not be defined but is 1)"`;
+
+exports[`tests/draft04/dependencies.json multiple dependencies missing both dependencies validateJSON() returns correct error message 1`] = `"The value is missing 'foo' and 'bar'"`;
+
+exports[`tests/draft04/dependencies.json multiple dependencies missing dependency validateJSON() returns correct error message 1`] = `"The value is missing 'bar'"`;
+
+exports[`tests/draft04/dependencies.json multiple dependencies missing other dependency validateJSON() returns correct error message 1`] = `"The value is missing 'foo'"`;
+
+exports[`tests/draft04/dependencies.json multiple dependencies subschema wrong type both validateJSON() returns correct error message 1`] = `"The value has invalid properties ('foo' should be an integer but is a string instead and 'bar' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/dependencies.json multiple dependencies subschema wrong type other validateJSON() returns correct error message 1`] = `"The value has an invalid property ('bar' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/dependencies.json multiple dependencies subschema wrong type validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/enum.json enum with 0 does not match false false is invalid validateJSON() returns correct error message 1`] = `"The value should be 0 but is false instead"`;
+
+exports[`tests/draft04/enum.json enum with 1 does not match true true is invalid validateJSON() returns correct error message 1`] = `"The value should be 1 but is true instead"`;
+
+exports[`tests/draft04/enum.json enum with escaped characters another string is invalid validateJSON() returns correct error message 1`] = `
+"The value should be one of 'foo
+bar' or 'foo
+bar' but is 'abc' instead"
+`;
+
+exports[`tests/draft04/enum.json enum with false does not match 0 float zero is invalid validateJSON() returns correct error message 1`] = `"The value should be false but is 0 instead"`;
+
+exports[`tests/draft04/enum.json enum with false does not match 0 integer zero is invalid validateJSON() returns correct error message 1`] = `"The value should be false but is 0 instead"`;
+
+exports[`tests/draft04/enum.json enum with true does not match 1 float one is invalid validateJSON() returns correct error message 1`] = `"The value should be true but is 1 instead"`;
+
+exports[`tests/draft04/enum.json enum with true does not match 1 integer one is invalid validateJSON() returns correct error message 1`] = `"The value should be true but is 1 instead"`;
+
+exports[`tests/draft04/enum.json enums in properties missing all properties is invalid validateJSON() returns correct error message 1`] = `"The value is missing 'bar'"`;
+
+exports[`tests/draft04/enum.json enums in properties missing required property is invalid validateJSON() returns correct error message 1`] = `"The value is missing 'bar'"`;
+
+exports[`tests/draft04/enum.json enums in properties wrong bar value validateJSON() returns correct error message 1`] = `"The value has an invalid property ('bar' should be 'bar' but is 'bart' instead)"`;
+
+exports[`tests/draft04/enum.json enums in properties wrong foo value validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should be 'foo' but is 'foot' instead)"`;
+
+exports[`tests/draft04/enum.json heterogeneous enum validation extra properties in object is invalid validateJSON() returns correct error message 1`] = `"The value should be one of 6, 'foo', [], true or {"foo":12} but is {"foo":12,"boo":42} instead"`;
+
+exports[`tests/draft04/enum.json heterogeneous enum validation objects are deep compared validateJSON() returns correct error message 1`] = `"The value should be one of 6, 'foo', [], true or {"foo":12} but is {"foo":false} instead"`;
+
+exports[`tests/draft04/enum.json heterogeneous enum validation something else is invalid validateJSON() returns correct error message 1`] = `"The value should be one of 6, 'foo', [], true or {"foo":12} but is null instead"`;
+
+exports[`tests/draft04/enum.json heterogeneous enum-with-null validation something else is invalid validateJSON() returns correct error message 1`] = `"The value should be one of 6 or null but is 'test' instead"`;
+
+exports[`tests/draft04/enum.json nul characters in strings do not match string lacking nul validateJSON() returns correct error message 1`] = `"The value should be 'hello there' but is 'hellothere' instead"`;
+
+exports[`tests/draft04/enum.json simple enum validation something else is invalid validateJSON() returns correct error message 1`] = `"The value should be one of 1, 2 or 3 but is 4 instead"`;
+
+exports[`tests/draft04/id.json id inside an enum is not a real identifier no match on enum or $ref to id validateJSON() returns correct error message 1`] = `"The value should validate against any subschema"`;
+
+exports[`tests/draft04/infinite-loop-detection.json evaluating the same schema location against the same data location twice is not a sign of an infinite loop failing case validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should be an integer but is a string instead) and has an invalid property ('foo' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/items.json a schema given for items wrong type of items validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 1 should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/items.json an array of schemas for items wrong types validateJSON() returns correct error message 1`] = `"The value has invalid items (item at 0 should be an integer but is a string instead and item at 1 should be a string but is an integer instead)"`;
+
+exports[`tests/draft04/items.json items and subitems too many items validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 3 should not be defined but is [{"foo":null},{"foo":null}])"`;
+
+exports[`tests/draft04/items.json items and subitems too many sub-items validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 0 has invalid item (item at 2 should not be defined but is {"foo":null}))"`;
+
+exports[`tests/draft04/items.json items and subitems wrong item validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 0 should be an array but is an object instead)"`;
+
+exports[`tests/draft04/items.json items and subitems wrong sub-item validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 0 has invalid item (item at 0 is missing 'foo'))"`;
+
+exports[`tests/draft04/items.json nested items nested array with invalid type validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 0 has invalid item (item at 0 has invalid item (item at 0 has invalid item (item at 0 should be a number but is a string instead))))"`;
+
+exports[`tests/draft04/items.json nested items not deep enough validateJSON() returns correct error message 1`] = `"The value has invalid items (item at 0 has invalid items (item at 0 has invalid item (item at 0 should be an array but is an integer instead), item at 1 has invalid item (item at 0 should be an array but is an integer instead) and item at 2 has invalid item (item at 0 should be an array but is an integer instead)) and item at 1 has invalid items (item at 0 has invalid item (item at 0 should be an array but is an integer instead), item at 1 has invalid item (item at 0 should be an array but is an integer instead) and item at 2 has invalid item (item at 0 should be an array but is an integer instead)))"`;
+
+exports[`tests/draft04/maxItems.json maxItems validation too long is invalid validateJSON() returns correct error message 1`] = `"The value should have up to 2 items but has 3 instead"`;
+
+exports[`tests/draft04/maxLength.json maxLength validation too long is invalid validateJSON() returns correct error message 1`] = `"The value should have up to 2 characters but has 3 instead"`;
+
+exports[`tests/draft04/maxProperties.json maxProperties = 0 means the object is empty one property is invalid validateJSON() returns correct error message 1`] = `"The value should have up to 0 properties but has 1 instead"`;
+
+exports[`tests/draft04/maxProperties.json maxProperties validation too long is invalid validateJSON() returns correct error message 1`] = `"The value should have up to 2 properties but has 3 instead"`;
+
+exports[`tests/draft04/maximum.json exclusiveMaximum validation boundary point is invalid validateJSON() returns correct error message 1`] = `"The value should be less than 3 but is 3 instead"`;
+
+exports[`tests/draft04/maximum.json maximum validation (explicit false exclusivity) above the maximum is invalid validateJSON() returns correct error message 1`] = `"The value should be less than or equal to 3 but is 3.5 instead"`;
+
+exports[`tests/draft04/maximum.json maximum validation above the maximum is invalid validateJSON() returns correct error message 1`] = `"The value should be less than or equal to 3 but is 3.5 instead"`;
+
+exports[`tests/draft04/maximum.json maximum validation with unsigned integer above the maximum is invalid validateJSON() returns correct error message 1`] = `"The value should be less than or equal to 300 but is 300.5 instead"`;
+
+exports[`tests/draft04/minItems.json minItems validation too short is invalid validateJSON() returns correct error message 1`] = `"The value should have at least 1 item but has 0 instead"`;
+
+exports[`tests/draft04/minLength.json minLength validation one supplementary Unicode code point is not long enough validateJSON() returns correct error message 1`] = `"The value should have at least 2 characters but has 1 instead"`;
+
+exports[`tests/draft04/minLength.json minLength validation too short is invalid validateJSON() returns correct error message 1`] = `"The value should have at least 2 characters but has 1 instead"`;
+
+exports[`tests/draft04/minProperties.json minProperties validation too short is invalid validateJSON() returns correct error message 1`] = `"The value should have at least 1 property but has 0 instead"`;
+
+exports[`tests/draft04/minimum.json exclusiveMinimum validation boundary point is invalid validateJSON() returns correct error message 1`] = `"The value should be greater than 1.1 but is 1.1 instead"`;
+
+exports[`tests/draft04/minimum.json minimum validation (explicit false exclusivity) below the minimum is invalid validateJSON() returns correct error message 1`] = `"The value should be greater than or equal to 1.1 but is 0.6 instead"`;
+
+exports[`tests/draft04/minimum.json minimum validation below the minimum is invalid validateJSON() returns correct error message 1`] = `"The value should be greater than or equal to 1.1 but is 0.6 instead"`;
+
+exports[`tests/draft04/minimum.json minimum validation with signed integer float below the minimum is invalid validateJSON() returns correct error message 1`] = `"The value should be greater than or equal to -2 but is -2.0001 instead"`;
+
+exports[`tests/draft04/minimum.json minimum validation with signed integer int below the minimum is invalid validateJSON() returns correct error message 1`] = `"The value should be greater than or equal to -2 but is -3 instead"`;
+
+exports[`tests/draft04/multipleOf.json by int int by int fail validateJSON() returns correct error message 1`] = `"The value should be a multiple of 2 but is 7 instead"`;
+
+exports[`tests/draft04/multipleOf.json by number 35 is not multiple of 1.5 validateJSON() returns correct error message 1`] = `"The value should be a multiple of 1.5 but is 35 instead"`;
+
+exports[`tests/draft04/multipleOf.json by small number 0.00751 is not multiple of 0.0001 validateJSON() returns correct error message 1`] = `"The value should be a multiple of 0.0001 but is 0.00751 instead"`;
+
+exports[`tests/draft04/multipleOf.json float division = inf invalid, but naive implementations may raise an overflow error validateJSON() returns correct error message 1`] = `"The value should be a multiple of 0.123456789 but is 1e+308 instead"`;
+
+exports[`tests/draft04/not.json forbidden property property present validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should not validate against subschema)"`;
+
+exports[`tests/draft04/not.json not disallowed validateJSON() returns correct error message 1`] = `"The value should not validate against subschema"`;
+
+exports[`tests/draft04/not.json not more complex schema mismatch validateJSON() returns correct error message 1`] = `"The value should not validate against subschema"`;
+
+exports[`tests/draft04/not.json not multiple types mismatch validateJSON() returns correct error message 1`] = `"The value should not validate against subschema"`;
+
+exports[`tests/draft04/not.json not multiple types other mismatch validateJSON() returns correct error message 1`] = `"The value should not validate against subschema"`;
+
+exports[`tests/draft04/oneOf.json nested oneOf, to check validation semantics anything non-null is invalid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/oneOf.json oneOf both oneOf valid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against 2"`;
+
+exports[`tests/draft04/oneOf.json oneOf complex types both oneOf valid (complex) validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against 2"`;
+
+exports[`tests/draft04/oneOf.json oneOf complex types neither oneOf valid (complex) validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/oneOf.json oneOf neither oneOf valid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/oneOf.json oneOf with base schema both oneOf valid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against 2"`;
+
+exports[`tests/draft04/oneOf.json oneOf with base schema mismatch base schema validateJSON() returns correct error message 1`] = `"The value should be a string but is an integer instead and should validate against exactly one subschema but validated against 2"`;
+
+exports[`tests/draft04/oneOf.json oneOf with empty schema both valid - invalid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against 2"`;
+
+exports[`tests/draft04/oneOf.json oneOf with missing optional property both oneOf valid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against 2"`;
+
+exports[`tests/draft04/oneOf.json oneOf with missing optional property neither oneOf valid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/oneOf.json oneOf with required both invalid - invalid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against none"`;
+
+exports[`tests/draft04/oneOf.json oneOf with required both valid - invalid validateJSON() returns correct error message 1`] = `"The value should validate against exactly one subschema but validated against 2"`;
+
+exports[`tests/draft04/pattern.json pattern validation a non-matching pattern is invalid validateJSON() returns correct error message 1`] = `"The value should match '^a*$' but is 'abc' instead"`;
+
+exports[`tests/draft04/patternProperties.json multiple simultaneous patternProperties are validated an invalid due to both is invalid validateJSON() returns correct error message 1`] = `"The value has invalid properties ('aaa' should be an integer but is a string instead and 'aaaa' should be less than or equal to 20 but is 31 instead)"`;
+
+exports[`tests/draft04/patternProperties.json multiple simultaneous patternProperties are validated an invalid due to one is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('a' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/patternProperties.json multiple simultaneous patternProperties are validated an invalid due to the other is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('aaaa' should be less than or equal to 20 but is 31 instead)"`;
+
+exports[`tests/draft04/patternProperties.json patternProperties validates properties matching a regex a single invalid match is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/patternProperties.json patternProperties validates properties matching a regex multiple invalid matches is invalid validateJSON() returns correct error message 1`] = `"The value has invalid properties ('foo' should be an integer but is a string instead and 'foooooo' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/patternProperties.json regexes are not anchored by default and are case sensitive recognized members are accounted for validateJSON() returns correct error message 1`] = `"The value has an invalid property ('a31b' should be a boolean but is null instead)"`;
+
+exports[`tests/draft04/patternProperties.json regexes are not anchored by default and are case sensitive regexes are case sensitive, 2 validateJSON() returns correct error message 1`] = `"The value has an invalid property ('a_X_3' should be a string but is an integer instead)"`;
+
+exports[`tests/draft04/properties.json object properties validation both properties invalid is invalid validateJSON() returns correct error message 1`] = `"The value has invalid properties ('foo' should be an integer but is an array instead and 'bar' should be a string but is an object instead)"`;
+
+exports[`tests/draft04/properties.json object properties validation one property invalid is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('bar' should be a string but is an object instead)"`;
+
+exports[`tests/draft04/properties.json properties whose names are Javascript object property names __proto__ not valid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('__proto__' should be a number but is a string instead)"`;
+
+exports[`tests/draft04/properties.json properties whose names are Javascript object property names constructor not valid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('constructor' should be a number but is an object instead)"`;
+
+exports[`tests/draft04/properties.json properties whose names are Javascript object property names toString not valid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('toString' has an invalid property ('length' should be a string but is an integer instead))"`;
+
+exports[`tests/draft04/properties.json properties with escaped characters object with strings is invalid validateJSON() returns correct error message 1`] = `
+"The value has invalid properties ('foo
+bar' should be a number but is a string instead, 'foo"bar' should be a number but is a string instead, 'foo\\bar' should be a number but is a string instead, 'foo
+bar' should be a number but is a string instead, 'foo	bar' should be a number but is a string instead and 'foobar' should be a number but is a string instead)"
+`;
+
+exports[`tests/draft04/properties.json properties, patternProperties, additionalProperties interaction additionalProperty invalidates others validateJSON() returns correct error message 1`] = `"The value has an invalid property ('quux' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/properties.json properties, patternProperties, additionalProperties interaction patternProperty invalidates nonproperty validateJSON() returns correct error message 1`] = `"The value has an invalid property ('fxo' should have at least 2 items but has 0 instead)"`;
+
+exports[`tests/draft04/properties.json properties, patternProperties, additionalProperties interaction patternProperty invalidates property validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should have at least 2 items but has 0 instead)"`;
+
+exports[`tests/draft04/properties.json properties, patternProperties, additionalProperties interaction property invalidates property validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should have up to 3 items but has 4 instead)"`;
+
+exports[`tests/draft04/ref.json $ref prevents a sibling id from changing the base uri $ref resolves to /definitions/base_foo, data does not validate validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/ref.json Location-independent identifier mismatch validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/ref.json Location-independent identifier with base URI change in subschema mismatch validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/ref.json Recursive references between schemas invalid tree validateJSON() returns correct error message 1`] = `"The value has an invalid property ('nodes' has invalid item (item at 0 has an invalid property ('subtree' has an invalid property ('nodes' has invalid item (item at 0 has an invalid property ('value' should be a number but is a string instead))))))"`;
+
+exports[`tests/draft04/ref.json empty tokens in $ref json-pointer non-number is invalid validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/ref.json escaped pointer ref percent invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('percent' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/ref.json escaped pointer ref slash invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('slash' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/ref.json escaped pointer ref tilde invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('tilde' should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/ref.json id must be resolved against nearest parent, not just immediate parent non-number is invalid validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/ref.json id with file URI still resolves pointers - *nix non-number is invalid validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/ref.json id with file URI still resolves pointers - windows non-number is invalid validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/ref.json naive replacement of $ref with its destination is not correct do not evaluate the $ref inside the enum, matching any string validateJSON() returns correct error message 1`] = `"The value should be {"$ref":"#/definitions/a_string"} but is 'this is a string' instead"`;
+
+exports[`tests/draft04/ref.json nested refs nested ref invalid validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/ref.json property named $ref that is not a reference property named $ref invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('$ref' should be a string but is an integer instead)"`;
+
+exports[`tests/draft04/ref.json property named $ref, containing an actual $ref property named $ref invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('$ref' should be a string but is an integer instead)"`;
+
+exports[`tests/draft04/ref.json ref overrides any sibling keywords ref invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' should be an array but is a string instead)"`;
+
+exports[`tests/draft04/ref.json refs with quote object with strings is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo"bar' should be a number but is a string instead)"`;
+
+exports[`tests/draft04/ref.json relative pointer ref to array mismatch array validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 1 should be an integer but is a string instead)"`;
+
+exports[`tests/draft04/ref.json relative pointer ref to object mismatch validateJSON() returns correct error message 1`] = `"The value has an invalid property ('bar' should be an integer but is a boolean instead)"`;
+
+exports[`tests/draft04/ref.json remote ref, containing refs itself remote ref invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('minLength' should be greater than or equal to 0 but is -1 instead)"`;
+
+exports[`tests/draft04/ref.json root pointer ref mismatch validateJSON() returns correct error message 1`] = `"The value has an invalid property ('bar' should not be defined but is false)"`;
+
+exports[`tests/draft04/ref.json root pointer ref recursive mismatch validateJSON() returns correct error message 1`] = `"The value has an invalid property ('foo' has an invalid property ('bar' should not be defined but is false))"`;
+
+exports[`tests/draft04/refRemote.json Location-independent identifier in remote ref string is invalid validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/refRemote.json base URI change - change folder in subschema string is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('list' has invalid item (item at 0 should be an integer but is a string instead))"`;
+
+exports[`tests/draft04/refRemote.json base URI change - change folder string is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('list' has invalid item (item at 0 should be an integer but is a string instead))"`;
+
+exports[`tests/draft04/refRemote.json base URI change base URI change ref invalid validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 0 has invalid item (item at 0 should be an integer but is a string instead))"`;
+
+exports[`tests/draft04/refRemote.json fragment within remote ref remote fragment invalid validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/refRemote.json ref within remote ref ref within ref invalid validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/refRemote.json remote ref remote ref invalid validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/refRemote.json root ref in remote ref object is invalid validateJSON() returns correct error message 1`] = `"The value has an invalid property ('name' should validate against any subschema)"`;
+
+exports[`tests/draft04/required.json required properties whose names are Javascript object property names __proto__ present validateJSON() returns correct error message 1`] = `"The value is missing 'toString' and 'constructor'"`;
+
+exports[`tests/draft04/required.json required properties whose names are Javascript object property names constructor present validateJSON() returns correct error message 1`] = `"The value is missing '__proto__' and 'toString'"`;
+
+exports[`tests/draft04/required.json required properties whose names are Javascript object property names none of the properties mentioned validateJSON() returns correct error message 1`] = `"The value is missing '__proto__', 'toString' and 'constructor'"`;
+
+exports[`tests/draft04/required.json required properties whose names are Javascript object property names toString present validateJSON() returns correct error message 1`] = `"The value is missing '__proto__' and 'constructor'"`;
+
+exports[`tests/draft04/required.json required validation non-present required property is invalid validateJSON() returns correct error message 1`] = `"The value is missing 'foo'"`;
+
+exports[`tests/draft04/required.json required with escaped characters object with some properties missing is invalid validateJSON() returns correct error message 1`] = `
+"The value is missing 'foo\\bar', 'foo
+bar', 'foo	bar' and 'foobar'"
+`;
+
+exports[`tests/draft04/type.json array type matches arrays a boolean is not an array validateJSON() returns correct error message 1`] = `"The value should be an array but is a boolean instead"`;
+
+exports[`tests/draft04/type.json array type matches arrays a float is not an array validateJSON() returns correct error message 1`] = `"The value should be an array but is a number instead"`;
+
+exports[`tests/draft04/type.json array type matches arrays a string is not an array validateJSON() returns correct error message 1`] = `"The value should be an array but is a string instead"`;
+
+exports[`tests/draft04/type.json array type matches arrays an integer is not an array validateJSON() returns correct error message 1`] = `"The value should be an array but is an integer instead"`;
+
+exports[`tests/draft04/type.json array type matches arrays an object is not an array validateJSON() returns correct error message 1`] = `"The value should be an array but is an object instead"`;
+
+exports[`tests/draft04/type.json array type matches arrays null is not an array validateJSON() returns correct error message 1`] = `"The value should be an array but is null instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans a float is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is a number instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans a string is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is a string instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans an array is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is an array instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans an empty string is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is a string instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans an integer is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is an integer instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans an object is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is an object instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans null is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is null instead"`;
+
+exports[`tests/draft04/type.json boolean type matches booleans zero is not a boolean validateJSON() returns correct error message 1`] = `"The value should be a boolean but is an integer instead"`;
+
+exports[`tests/draft04/type.json integer type matches integers a boolean is not an integer validateJSON() returns correct error message 1`] = `"The value should be an integer but is a boolean instead"`;
+
+exports[`tests/draft04/type.json integer type matches integers a float is not an integer validateJSON() returns correct error message 1`] = `"The value should be an integer but is a number instead"`;
+
+exports[`tests/draft04/type.json integer type matches integers a string is not an integer validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/type.json integer type matches integers a string is still not an integer, even if it looks like one validateJSON() returns correct error message 1`] = `"The value should be an integer but is a string instead"`;
+
+exports[`tests/draft04/type.json integer type matches integers an array is not an integer validateJSON() returns correct error message 1`] = `"The value should be an integer but is an array instead"`;
+
+exports[`tests/draft04/type.json integer type matches integers an object is not an integer validateJSON() returns correct error message 1`] = `"The value should be an integer but is an object instead"`;
+
+exports[`tests/draft04/type.json integer type matches integers null is not an integer validateJSON() returns correct error message 1`] = `"The value should be an integer but is null instead"`;
+
+exports[`tests/draft04/type.json multiple types can be specified in an array a boolean is invalid validateJSON() returns correct error message 1`] = `"The value should be either an integer or a string but is a boolean instead"`;
+
+exports[`tests/draft04/type.json multiple types can be specified in an array a float is invalid validateJSON() returns correct error message 1`] = `"The value should be either an integer or a string but is a number instead"`;
+
+exports[`tests/draft04/type.json multiple types can be specified in an array an array is invalid validateJSON() returns correct error message 1`] = `"The value should be either an integer or a string but is an array instead"`;
+
+exports[`tests/draft04/type.json multiple types can be specified in an array an object is invalid validateJSON() returns correct error message 1`] = `"The value should be either an integer or a string but is an object instead"`;
+
+exports[`tests/draft04/type.json multiple types can be specified in an array null is invalid validateJSON() returns correct error message 1`] = `"The value should be either an integer or a string but is null instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object a float is not null validateJSON() returns correct error message 1`] = `"The value should be null but is a number instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object a string is not null validateJSON() returns correct error message 1`] = `"The value should be null but is a string instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object an array is not null validateJSON() returns correct error message 1`] = `"The value should be null but is an array instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object an empty string is not null validateJSON() returns correct error message 1`] = `"The value should be null but is a string instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object an integer is not null validateJSON() returns correct error message 1`] = `"The value should be null but is an integer instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object an object is not null validateJSON() returns correct error message 1`] = `"The value should be null but is an object instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object false is not null validateJSON() returns correct error message 1`] = `"The value should be null but is a boolean instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object true is not null validateJSON() returns correct error message 1`] = `"The value should be null but is a boolean instead"`;
+
+exports[`tests/draft04/type.json null type matches only the null object zero is not null validateJSON() returns correct error message 1`] = `"The value should be null but is an integer instead"`;
+
+exports[`tests/draft04/type.json number type matches numbers a boolean is not a number validateJSON() returns correct error message 1`] = `"The value should be a number but is a boolean instead"`;
+
+exports[`tests/draft04/type.json number type matches numbers a string is not a number validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/type.json number type matches numbers a string is still not a number, even if it looks like one validateJSON() returns correct error message 1`] = `"The value should be a number but is a string instead"`;
+
+exports[`tests/draft04/type.json number type matches numbers an array is not a number validateJSON() returns correct error message 1`] = `"The value should be a number but is an array instead"`;
+
+exports[`tests/draft04/type.json number type matches numbers an object is not a number validateJSON() returns correct error message 1`] = `"The value should be a number but is an object instead"`;
+
+exports[`tests/draft04/type.json number type matches numbers null is not a number validateJSON() returns correct error message 1`] = `"The value should be a number but is null instead"`;
+
+exports[`tests/draft04/type.json object type matches objects a boolean is not an object validateJSON() returns correct error message 1`] = `"The value should be an object but is a boolean instead"`;
+
+exports[`tests/draft04/type.json object type matches objects a float is not an object validateJSON() returns correct error message 1`] = `"The value should be an object but is a number instead"`;
+
+exports[`tests/draft04/type.json object type matches objects a string is not an object validateJSON() returns correct error message 1`] = `"The value should be an object but is a string instead"`;
+
+exports[`tests/draft04/type.json object type matches objects an array is not an object validateJSON() returns correct error message 1`] = `"The value should be an object but is an array instead"`;
+
+exports[`tests/draft04/type.json object type matches objects an integer is not an object validateJSON() returns correct error message 1`] = `"The value should be an object but is an integer instead"`;
+
+exports[`tests/draft04/type.json object type matches objects null is not an object validateJSON() returns correct error message 1`] = `"The value should be an object but is null instead"`;
+
+exports[`tests/draft04/type.json string type matches strings 1 is not a string validateJSON() returns correct error message 1`] = `"The value should be a string but is an integer instead"`;
+
+exports[`tests/draft04/type.json string type matches strings a boolean is not a string validateJSON() returns correct error message 1`] = `"The value should be a string but is a boolean instead"`;
+
+exports[`tests/draft04/type.json string type matches strings a float is not a string validateJSON() returns correct error message 1`] = `"The value should be a string but is a number instead"`;
+
+exports[`tests/draft04/type.json string type matches strings an array is not a string validateJSON() returns correct error message 1`] = `"The value should be a string but is an array instead"`;
+
+exports[`tests/draft04/type.json string type matches strings an object is not a string validateJSON() returns correct error message 1`] = `"The value should be a string but is an object instead"`;
+
+exports[`tests/draft04/type.json string type matches strings null is not a string validateJSON() returns correct error message 1`] = `"The value should be a string but is null instead"`;
+
+exports[`tests/draft04/type.json type as array with one item number is invalid validateJSON() returns correct error message 1`] = `"The value should be either a string but is an integer instead"`;
+
+exports[`tests/draft04/type.json type: array or object null is invalid validateJSON() returns correct error message 1`] = `"The value should be either an array or an object but is null instead"`;
+
+exports[`tests/draft04/type.json type: array or object number is invalid validateJSON() returns correct error message 1`] = `"The value should be either an array or an object but is an integer instead"`;
+
+exports[`tests/draft04/type.json type: array or object string is invalid validateJSON() returns correct error message 1`] = `"The value should be either an array or an object but is a string instead"`;
+
+exports[`tests/draft04/type.json type: array, object or null number is invalid validateJSON() returns correct error message 1`] = `"The value should be either an array, an object or null but is an integer instead"`;
+
+exports[`tests/draft04/type.json type: array, object or null string is invalid validateJSON() returns correct error message 1`] = `"The value should be either an array, an object or null but is a string instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique array of arrays is invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique array of integers is invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique array of more than two arrays is invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 2 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique array of more than two integers is invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 2 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique array of nested objects is invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique array of objects is invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique array of strings is invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 2 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation non-unique heterogeneous types are invalid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 4 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation numbers are unique if mathematically unequal validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal, items at 0 and 2 are equal and items at 1 and 2 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation objects are non-unique despite key order validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems validation property order of array of objects is ignored validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems with an array of items [false, false] from items array is not valid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems with an array of items [true, true] from items array is not valid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems with an array of items and additionalItems=false [false, false] from items array is not valid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems with an array of items and additionalItems=false [true, true] from items array is not valid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 0 and 1 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems with an array of items and additionalItems=false extra items are invalid even if unique validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 2 should not be defined but is null)"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems with an array of items non-unique array extended from [false, true] is not valid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 2 and 3 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems with an array of items non-unique array extended from [true, false] is not valid validateJSON() returns correct error message 1`] = `"The value should have unique items but items at 2 and 3 are equal instead"`;
+
+exports[`tests/draft04/uniqueItems.json uniqueItems=false with an array of items and additionalItems=false extra items are invalid even if unique validateJSON() returns correct error message 1`] = `"The value has invalid item (item at 2 should not be defined but is null)"`;

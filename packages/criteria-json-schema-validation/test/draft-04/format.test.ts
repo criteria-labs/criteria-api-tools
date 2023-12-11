@@ -4,7 +4,10 @@ import fs from 'fs'
 import path from 'path'
 import { jsonValidatorDraft04 } from '../../src'
 
-const testCasesDirectory = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/tests/draft4')
+const testCasesDirectory = path.resolve(
+  __dirname,
+  '../__fixtures__/json-schema-test-suite/tests/draft4/optional/format'
+)
 const testFiles = fs.readdirSync(testCasesDirectory).filter((filename) => filename.endsWith('.json'))
 let testFilesTable: [string][] = testFiles.map((testFile) => [testFile])
 
@@ -21,7 +24,7 @@ const retrieveRemote = (uri: string): JSONSchemaDraft04 => {
   }
 }
 
-describe.each(testFilesTable)(`tests/draft04/%s`, (testFilename) => {
+describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
   const testFilePath = path.resolve(testCasesDirectory, testFilename)
   const testFileContents = fs.readFileSync(testFilePath, { encoding: 'utf-8' })
   const testCases = JSON.parse(testFileContents)
@@ -38,8 +41,8 @@ describe.each(testFilesTable)(`tests/draft04/%s`, (testFilename) => {
       expect(() => {
         testCaseSchemaValidator = jsonValidatorDraft04(testCaseSchema, {
           failFast: false,
-          retrieve: retrieveRemote,
-          referenceMergePolicy: 'none'
+          assertFormat: true,
+          retrieve: retrieveRemote
         })
       }).not.toThrow()
     })

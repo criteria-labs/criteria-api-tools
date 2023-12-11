@@ -6,6 +6,7 @@ import { applicatorValidators as applicatorValidatorsDraft2020_12 } from '../spe
 import { coreValidators as coreValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/core'
 import { unevaluatedValidators as unevaluatedValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/unevaluated'
 import { validationValidators as validationValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/validation'
+import { formatAssertionValidators as formatAssertionValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/format-assertion'
 import { JSONPointer } from '../util/JSONPointer'
 import { BoundValidatorWithAnnotationResults } from './BoundValidator'
 import { BoundValidatorForSchema } from './validatorBinder'
@@ -30,9 +31,13 @@ export type JSONSchemaKeywordValidators = {
 
 export type KeywordValidatorsForMetaSchemaURI = (metaSchemaURI: string) => JSONSchemaKeywordValidators
 
-export function keywordValidatorsForMetaSchemaURIFactory(
+export function keywordValidatorsForMetaSchemaURIFactory({
+  assertFormat,
+  retrieve
+}: {
+  assertFormat: boolean
   retrieve: (uri: string) => { $vocabulary?: { [uri: string]: boolean } }
-): KeywordValidatorsForMetaSchemaURI {
+}): KeywordValidatorsForMetaSchemaURI {
   const cache = new Map<string, JSONSchemaKeywordValidators>()
   return (metaSchemaURI: string) => {
     if (cache.has(metaSchemaURI)) {
@@ -58,8 +63,10 @@ export function keywordValidatorsForMetaSchemaURIFactory(
       'https://json-schema.org/draft/2020-12/vocab/applicator': applicatorValidatorsDraft2020_12,
       'https://json-schema.org/draft/2020-12/vocab/validation': validationValidatorsDraft2020_12,
       'https://json-schema.org/draft/2020-12/vocab/meta-data': {},
-      'https://json-schema.org/draft/2020-12/vocab/format-annotation': {},
-      'https://json-schema.org/draft/2020-12/vocab/format-assertion': {},
+      'https://json-schema.org/draft/2020-12/vocab/format-annotation': assertFormat
+        ? formatAssertionValidatorsDraft2020_12
+        : {},
+      'https://json-schema.org/draft/2020-12/vocab/format-assertion': formatAssertionValidatorsDraft2020_12,
       'https://json-schema.org/draft/2020-12/vocab/content': {},
       'https://json-schema.org/draft/2020-12/vocab/unevaluated': unevaluatedValidatorsDraft2020_12
     }

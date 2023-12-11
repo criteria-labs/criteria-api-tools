@@ -12,7 +12,7 @@ export function patternValidator(schema: JSONSchemaObject, schemaPath: JSONPoint
   }
 
   const pattern = schema['pattern']
-  const regexp = new RegExp(pattern)
+  const regexp = new RegExp(pattern, 'u')
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONString(instance)) {

@@ -7,9 +7,11 @@ import { validatorBinder } from './validatorBinder'
 
 // default options
 export const defaultFailFast = false
+export const defaultAssertFormat = false
 
 export type ValidateOptions = DereferenceOptions & {
   failFast?: boolean
+  assertFormat?: boolean
 }
 
 export function jsonValidator(schema: object | boolean, options?: ValidateOptions): (instance: unknown) => void {
@@ -24,6 +26,7 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
   }
 
   const failFast = options.failFast ?? defaultFailFast
+  const assertFormat = options.assertFormat ?? defaultAssertFormat
 
   // Index root schema
   const index = new SchemaIndex({
@@ -33,7 +36,10 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
   })
   index.addDocument(schema, options?.baseURI ?? '', '', '')
 
-  const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory(index.retrieve)
+  const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory({
+    assertFormat,
+    retrieve: index.retrieve
+  })
   const boundValidatorForSchema = validatorBinder(index, {
     failFast,
     validatorsForMetaSchemaURI

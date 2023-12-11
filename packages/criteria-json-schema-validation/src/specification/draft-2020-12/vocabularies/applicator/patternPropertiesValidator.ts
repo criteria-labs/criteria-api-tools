@@ -18,7 +18,7 @@ export function patternPropertiesValidator(
 
   const patternProperties = schema['patternProperties']
   const patternValidators: [string, RegExp, BoundValidator][] = Object.keys(patternProperties).map((pattern) => {
-    const regexp = new RegExp(pattern)
+    const regexp = new RegExp(pattern, 'u')
     const subschema = patternProperties[pattern]
     const subschemaValidator = context.validatorForSchema(subschema, [
       ...schemaPath,

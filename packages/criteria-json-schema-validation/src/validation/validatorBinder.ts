@@ -5,12 +5,7 @@ import { formatList } from '../util/formatList'
 import { BoundValidator, BoundValidatorWithAnnotationResults } from './BoundValidator'
 import { InvalidOutput, Output } from './Output'
 import { booleanValidator } from './booleanValidator'
-import {
-  JSONSchemaKeyword,
-  JSONSchemaKeywordValidator,
-  JSONSchemaKeywordValidators,
-  ValidatorContext
-} from './keywordValidators'
+import { JSONSchemaKeyword, JSONSchemaKeywordValidator, ValidatorContext } from './keywordValidators'
 
 // types for binders
 export type BoundValidatorForSchema = (schema: object | boolean, schemaPath: JSONPointer[]) => BoundValidator

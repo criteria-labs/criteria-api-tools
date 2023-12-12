@@ -5,7 +5,7 @@ import { URI, resolveURIReference, splitFragment } from '../util/uri'
 import { isJSONReference } from '../util/visitJSONReferences'
 
 // default configuration
-export const defaultCloned = false
+const defaultCloned = false
 const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
@@ -184,7 +184,7 @@ export class DocumentIndex<Metadata> {
 
     if (this.onDocumentAdded) {
       const unretrievedURIs = this.onDocumentAdded(document, documentURI, documentMetadata)
-      unretrievedURIs.forEach((externalDocumentAdditionalInfo, externalDocumentURI) => {
+      unretrievedURIs.forEach((externalDocumentMetadata, externalDocumentURI) => {
         let externalDocument
         try {
           const { absoluteURI } = splitFragment(externalDocumentURI)
@@ -193,7 +193,7 @@ export class DocumentIndex<Metadata> {
           throw new Error(`Failed to retrieve document at uri '${externalDocumentURI}'`)
         }
 
-        this.addDocument(externalDocument, externalDocumentURI, externalDocumentAdditionalInfo)
+        this.addDocument(externalDocument, externalDocumentURI, externalDocumentMetadata)
       })
     }
   }

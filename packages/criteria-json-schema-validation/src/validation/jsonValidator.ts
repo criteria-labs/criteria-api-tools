@@ -38,7 +38,7 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
 
   const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory({
     assertFormat,
-    retrieve: index.retrieve()
+    retrieve: index.retrieve
   })
   const boundValidatorForSchema = validatorBinder(index, {
     failFast,

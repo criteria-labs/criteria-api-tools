@@ -54,7 +54,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
   const dereferenceReference = (reference: { $ref: string }) => {
     // $refs that we encounter might actually be JSON references,
     // if the document was never indexed as a schema itself
-    const baseURI = index.baseURIForSchema(reference) ?? index.baseURIForJSONReference(reference)
+    const baseURI = index.baseURIForSchema(reference)
     const uri = resolveURIReference(reference.$ref, baseURI)
     return index.find(uri, { followReferences: true })
   }
@@ -66,7 +66,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
   }
 
   const dereferenceJSONReference = (reference: { $ref: string }) => {
-    const baseURI = index.baseURIForJSONReference(reference)
+    const baseURI = index.baseURIForSchema(reference)
     const uri = resolveURIReference(reference.$ref, baseURI)
     return index.find(uri, { followReferences: true })
   }

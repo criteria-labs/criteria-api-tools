@@ -17,3 +17,4 @@ export {
 } from './draft-2020-12'
 export * from './retrievers'
 export { SchemaIndex } from './schema-index/SchemaIndex'
+export * from './schema-index/DocumentIndex'

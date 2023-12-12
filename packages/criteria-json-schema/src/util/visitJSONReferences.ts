@@ -5,14 +5,19 @@ export function isJSONReference(value: any): value is { $ref: string } {
   return typeof value === 'object' && '$ref' in value
 }
 
-export function visitJSONReferences(
+export function visitJSONReferences<State extends object = {}>(
   value: any,
-  visitor: (reference: { $ref: string }, location: JSONPointer) => boolean | void
+  initialState: State,
+  visitor: (reference: { $ref: string }, location: JSONPointer, state: State) => boolean | void
 ) {
+  let states = [initialState]
   visitObjects(value, (object, location, visitChildren) => {
     if (isJSONReference(object)) {
       if (typeof object.$ref === 'string') {
-        visitor(object, location)
+        const newState = { ...states[states.length - 1] }
+        states.push(newState)
+        visitor(object, location, newState)
+        states.pop()
       }
     } else {
       visitChildren()

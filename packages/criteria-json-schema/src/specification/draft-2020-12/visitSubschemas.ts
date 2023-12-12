@@ -36,17 +36,18 @@ function appendJSONPointer(path: JSONPointer[], jsonPointer: JSONPointer): JSONP
   return [...path.slice(0, -1), `${path[path.length - 1]}${jsonPointer}`]
 }
 
-export function visitSubschemas(
+export function visitSubschemas<State extends object = {}>(
   document: JSONSchema,
   initialLocation: JSONPointer,
-  visitor: (subschema: JSONSchema, path: JSONPointer[]) => boolean | void
+  initialState: State,
+  visitor: (subschema: JSONSchema, path: JSONPointer[], state: State) => boolean | void
 ) {
   // detects circular references
   const seen = new WeakSet()
 
-  const visitMap = (map: Record<string, JSONSchema>, path: JSONPointer[]) => {
+  const visitMap = (map: Record<string, JSONSchema>, path: JSONPointer[], states: State[]) => {
     for (const [key, subschema] of Object.entries(map)) {
-      const stop = Boolean(visitSubschema(subschema, appendJSONPointer(path, `/${escapeReferenceToken(key)}`)))
+      const stop = Boolean(visitSubschema(subschema, appendJSONPointer(path, `/${escapeReferenceToken(key)}`), states))
       if (stop) {
         return true
       }
@@ -54,9 +55,9 @@ export function visitSubschemas(
     return false
   }
 
-  const visitList = (list: JSONSchema[], path: JSONPointer[]) => {
+  const visitList = (list: JSONSchema[], path: JSONPointer[], states: State[]) => {
     for (let index = 0; index < list.length; index++) {
-      const stop = Boolean(visitSubschema(list[index], appendJSONPointer(path, `/${index}`)))
+      const stop = Boolean(visitSubschema(list[index], appendJSONPointer(path, `/${index}`), states))
       if (stop) {
         return true
       }
@@ -64,9 +65,12 @@ export function visitSubschemas(
     return false
   }
 
-  const visitSubschema = (subschema: JSONSchema, path: JSONPointer[]): boolean => {
+  const visitSubschema = (subschema: JSONSchema, path: JSONPointer[], states: State[]): boolean => {
+    const newState = { ...states[states.length - 1] }
+    states = [...states, newState]
+
     if (typeof subschema === 'boolean') {
-      return Boolean(visitor(subschema, path))
+      return Boolean(visitor(subschema, path, newState))
     }
 
     if (seen.has(subschema)) {
@@ -74,7 +78,7 @@ export function visitSubschemas(
     }
     seen.add(subschema)
 
-    let stop = Boolean(visitor(subschema, path))
+    let stop = Boolean(visitor(subschema, path, newState))
     if (stop) {
       return true
     }
@@ -106,80 +110,80 @@ export function visitSubschemas(
     } = subschema
 
     if (!stop && $defs !== undefined) {
-      stop = visitMap($defs, [...path, '/$defs'])
+      stop = visitMap($defs, [...path, '/$defs'], states)
     }
     if (!stop && $ref !== undefined && typeof $ref === 'object') {
-      stop = visitSubschema($ref, [...path, '/$ref'])
+      stop = visitSubschema($ref, [...path, '/$ref'], states)
     }
     if (!stop && $dynamicRef !== undefined && typeof $dynamicRef === 'object') {
-      stop = visitSubschema($dynamicRef, [...path, '/$dynamicRef'])
+      stop = visitSubschema($dynamicRef, [...path, '/$dynamicRef'], states)
     }
     if (!stop && allOf !== undefined) {
-      stop = visitList(allOf, [...path, '/allOf'])
+      stop = visitList(allOf, [...path, '/allOf'], states)
     }
     if (!stop && anyOf !== undefined) {
-      stop = visitList(anyOf, [...path, '/anyOf'])
+      stop = visitList(anyOf, [...path, '/anyOf'], states)
     }
     if (!stop && oneOf !== undefined) {
-      stop = visitList(oneOf, [...path, '/oneOf'])
+      stop = visitList(oneOf, [...path, '/oneOf'], states)
     }
     if (!stop && not !== undefined) {
-      stop = visitSubschema(not, [...path, '/not'])
+      stop = visitSubschema(not, [...path, '/not'], states)
     }
     if (!stop && ifSchema !== undefined) {
-      stop = visitSubschema(ifSchema, [...path, '/if'])
+      stop = visitSubschema(ifSchema, [...path, '/if'], states)
     }
     if (!stop && thenSchema !== undefined) {
-      stop = visitSubschema(thenSchema, [...path, '/then'])
+      stop = visitSubschema(thenSchema, [...path, '/then'], states)
     }
     if (!stop && elseSchema !== undefined) {
-      stop = visitSubschema(elseSchema, [...path, '/else'])
+      stop = visitSubschema(elseSchema, [...path, '/else'], states)
     }
     if (!stop && dependentSchemas !== undefined) {
-      stop = visitMap(dependentSchemas, [...path, '/dependentSchemas'])
+      stop = visitMap(dependentSchemas, [...path, '/dependentSchemas'], states)
     }
     if (!stop && prefixItems !== undefined) {
-      stop = visitList(prefixItems, [...path, '/prefixItems'])
+      stop = visitList(prefixItems, [...path, '/prefixItems'], states)
     }
     if (!stop && items !== undefined) {
-      stop = visitSubschema(items, [...path, '/items'])
+      stop = visitSubschema(items, [...path, '/items'], states)
     }
     if (!stop && contains !== undefined) {
-      stop = visitSubschema(contains, [...path, '/contains'])
+      stop = visitSubschema(contains, [...path, '/contains'], states)
     }
     if (!stop && properties !== undefined) {
-      stop = visitMap(properties, [...path, '/properties'])
+      stop = visitMap(properties, [...path, '/properties'], states)
     }
     if (!stop && patternProperties !== undefined) {
-      stop = visitMap(patternProperties, [...path, '/patternProperties'])
+      stop = visitMap(patternProperties, [...path, '/patternProperties'], states)
     }
     if (!stop && additionalProperties !== undefined) {
-      stop = visitSubschema(additionalProperties, [...path, '/additionalProperties'])
+      stop = visitSubschema(additionalProperties, [...path, '/additionalProperties'], states)
     }
     if (!stop && propertyNames !== undefined) {
-      stop = visitSubschema(propertyNames, [...path, '/propertyNames'])
+      stop = visitSubschema(propertyNames, [...path, '/propertyNames'], states)
     }
     if (!stop && unevaluatedItems !== undefined) {
-      stop = visitSubschema(unevaluatedItems, [...path, '/unevaluatedItems'])
+      stop = visitSubschema(unevaluatedItems, [...path, '/unevaluatedItems'], states)
     }
     if (!stop && unevaluatedProperties !== undefined) {
-      stop = visitSubschema(unevaluatedProperties, [...path, '/unevaluatedProperties'])
+      stop = visitSubschema(unevaluatedProperties, [...path, '/unevaluatedProperties'], states)
     }
     if (!stop && contentSchema !== undefined) {
-      stop = visitSubschema(contentSchema, [...path, '/contentSchema'])
+      stop = visitSubschema(contentSchema, [...path, '/contentSchema'], states)
     }
 
     // deprecated but still supported, TODO: verify
     const { additionalItems, definitions, dependencies, ...rest } = restWithDeprecated as any
 
     if (!stop && additionalItems !== undefined) {
-      stop = visitSubschema(additionalItems, [...path, '/additionalItems'])
+      stop = visitSubschema(additionalItems, [...path, '/additionalItems'], states)
     }
     if (!stop && definitions !== undefined) {
-      stop = visitMap(definitions, [...path, '/definitions'])
+      stop = visitMap(definitions, [...path, '/definitions'], states)
     }
     if (!stop && dependencies !== undefined) {
-      stop = visitMap(dependencies, [...path, '/dependencies'])
+      stop = visitMap(dependencies, [...path, '/dependencies'], states)
     }
 
     return stop
@@ -187,7 +191,7 @@ export function visitSubschemas(
 
   visitObjects(document, (object, location, visitChildren) => {
     if (isSubschema(`${initialLocation}${location}`)) {
-      visitSubschema(object, [location])
+      visitSubschema(object, [location], [initialState])
     } else {
       visitChildren()
     }

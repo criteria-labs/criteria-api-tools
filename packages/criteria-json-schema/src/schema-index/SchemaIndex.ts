@@ -107,15 +107,15 @@ export class SchemaIndex {
     if (this.contextsBySchema.has(value)) {
       return this.contextsBySchema.get(value)
     }
+    if (this.contextsByJSONReference.has(value)) {
+      return this.contextsByJSONReference.get(value)
+    }
     if (this.documentIndex.hasDocument(value)) {
       const documentInfo = this.documentIndex.infoForDocument(value)
       return {
         baseURI: documentInfo.baseURI,
         metaSchemaURI: documentInfo.metadata.metaSchemaURI
       }
-    }
-    if (this.contextsByJSONReference.has(value)) {
-      return this.contextsByJSONReference.get(value)
     }
     return undefined
   }
@@ -188,22 +188,6 @@ export class SchemaIndex {
     return dereferencedSchema
   }
 
-  findInfo(value: any, document: any, location: JSONPointer | null) {
-    const info = this.infoForValue(value)
-    if (info) {
-      return info
-    }
-
-    if (!location || !isJSONPointer(location)) {
-      return undefined
-    }
-
-    const i = location.lastIndexOf('/')
-    const parentLocation = location.slice(0, i) as JSONPointer
-    const parentValue = evaluateJSONPointer(parentLocation, document)
-    return this.findInfo(parentValue, document, parentLocation)
-  }
-
   find(uri: URI, options?: { followReferences: boolean; _uris?: Set<URI> }): any {
     return this.documentIndex.find(uri, options)
   }
@@ -229,96 +213,108 @@ export class SchemaIndex {
       }
     }
 
-    visitSubschemas(this.defaultMetaSchemaURI)(root, locationFromNearestSchema, (subschema, path) => {
-      if (typeof subschema === 'boolean') {
-        return
-      }
-
-      if (this.contextsBySchema.has(subschema)) {
-        return
-      }
-
-      const { baseURI, metaSchemaURI } = this.findInfo(subschema, document, path.join('')) ?? {
+    visitSubschemas(this.defaultMetaSchemaURI)(
+      root,
+      locationFromNearestSchema,
+      {
         baseURI: documentURI,
         metaSchemaURI: this.defaultMetaSchemaURI
-      }
-
-      const $schema = '$schema' in subschema ? subschema.$schema : metaSchemaURI
-
-      let $id: string | undefined
-      switch ($schema) {
-        case 'https://json-schema.org/draft/2020-12/schema': {
-          $id = resolveIDDraft2020_12(subschema, baseURI)
-          if ($id) {
-            this.schemasByURI.set($id, subschema)
-          }
-          break
+      },
+      (subschema, path, state) => {
+        if (typeof subschema === 'boolean') {
+          return
         }
-        case 'http://json-schema.org/draft-04/schema#': {
-          $id = resolveIDDraft04(subschema, baseURI)
-          if ($id) {
-            this.schemasByURI.set($id, subschema)
+
+        if (this.contextsBySchema.has(subschema)) {
+          return
+        }
+
+        const { baseURI, metaSchemaURI } = state
+
+        const $schema = '$schema' in subschema ? subschema.$schema : metaSchemaURI
+
+        let $id: string | undefined
+        switch ($schema) {
+          case 'https://json-schema.org/draft/2020-12/schema': {
+            $id = resolveIDDraft2020_12(subschema, baseURI)
+            if ($id) {
+              this.schemasByURI.set($id, subschema)
+            }
+            break
           }
-          break
+          case 'http://json-schema.org/draft-04/schema#': {
+            $id = resolveIDDraft04(subschema, baseURI)
+            if ($id) {
+              this.schemasByURI.set($id, subschema)
+            }
+            break
+          }
+        }
+
+        this.contextsBySchema.set(subschema, { baseURI: $id ?? baseURI, metaSchemaURI: $schema })
+
+        state.baseURI = $id ?? baseURI
+        state.metaSchemaURI = $schema
+
+        let $anchor: string | undefined
+        if ('$anchor' in subschema && typeof subschema.$anchor === 'string') {
+          $anchor = resolveURIReference(`#${subschema.$anchor}`, $id ?? baseURI)
+          this.schemasByAnchors.set($anchor, subschema)
+        }
+
+        let $dynamicAnchor: string | undefined
+        if ('$dynamicAnchor' in subschema && typeof subschema.$dynamicAnchor === 'string') {
+          $dynamicAnchor = resolveURIReference(`#${subschema.$dynamicAnchor}`, $id ?? baseURI)
+          this.schemasByDynamicAnchors.set($dynamicAnchor, subschema)
+        }
+
+        if ('$ref' in subschema && typeof subschema.$ref === 'string') {
+          const $ref = resolveURIReference(subschema.$ref, $id ?? baseURI)
+          // Don't retrieve yet, because it may resolve to a nested schema with an id
+          references.set($ref, { isSchema: true, location: '' })
+        }
+
+        if ('$dynamicRef' in subschema && typeof subschema.$dynamicRef === 'string') {
+          const $dynamicRef = resolveURIReference(subschema.$dynamicRef, $id ?? baseURI)
+          // Don't retrieve yet, because it may resolve to a nested schema with an id
+          references.set($dynamicRef, { isSchema: true, location: '' })
         }
       }
-
-      this.contextsBySchema.set(subschema, { baseURI: $id ?? baseURI, metaSchemaURI: $schema })
-
-      let $anchor: string | undefined
-      if ('$anchor' in subschema && typeof subschema.$anchor === 'string') {
-        $anchor = resolveURIReference(`#${subschema.$anchor}`, $id ?? baseURI)
-        this.schemasByAnchors.set($anchor, subschema)
-      }
-
-      let $dynamicAnchor: string | undefined
-      if ('$dynamicAnchor' in subschema && typeof subschema.$dynamicAnchor === 'string') {
-        $dynamicAnchor = resolveURIReference(`#${subschema.$dynamicAnchor}`, $id ?? baseURI)
-        this.schemasByDynamicAnchors.set($dynamicAnchor, subschema)
-      }
-
-      if ('$ref' in subschema && typeof subschema.$ref === 'string') {
-        const $ref = resolveURIReference(subschema.$ref, $id ?? baseURI)
-        // Don't retrieve yet, because it may resolve to a nested schema with an id
-        references.set($ref, { isSchema: true, location: '' })
-      }
-
-      if ('$dynamicRef' in subschema && typeof subschema.$dynamicRef === 'string') {
-        const $dynamicRef = resolveURIReference(subschema.$dynamicRef, $id ?? baseURI)
-        // Don't retrieve yet, because it may resolve to a nested schema with an id
-        references.set($dynamicRef, { isSchema: true, location: '' })
-      }
-    })
+    )
 
     // technically shouldn't need this, but used for non-standard $refs
-    visitJSONReferences(document, (reference, location) => {
-      if (this.documentIndex.hasDocument(reference)) {
-        return
-      }
-      if (this.contextsBySchema.has(reference)) {
-        return
-      }
-      if (this.contextsByJSONReference.has(reference)) {
-        return
-      }
-
-      const { baseURI, metaSchemaURI } = this.findInfo(reference, document, location) ?? {
+    visitJSONReferences(
+      document,
+      {
         baseURI: documentURI,
         metaSchemaURI: this.defaultMetaSchemaURI
+      },
+      (reference, location, state) => {
+        if (this.documentIndex.hasDocument(reference)) {
+          return
+        }
+        if (this.contextsBySchema.has(reference)) {
+          return
+        }
+        if (this.contextsByJSONReference.has(reference)) {
+          return
+        }
+
+        const { baseURI, metaSchemaURI } = state
+
+        this.contextsByJSONReference.set(reference, { baseURI, metaSchemaURI })
+
+        const uri = resolveURIReference(reference.$ref, baseURI)
+        if (references.has(uri)) {
+          return
+        }
+
+        references.set(uri, {
+          isSchema: false,
+          location: `${locationFromNearestSchema}${location}`
+        })
       }
-
-      this.contextsByJSONReference.set(reference, { baseURI, metaSchemaURI })
-
-      const uri = resolveURIReference(reference.$ref, baseURI)
-      if (references.has(uri)) {
-        return
-      }
-
-      references.set(uri, {
-        isSchema: false,
-        location: `${locationFromNearestSchema}${location}`
-      })
-    })
+    )
 
     let unretrievedURIs = new Map<URI, DocumentMetadata>()
     references.forEach(({ isSchema, location }, reference) => {

@@ -159,6 +159,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
       visitSubschemas(info.metadata.metaSchemaURI)(
         indexedDocument,
         info.metadata.locationFromNearestSchema,
+        {},
         (subschema, path) => {
           collectReferences(subschema, path, indexedDocument)
         }
@@ -168,7 +169,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
 
   for (const documentURI of index.documentURIs()) {
     const indexedDocument = index.find(documentURI, { followReferences: false })
-    visitJSONReferences(indexedDocument, (reference, location) => {
+    visitJSONReferences(indexedDocument, {}, (reference, location) => {
       if (collected.has(reference)) {
         return
       }

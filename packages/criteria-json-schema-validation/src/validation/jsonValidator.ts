@@ -34,11 +34,11 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
     retrieve: options?.retrieve,
     defaultMetaSchemaURI: options.defaultMetaSchemaURI
   })
-  index.addDocument(schema, options?.baseURI ?? '', '', '')
+  index.addRootSchema(schema, options?.baseURI ?? '')
 
   const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory({
     assertFormat,
-    retrieve: index.retrieve
+    retrieve: index.retrieve()
   })
   const boundValidatorForSchema = validatorBinder(index, {
     failFast,

@@ -25,7 +25,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
     retrieve: options?.retrieve,
     defaultMetaSchemaURI: options.defaultMetaSchemaURI
   })
-  index.addDocument(rootSchema, options.baseURI ?? '', '', '')
+  index.addRootSchema(rootSchema, options.baseURI ?? '')
 
   const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
 
@@ -156,9 +156,13 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
     const indexedDocument = index.find(documentURI, { followReferences: false })
     if (typeof indexedDocument === 'object') {
       const info = index.infoForDocument(indexedDocument)
-      visitSubschemas(info.metaSchemaURI)(indexedDocument, info.locationFromNearestSchema, (subschema, path) => {
-        collectReferences(subschema, path, indexedDocument)
-      })
+      visitSubschemas(info.additionalInfo.metaSchemaURI)(
+        indexedDocument,
+        info.additionalInfo.locationFromNearestSchema,
+        (subschema, path) => {
+          collectReferences(subschema, path, indexedDocument)
+        }
+      )
     }
   }
 
@@ -287,7 +291,7 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
     parent[key] = dereferencedValue
   })
 
-  const indexedSchema = index.rootDocument()
+  const indexedSchema = index.rootSchema()
   if (typeof indexedSchema === 'object' && '$ref' in indexedSchema && Object.keys(indexedSchema).length === 1) {
     return indexedSchema.$ref
   }

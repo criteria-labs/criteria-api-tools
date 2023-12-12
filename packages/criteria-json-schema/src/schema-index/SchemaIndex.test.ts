@@ -51,7 +51,7 @@ describe('SchemaIndex', () => {
           retrieve: retrieveUsingLookup(documents),
           defaultMetaSchemaURI: metaSchemaURIDraft04
         })
-        index.addDocument(documents[''], '', '', '')
+        index.addRootSchema(documents[''], '')
 
         expect(index.baseURIForDocument(documents[''])).toBeDefined()
         expect(index.baseURIForDocument(documents['http://localhost:1234/subSchemas.json'])).toBeDefined()
@@ -66,7 +66,7 @@ describe('SchemaIndex', () => {
         cloned: true,
         defaultMetaSchemaURI: metaSchemaURIDraft04
       })
-      index.addDocument(schema, '', '', '')
+      index.addRootSchema(schema, '')
 
       test('evaluates json pointers', () => {
         expect(index.find('http://example.com/root.json')).toEqual(schema)

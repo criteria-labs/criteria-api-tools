@@ -19,7 +19,7 @@ export interface DocumentIndexConfiguration<Metadata> {
   cloned?: boolean
   retrieve?: (uri: URI) => any
   findWithURI?: (uri: URI) => any
-  baseURIForValue?: (value: any) => URI
+  infoForValue?: (value: any) => { baseURI: URI; metadata: Metadata }
   onDocumentAdded?: (document: any, documentURI: URI, documentMetadata: Metadata) => Map<URI, Metadata>
 }
 
@@ -27,7 +27,7 @@ export class DocumentIndex<Metadata> {
   readonly cloned: boolean
   readonly retrieve: (uri: URI) => any
   readonly findWithURI?: (uri: URI) => any
-  readonly baseURIForValue?: (value: any) => URI
+  readonly infoForValue?: (value: any) => { baseURI: URI; metadata: Metadata }
   readonly onDocumentAdded?: (document: any, documentURI: URI, documentMetadata: Metadata) => Map<URI, Metadata>
   constructor(configuration: DocumentIndexConfiguration<Metadata>) {
     this.cloned = configuration.cloned ?? defaultCloned
@@ -47,15 +47,15 @@ export class DocumentIndex<Metadata> {
       }
       return this.documentsByURI.get(uri)
     }
-    this.baseURIForValue = (value: any) => {
-      if (configuration.baseURIForValue) {
-        const baseURI = configuration?.baseURIForValue(value)
-        if (baseURI !== undefined) {
-          return baseURI
+    this.infoForValue = (value: any) => {
+      if (configuration.infoForValue) {
+        const info = configuration?.infoForValue(value)
+        if (info !== undefined) {
+          return info
         }
       }
       if (this.infosByDocument.has(value)) {
-        return this.infosByDocument.get(value).baseURI
+        return this.infosByDocument.get(value)
       }
       return undefined
     }
@@ -116,7 +116,7 @@ export class DocumentIndex<Metadata> {
 
     const value = this.findWithURI(uri)
     if (value !== undefined) {
-      const baseURI = this.baseURIForValue(value)
+      const baseURI = this.infoForValue(value)?.baseURI
       return followReferences && typeof value === 'object' ? followReference(value, baseURI) : value
     }
 
@@ -125,7 +125,7 @@ export class DocumentIndex<Metadata> {
       const container = this.find(absoluteURI, options) // can followReferences be folded into findIndex?
       const evaluatedValue = evaluateJSONPointer(fragment, container)
       if (evaluatedValue !== undefined) {
-        const baseURI = this.baseURIForValue(container)
+        const baseURI = this.infoForValue(container)?.baseURI
         return followReferences ? followReference(evaluatedValue, baseURI) : evaluatedValue
       }
 
@@ -141,7 +141,7 @@ export class DocumentIndex<Metadata> {
         let parent = this.find(parentURI, options)
         const evaluatedValue = evaluateJSONPointer(remainingFragment, parent) // try evaluating against siblings of $ref
         if (evaluatedValue !== undefined) {
-          const baseURI = this.baseURIForValue(parent)
+          const baseURI = this.infoForValue(parent)?.baseURI
           return followReferences === true ? followReference(evaluatedValue, baseURI) : evaluatedValue
         }
 
@@ -149,7 +149,7 @@ export class DocumentIndex<Metadata> {
           if (typeof parent.$ref == 'object') {
             parent = parent.$ref
           } else {
-            const baseURI = this.baseURIForValue(parent)
+            const baseURI = this.infoForValue(parent)?.baseURI
             const parentRefURI = resolveURIReference(parent.$ref, baseURI)
             parent = this.find(parentRefURI, options)
           }
@@ -157,7 +157,7 @@ export class DocumentIndex<Metadata> {
           const evaluatedValue = evaluateJSONPointer(remainingFragment, parent)
 
           if (evaluatedValue !== undefined) {
-            const baseURI = this.baseURIForValue(parent)
+            const baseURI = this.infoForValue(parent)?.baseURI
             return options?.followReferences === true ? followReference(evaluatedValue, baseURI) : evaluatedValue
           }
         }

@@ -12,12 +12,12 @@ import { DocumentIndex } from './DocumentIndex'
 // default configuration
 const defaultDefaultMetaSchemaURI = metaSchemaURIDraft2020_12 // yes, defaultDefault...
 
-export interface SchemaIndexInfo {
+export interface SchemaInfo {
   baseURI: URI
-  metaSchemaURI: URI
+  metadata: Metadata
 }
 
-export interface DocumentMetadata {
+export interface Metadata {
   metaSchemaURI: URI
   locationFromNearestSchema: JSONPointer
 }
@@ -33,7 +33,7 @@ export class SchemaIndex {
   constructor(configuration: SchemaIndexConfiguration) {
     this.defaultMetaSchemaURI = configuration?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
 
-    this.documentIndex = new DocumentIndex<DocumentMetadata>({
+    this.documentIndex = new DocumentIndex<Metadata>({
       cloned: configuration.cloned,
       retrieve: configuration.retrieve,
       findWithURI: (uri: URI) => {
@@ -54,12 +54,12 @@ export class SchemaIndex {
 
         return undefined
       },
-      baseURIForValue: (value: any) => {
-        if (this.contextsBySchema.has(value)) {
-          return this.contextsBySchema.get(value).baseURI
+      infoForValue: (value: any) => {
+        if (this.infosBySchema.has(value)) {
+          return this.infosBySchema.get(value)
         }
-        if (this.contextsByJSONReference.has(value)) {
-          return this.contextsByJSONReference.get(value).baseURI
+        if (this.infosByJSONReference.has(value)) {
+          return this.infosByJSONReference.get(value)
         }
         return undefined
       },
@@ -76,16 +76,16 @@ export class SchemaIndex {
   }
 
   // Indexes documents
-  private documentIndex: DocumentIndex<DocumentMetadata>
+  private documentIndex: DocumentIndex<Metadata>
 
   // Indexes schemas and { $ref }
   private schemasByURI = new Map<string, object>()
   private schemasByAnchors = new Map<string, object>()
   private schemasByDynamicAnchors = new Map<string, object>()
-  private contextsBySchema = new Map<object, SchemaIndexInfo>()
+  private infosBySchema = new Map<object, SchemaInfo>()
 
   // Indexes { $ref } in locations that are not schemas
-  private contextsByJSONReference = new Map<object, SchemaIndexInfo>()
+  private infosByJSONReference = new Map<object, SchemaInfo>()
 
   rootSchema() {
     return this.documentIndex.rootDocument()
@@ -99,37 +99,24 @@ export class SchemaIndex {
     return this.documentIndex.infoForDocument(document)
   }
 
+  infoForValue(value: any): { baseURI: URI; metadata: Metadata } {
+    return this.documentIndex.infoForValue(value)
+  }
+
   baseURIForDocument(document: any): URI {
     return this.infoForDocument(document)?.baseURI
   }
 
-  infoForValue(value: any) {
-    if (this.contextsBySchema.has(value)) {
-      return this.contextsBySchema.get(value)
-    }
-    if (this.contextsByJSONReference.has(value)) {
-      return this.contextsByJSONReference.get(value)
-    }
-    if (this.documentIndex.hasDocument(value)) {
-      const documentInfo = this.documentIndex.infoForDocument(value)
-      return {
-        baseURI: documentInfo.baseURI,
-        metaSchemaURI: documentInfo.metadata.metaSchemaURI
-      }
-    }
-    return undefined
-  }
-
   baseURIForSchema(schema: object): URI {
-    return this.contextsBySchema.get(schema)?.baseURI
+    return this.infosBySchema.get(schema)?.baseURI
   }
 
   baseURIForJSONReference(jsonReference: object): URI {
-    return this.contextsByJSONReference.get(jsonReference)?.baseURI
+    return this.infosByJSONReference.get(jsonReference)?.baseURI
   }
 
   metaSchemaURIForSchema(schema: object): URI {
-    return this.contextsBySchema.get(schema)?.metaSchemaURI
+    return this.infosBySchema.get(schema)?.metadata.metaSchemaURI
   }
 
   dereferenceReference(reference: URI, schema: object, path: JSONPointer[]): object {
@@ -188,7 +175,7 @@ export class SchemaIndex {
     return dereferencedSchema
   }
 
-  find(uri: URI, options?: { followReferences: boolean; _uris?: Set<URI> }): any {
+  find(uri: URI, options?: { followReferences: boolean }): any {
     return this.documentIndex.find(uri, options)
   }
 
@@ -218,18 +205,23 @@ export class SchemaIndex {
       locationFromNearestSchema,
       {
         baseURI: documentURI,
-        metaSchemaURI: this.defaultMetaSchemaURI
+        metadata: {
+          metaSchemaURI: this.defaultMetaSchemaURI
+        }
       },
       (subschema, path, state) => {
         if (typeof subschema === 'boolean') {
           return
         }
 
-        if (this.contextsBySchema.has(subschema)) {
+        if (this.infosBySchema.has(subschema)) {
           return
         }
 
-        const { baseURI, metaSchemaURI } = state
+        const {
+          baseURI,
+          metadata: { metaSchemaURI }
+        } = state
 
         const $schema = '$schema' in subschema ? subschema.$schema : metaSchemaURI
 
@@ -251,10 +243,19 @@ export class SchemaIndex {
           }
         }
 
-        this.contextsBySchema.set(subschema, { baseURI: $id ?? baseURI, metaSchemaURI: $schema })
+        this.infosBySchema.set(subschema, {
+          baseURI: $id ?? baseURI,
+          metadata: {
+            metaSchemaURI: $schema,
+            locationFromNearestSchema: ''
+          }
+        })
 
         state.baseURI = $id ?? baseURI
-        state.metaSchemaURI = $schema
+        state.metadata = {
+          metaSchemaURI: $schema,
+          locationFromNearestSchema: ''
+        }
 
         let $anchor: string | undefined
         if ('$anchor' in subschema && typeof subschema.$anchor === 'string') {
@@ -287,22 +288,33 @@ export class SchemaIndex {
       document,
       {
         baseURI: documentURI,
-        metaSchemaURI: this.defaultMetaSchemaURI
+        metadata: {
+          metaSchemaURI: this.defaultMetaSchemaURI
+        }
       },
       (reference, location, state) => {
         if (this.documentIndex.hasDocument(reference)) {
           return
         }
-        if (this.contextsBySchema.has(reference)) {
+        if (this.infosBySchema.has(reference)) {
           return
         }
-        if (this.contextsByJSONReference.has(reference)) {
+        if (this.infosByJSONReference.has(reference)) {
           return
         }
 
-        const { baseURI, metaSchemaURI } = state
+        const {
+          baseURI,
+          metadata: { metaSchemaURI }
+        } = state
 
-        this.contextsByJSONReference.set(reference, { baseURI, metaSchemaURI })
+        this.infosByJSONReference.set(reference, {
+          baseURI,
+          metadata: {
+            metaSchemaURI,
+            locationFromNearestSchema: `${locationFromNearestSchema}${location}`
+          }
+        })
 
         const uri = resolveURIReference(reference.$ref, baseURI)
         if (references.has(uri)) {
@@ -316,7 +328,7 @@ export class SchemaIndex {
       }
     )
 
-    let unretrievedURIs = new Map<URI, DocumentMetadata>()
+    let unretrievedURIs = new Map<URI, Metadata>()
     references.forEach(({ isSchema, location }, reference) => {
       if (this.schemasByURI.has(reference)) {
         return

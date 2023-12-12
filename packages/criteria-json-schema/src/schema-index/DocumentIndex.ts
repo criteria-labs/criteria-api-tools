@@ -10,20 +10,22 @@ const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
 
-export interface DocumentInfo<AdditionalInfo> {
+export interface DocumentInfo<Metadata> {
   baseURI: URI
-  additionalInfo: AdditionalInfo
+  metadata: Metadata
 }
 
-export interface DocumentIndexConfiguration {
+export interface DocumentIndexConfiguration<Metadata> {
   cloned?: boolean
   retrieve?: (uri: URI) => any
+  onDocumentAdded?: (document: any, documentURI: URI, documentMetadata: Metadata) => Map<URI, Metadata>
 }
 
-export class DocumentIndex<AdditionalInfo> {
+export class DocumentIndex<Metadata> {
   readonly cloned: boolean
   readonly retrieve: (uri: URI) => any
-  constructor(configuration: DocumentIndexConfiguration) {
+  readonly onDocumentAdded?: (document: any, documentURI: URI, documentMetadata: Metadata) => Map<URI, Metadata>
+  constructor(configuration: DocumentIndexConfiguration<Metadata>) {
     this.cloned = configuration.cloned ?? defaultCloned
     this.retrieve = memoize((uri: string) => {
       const document = retrieveBuiltin(uri) ?? configuration?.retrieve(uri) ?? defaultRetrieve(uri)
@@ -32,11 +34,12 @@ export class DocumentIndex<AdditionalInfo> {
       }
       return document
     })
+    this.onDocumentAdded = configuration.onDocumentAdded
   }
 
   // Indexes documents
   private documentsByURI = new Map<string, any>()
-  private infosByDocument = new Map<object, DocumentInfo<AdditionalInfo>>()
+  private infosByDocument = new Map<object, DocumentInfo<Metadata>>()
 
   rootDocument() {
     for (const document of this.documentsByURI.values()) {
@@ -61,7 +64,7 @@ export class DocumentIndex<AdditionalInfo> {
     return this.documentsByURI.keys()
   }
 
-  infoForDocument(document: any): DocumentInfo<AdditionalInfo> {
+  infoForDocument(document: any): DocumentInfo<Metadata> {
     return this.infosByDocument.get(document)
   }
 
@@ -183,16 +186,7 @@ export class DocumentIndex<AdditionalInfo> {
     return undefined
   }
 
-  addDocument(
-    document: object,
-    documentURI: URI,
-    additionalInfo: AdditionalInfo,
-    collectUnretrievedURIs: (
-      document: object,
-      documentURI: string,
-      additionalInfo: AdditionalInfo
-    ) => Map<URI, AdditionalInfo>
-  ) {
+  addDocument(document: object, documentURI: URI, documentMetadata: Metadata) {
     const { absoluteURI } = splitFragment(documentURI)
 
     if (this.cloned) {
@@ -203,22 +197,23 @@ export class DocumentIndex<AdditionalInfo> {
     if (typeof document === 'object') {
       this.infosByDocument.set(document, {
         baseURI: absoluteURI,
-        additionalInfo
+        metadata: documentMetadata
       })
     }
 
-    const unretrievedURIs = collectUnretrievedURIs(document, documentURI, additionalInfo)
+    if (this.onDocumentAdded) {
+      const unretrievedURIs = this.onDocumentAdded(document, documentURI, documentMetadata)
+      unretrievedURIs.forEach((externalDocumentAdditionalInfo, externalDocumentURI) => {
+        let externalDocument
+        try {
+          const { absoluteURI } = splitFragment(externalDocumentURI)
+          externalDocument = this.retrieve(absoluteURI)
+        } catch (error) {
+          throw new Error(`Failed to retrieve document at uri '${externalDocumentURI}'`)
+        }
 
-    unretrievedURIs.forEach((externalDocumentAdditionalInfo, externalDocumentURI) => {
-      let externalDocument
-      try {
-        const { absoluteURI } = splitFragment(externalDocumentURI)
-        externalDocument = this.retrieve(absoluteURI)
-      } catch (error) {
-        throw new Error(`Failed to retrieve document at uri '${externalDocumentURI}': ${error.message}`)
-      }
-
-      this.addDocument(externalDocument, externalDocumentURI, externalDocumentAdditionalInfo, collectUnretrievedURIs)
-    })
+        this.addDocument(externalDocument, externalDocumentURI, externalDocumentAdditionalInfo)
+      })
+    }
   }
 }

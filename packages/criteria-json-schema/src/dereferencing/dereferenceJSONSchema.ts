@@ -156,9 +156,9 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
     const indexedDocument = index.find(documentURI, { followReferences: false })
     if (typeof indexedDocument === 'object') {
       const info = index.infoForDocument(indexedDocument)
-      visitSubschemas(info.additionalInfo.metaSchemaURI)(
+      visitSubschemas(info.metadata.metaSchemaURI)(
         indexedDocument,
-        info.additionalInfo.locationFromNearestSchema,
+        info.metadata.locationFromNearestSchema,
         (subschema, path) => {
           collectReferences(subschema, path, indexedDocument)
         }

@@ -17,7 +17,7 @@ export interface SchemaIndexInfo {
   metaSchemaURI: URI
 }
 
-export interface DocumentAdditionalInfo {
+export interface DocumentMetadata {
   metaSchemaURI: URI
   locationFromNearestSchema: JSONPointer
 }
@@ -33,9 +33,14 @@ export class SchemaIndex {
   constructor(configuration: SchemaIndexConfiguration) {
     this.defaultMetaSchemaURI = configuration?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
 
-    this.documentIndex = new DocumentIndex<DocumentAdditionalInfo>({
+    this.documentIndex = new DocumentIndex<DocumentMetadata>({
       cloned: configuration.cloned,
-      retrieve: configuration.retrieve
+      retrieve: configuration.retrieve,
+      onDocumentAdded: (document, documentURI, documentMetadata) => {
+        const { fragment } = splitFragment(documentURI)
+        const rootSchema = fragment && isJSONPointer(fragment) ? evaluateJSONPointer(fragment, document) : document
+        return this.addSchemas(rootSchema, documentMetadata.locationFromNearestSchema, document, documentURI)
+      }
     })
   }
 
@@ -44,7 +49,7 @@ export class SchemaIndex {
   }
 
   // Indexes documents
-  private documentIndex: DocumentIndex<DocumentAdditionalInfo>
+  private documentIndex: DocumentIndex<DocumentMetadata>
 
   // Indexes schemas and { $ref }
   private schemasByURI = new Map<string, object>()
@@ -79,7 +84,7 @@ export class SchemaIndex {
       const documentInfo = this.documentIndex.infoForDocument(value)
       return {
         baseURI: documentInfo.baseURI,
-        metaSchemaURI: documentInfo.additionalInfo.metaSchemaURI
+        metaSchemaURI: documentInfo.metadata.metaSchemaURI
       }
     }
     if (this.contextsByJSONReference.has(value)) {
@@ -214,21 +219,10 @@ export class SchemaIndex {
   }
 
   addRootSchema(document: object, documentURI: URI) {
-    const collectUnretrievedURIs = (document: object, documentURI: URI, additionalInfo: DocumentAdditionalInfo) => {
-      const { fragment } = splitFragment(documentURI)
-      const rootSchema = fragment && isJSONPointer(fragment) ? evaluateJSONPointer(fragment, document) : document
-      return this.addSchemas(rootSchema, additionalInfo.locationFromNearestSchema, document, documentURI)
-    }
-
-    this.documentIndex.addDocument(
-      document,
-      documentURI,
-      {
-        metaSchemaURI: this.defaultMetaSchemaURI,
-        locationFromNearestSchema: ''
-      },
-      collectUnretrievedURIs
-    )
+    this.documentIndex.addDocument(document, documentURI, {
+      metaSchemaURI: this.defaultMetaSchemaURI,
+      locationFromNearestSchema: ''
+    })
   }
 
   addSchemas(root: object, locationFromNearestSchema: JSONPointer, document: any, documentURI: URI) {
@@ -336,7 +330,7 @@ export class SchemaIndex {
       })
     })
 
-    let unretrievedURIs = new Map<URI, DocumentAdditionalInfo>()
+    let unretrievedURIs = new Map<URI, DocumentMetadata>()
     references.forEach(({ isSchema, location }, reference) => {
       if (this.schemasByURI.has(reference)) {
         return

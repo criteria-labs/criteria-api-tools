@@ -68,46 +68,6 @@ export class DocumentIndex<Metadata> {
     return this.infosByDocument.get(document)
   }
 
-  findParent(location: JSONPointer, document: any) {
-    if (location === '') {
-      return undefined
-    }
-    const i = location.lastIndexOf('/')
-    const parentLocation = location.slice(0, i) as JSONPointer
-    return evaluateJSONPointer(parentLocation, document)
-  }
-
-  find(uri: URI, options?: { followReferences: boolean; _uris?: Set<URI> }): any {
-    const followReferences = options?.followReferences ?? false
-    const _uris = options?._uris ?? new Set()
-
-    const followReference = (value: any, baseURI: URI) => {
-      if (isJSONReference(value) && Object.keys(value).length === 1) {
-        if (typeof value.$ref === 'string') {
-          const followedURI = resolveURIReference(value.$ref, baseURI)
-          if (_uris.has(followedURI)) {
-            return {}
-          }
-          return this.find(followedURI, { ...options, _uris })
-        } else {
-          return value.$ref
-        }
-      }
-      return value
-    }
-
-    _uris.add(uri)
-
-    // TODO: delegate to find indexed schemas?
-
-    const document = this.documentsByURI.get(uri)
-    if (document !== undefined) {
-      return followReferences && typeof document === 'object'
-        ? followReference(document, this.infosByDocument.get(document).baseURI)
-        : document
-    }
-  }
-
   static findAnywhere(
     uri: URI,
     findIndexed: (uri: URI, options: { followReferences: boolean; _uris?: Set<URI> }) => any | undefined,

@@ -36,6 +36,33 @@ export class SchemaIndex {
     this.documentIndex = new DocumentIndex<DocumentMetadata>({
       cloned: configuration.cloned,
       retrieve: configuration.retrieve,
+      findWithURI: (uri: URI) => {
+        let schema = this.schemasByURI.get(uri)
+        if (schema !== undefined) {
+          return schema
+        }
+
+        schema = this.schemasByAnchors.get(uri)
+        if (schema !== undefined) {
+          return schema
+        }
+
+        schema = this.schemasByDynamicAnchors.get(uri)
+        if (schema !== undefined) {
+          return schema
+        }
+
+        return undefined
+      },
+      baseURIForValue: (value: any) => {
+        if (this.contextsBySchema.has(value)) {
+          return this.contextsBySchema.get(value).baseURI
+        }
+        if (this.contextsByJSONReference.has(value)) {
+          return this.contextsByJSONReference.get(value).baseURI
+        }
+        return undefined
+      },
       onDocumentAdded: (document, documentURI, documentMetadata) => {
         const { fragment } = splitFragment(documentURI)
         const rootSchema = fragment && isJSONPointer(fragment) ? evaluateJSONPointer(fragment, document) : document
@@ -178,44 +205,7 @@ export class SchemaIndex {
   }
 
   find(uri: URI, options?: { followReferences: boolean; _uris?: Set<URI> }): any {
-    const findIndexed = (uri: URI, options: { followReferences: boolean; _uris?: Set<URI> }) => {
-      let schema = this.schemasByURI.get(uri)
-      if (schema !== undefined) {
-        return schema
-      }
-
-      schema = this.schemasByAnchors.get(uri)
-      if (schema !== undefined) {
-        return schema
-      }
-
-      schema = this.schemasByDynamicAnchors.get(uri)
-      if (schema !== undefined) {
-        return schema
-      }
-
-      const document = this.documentIndex.getDocument(uri)
-      if (document !== undefined) {
-        return document
-      }
-
-      return undefined
-    }
-
-    const baseURIForValue = (value: any) => {
-      if (this.contextsBySchema.has(value)) {
-        return this.contextsBySchema.get(value).baseURI
-      }
-      if (this.documentIndex.hasDocument(value)) {
-        return this.documentIndex.infoForDocument(value).baseURI
-      }
-      if (this.contextsByJSONReference.has(value)) {
-        return this.contextsByJSONReference.get(value).baseURI
-      }
-      return undefined
-    }
-
-    return DocumentIndex.findAnywhere(uri, findIndexed, baseURIForValue, options)
+    return this.documentIndex.find(uri, options)
   }
 
   addRootSchema(document: object, documentURI: URI) {

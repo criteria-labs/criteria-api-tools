@@ -1,8 +1,9 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { memoize, retrieveBuiltin } from '../retrievers'
 import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
-import { URI, resolveURIReference, splitFragment } from '../util/uri'
+import { URI, hasFragment, isAbsoluteURI, resolveURIReference, splitFragment } from '../util/uri'
 import { isJSONReference } from '../util/visitJSONReferences'
+import { Index } from './Index'
 
 // default configuration
 const defaultCloned = false
@@ -10,26 +11,19 @@ const defaultRetrieve = (uri: URI): any => {
   throw new Error(`Cannot retrieve URI '${uri}'`)
 }
 
-export interface DocumentInfo<Metadata> {
+export interface DocumentInfo {
   baseURI: URI
-  metadata: Metadata
 }
 
-export interface DocumentIndexConfiguration<Metadata> {
+export interface DocumentIndexConfiguration {
   cloned?: boolean
   retrieve?: (uri: URI) => any
-  findWithURI?: (uri: URI) => any
-  infoForValue?: (value: any) => { baseURI: URI; metadata: Metadata }
-  onDocumentAdded?: (document: any, documentURI: URI, documentMetadata: Metadata) => Map<URI, Metadata>
 }
 
-export class DocumentIndex<Metadata> {
+export abstract class DocumentIndex implements Index<never> {
   readonly cloned: boolean
   readonly retrieve: (uri: URI) => any
-  readonly findWithURI?: (uri: URI) => any
-  readonly infoForValue?: (value: any) => { baseURI: URI; metadata: Metadata }
-  readonly onDocumentAdded?: (document: any, documentURI: URI, documentMetadata: Metadata) => Map<URI, Metadata>
-  constructor(configuration: DocumentIndexConfiguration<Metadata>) {
+  constructor(configuration: DocumentIndexConfiguration) {
     this.cloned = configuration.cloned ?? defaultCloned
     this.retrieve = memoize((uri: string) => {
       const document = retrieveBuiltin(uri) ?? configuration?.retrieve(uri) ?? defaultRetrieve(uri)
@@ -38,59 +32,35 @@ export class DocumentIndex<Metadata> {
       }
       return document
     })
-    this.findWithURI = (uri: URI) => {
-      if (configuration.findWithURI) {
-        const value = configuration?.findWithURI(uri)
-        if (value !== undefined) {
-          return value
-        }
-      }
-      return this.documentsByURI.get(uri)
-    }
-    this.infoForValue = (value: any) => {
-      if (configuration.infoForValue) {
-        const info = configuration?.infoForValue(value)
-        if (info !== undefined) {
-          return info
-        }
-      }
-      if (this.infosByDocument.has(value)) {
-        return this.infosByDocument.get(value)
-      }
-      return undefined
-    }
-    this.onDocumentAdded = configuration.onDocumentAdded
   }
 
-  // Indexes documents
   private documentsByURI = new Map<string, any>()
-  private infosByDocument = new Map<object, DocumentInfo<Metadata>>()
+  private infosByDocument = new Map<object, DocumentInfo>()
 
-  rootDocument() {
+  root() {
     for (const document of this.documentsByURI.values()) {
       return document
     }
     return undefined
   }
 
-  hasDocument(document: object) {
-    return this.infosByDocument.has(document)
+  isObjectIndexed(object: object) {
+    return this.infosByDocument.has(object)
   }
 
-  hasDocumentWithURI(uri: URI) {
+  isURIIndexed(uri: URI) {
     return this.documentsByURI.has(uri)
   }
 
-  getDocument(uri: URI) {
+  indexedObjectWithURI(uri: URI) {
     return this.documentsByURI.get(uri)
   }
 
-  documentURIs() {
-    return this.documentsByURI.keys()
-  }
-
-  infoForDocument(document: any): DocumentInfo<Metadata> {
-    return this.infosByDocument.get(document)
+  infoForIndexedObject(value: any) {
+    if (this.infosByDocument.has(value)) {
+      return this.infosByDocument.get(value)
+    }
+    return undefined
   }
 
   find(uri: URI, options?: { followReferences: boolean; _uris?: Set<URI> }) {
@@ -114,9 +84,9 @@ export class DocumentIndex<Metadata> {
 
     _uris.add(uri)
 
-    const value = this.findWithURI(uri)
+    const value = this.indexedObjectWithURI(uri)
     if (value !== undefined) {
-      const baseURI = this.infoForValue(value)?.baseURI
+      const baseURI = this.infoForIndexedObject(value)?.baseURI
       return followReferences && typeof value === 'object' ? followReference(value, baseURI) : value
     }
 
@@ -125,7 +95,7 @@ export class DocumentIndex<Metadata> {
       const container = this.find(absoluteURI, options) // can followReferences be folded into findIndex?
       const evaluatedValue = evaluateJSONPointer(fragment, container)
       if (evaluatedValue !== undefined) {
-        const baseURI = this.infoForValue(container)?.baseURI
+        const baseURI = this.infoForIndexedObject(container)?.baseURI
         return followReferences ? followReference(evaluatedValue, baseURI) : evaluatedValue
       }
 
@@ -141,7 +111,7 @@ export class DocumentIndex<Metadata> {
         let parent = this.find(parentURI, options)
         const evaluatedValue = evaluateJSONPointer(remainingFragment, parent) // try evaluating against siblings of $ref
         if (evaluatedValue !== undefined) {
-          const baseURI = this.infoForValue(parent)?.baseURI
+          const baseURI = this.infoForIndexedObject(parent)?.baseURI
           return followReferences === true ? followReference(evaluatedValue, baseURI) : evaluatedValue
         }
 
@@ -149,7 +119,7 @@ export class DocumentIndex<Metadata> {
           if (typeof parent.$ref == 'object') {
             parent = parent.$ref
           } else {
-            const baseURI = this.infoForValue(parent)?.baseURI
+            const baseURI = this.infoForIndexedObject(parent)?.baseURI ?? this.infoForIndexedObject(container)?.baseURI
             const parentRefURI = resolveURIReference(parent.$ref, baseURI)
             parent = this.find(parentRefURI, options)
           }
@@ -157,7 +127,7 @@ export class DocumentIndex<Metadata> {
           const evaluatedValue = evaluateJSONPointer(remainingFragment, parent)
 
           if (evaluatedValue !== undefined) {
-            const baseURI = this.infoForValue(parent)?.baseURI
+            const baseURI = this.infoForIndexedObject(parent)?.baseURI
             return options?.followReferences === true ? followReference(evaluatedValue, baseURI) : evaluatedValue
           }
         }
@@ -167,34 +137,41 @@ export class DocumentIndex<Metadata> {
     return undefined
   }
 
-  addDocument(document: object, documentURI: URI, documentMetadata: Metadata) {
-    const { absoluteURI } = splitFragment(documentURI)
+  addDocument(document: object, baseURI: URI) {
+    // TODO: assert baseURI is absolute..
 
     if (this.cloned) {
       document = structuredClone(document)
     }
 
+    const { absoluteURI, fragment } = splitFragment(baseURI)
     this.documentsByURI.set(absoluteURI, document)
+
     if (typeof document === 'object') {
       this.infosByDocument.set(document, {
-        baseURI: absoluteURI,
-        metadata: documentMetadata
+        baseURI: absoluteURI
       })
     }
 
-    if (this.onDocumentAdded) {
-      const unretrievedURIs = this.onDocumentAdded(document, documentURI, documentMetadata)
-      unretrievedURIs.forEach((externalDocumentMetadata, externalDocumentURI) => {
-        let externalDocument
-        try {
-          const { absoluteURI } = splitFragment(externalDocumentURI)
-          externalDocument = this.retrieve(absoluteURI)
-        } catch (error) {
-          throw new Error(`Failed to retrieve document at uri '${externalDocumentURI}'`)
-        }
+    return document
+  }
 
-        this.addDocument(externalDocument, externalDocumentURI, externalDocumentMetadata)
-      })
+  addDocumentWithURI(uri: URI) {
+    if (hasFragment(uri)) {
+      throw new Error(`Document URI is not absolute: ${uri}`)
     }
+
+    if (this.isURIIndexed(uri)) {
+      return
+    }
+
+    let document
+    try {
+      document = this.retrieve(uri)
+    } catch (error) {
+      throw new Error(`Failed to retrieve document at uri '${uri}'`)
+    }
+
+    return this.addDocument(document, uri)
   }
 }

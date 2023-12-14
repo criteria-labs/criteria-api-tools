@@ -20,7 +20,7 @@ describe('visitSubschemas()', () => {
 
     test('detects subschemas', () => {
       const visited = []
-      visitSubschemas(schema, '', {}, (subschema, path, state) => {
+      visitSubschemas(schema, {}, (subschema, path, state) => {
         visited.push(path)
       })
       expect(visited).toEqual([
@@ -34,7 +34,7 @@ describe('visitSubschemas()', () => {
     })
     test('continues by default', () => {
       const visited = []
-      visitSubschemas(schema, '', {}, (subschema, path, state) => {
+      visitSubschemas(schema, {}, (subschema, path, state) => {
         visited.push(path)
       })
       expect(visited).toEqual([
@@ -48,7 +48,7 @@ describe('visitSubschemas()', () => {
     })
     test('stopping does not visit children or next siblings', () => {
       const visited = []
-      visitSubschemas(schema, '', {}, (subschema, path, state) => {
+      visitSubschemas(schema, {}, (subschema, path, state) => {
         visited.push(path)
         return typeof subschema === 'object' && subschema.$anchor === 'first'
       })
@@ -56,7 +56,7 @@ describe('visitSubschemas()', () => {
     })
     test('stopping while visiting children does not visit remaining children', () => {
       const visited = []
-      visitSubschemas(schema, '', {}, (subschema, path, state) => {
+      visitSubschemas(schema, {}, (subschema, path, state) => {
         visited.push(path)
         return path.length > 0 && path[path.length - 1] === '/properties/foo'
       })
@@ -64,7 +64,7 @@ describe('visitSubschemas()', () => {
     })
     test('stops on truthy value', () => {
       const visited = []
-      visitSubschemas(schema, '', {}, (subschema, path, state) => {
+      visitSubschemas(schema, {}, (subschema, path, state) => {
         visited.push(path)
         return 1 as any
       })
@@ -72,7 +72,7 @@ describe('visitSubschemas()', () => {
     })
     test('continues on falsy', () => {
       const visited = []
-      visitSubschemas(schema, '', {}, (subschema, path, state) => {
+      visitSubschemas(schema, {}, (subschema, path, state) => {
         visited.push(path)
         return null
       })

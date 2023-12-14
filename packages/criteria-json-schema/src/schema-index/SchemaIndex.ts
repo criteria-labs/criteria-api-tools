@@ -1,35 +1,38 @@
-import { evaluateJSONPointer } from '@criteria/json-pointer'
+import { evaluateJSONPointer, unescapeReferenceToken } from '@criteria/json-pointer'
 import { resolveID as resolveIDDraft04 } from '../specification/draft-04/resolveID'
 import { visitSubschemas as visitSubschemasDraft04 } from '../specification/draft-04/visitSubschemas'
-import { metaSchemaURI as metaSchemaURIDraft2020_12 } from '../specification/draft-2020-12/metaSchemaURI'
 import { resolveID as resolveIDDraft2020_12 } from '../specification/draft-2020-12/resolveID'
 import { visitSubschemas as visitSubschemasDraft2020_12 } from '../specification/draft-2020-12/visitSubschemas'
-import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
-import { URI, resolveURIReference, splitFragment } from '../util/uri'
-import { visitJSONReferences } from '../util/visitJSONReferences'
-import { DocumentIndex } from './DocumentIndex'
+import { JSONPointer } from '../util/JSONPointer'
+import { URI, resolveURIReference } from '../util/uri'
+import { Index } from './Index'
 
-// default configuration
-const defaultDefaultMetaSchemaURI = metaSchemaURIDraft2020_12 // yes, defaultDefault...
+export interface Metadata {
+  metaSchemaURI: URI
+}
 
 export interface SchemaInfo {
   baseURI: URI
   metadata: Metadata
 }
 
-export interface Metadata {
-  metaSchemaURI: URI
-  locationFromNearestSchema: JSONPointer
+export interface ReferenceInfo {
+  resolvedURI: URI
+  parent: any | null
+  key: string
+  metadata: Metadata
+  isDynamic: boolean
+  path: JSONPointer[]
 }
 
-export interface SchemaIndexIsolatedConfiguration {
-  defaultMetaSchemaURI: URI
+export interface SchemaIndexConfiguration {
+  foundReference: (reference: object, info: ReferenceInfo) => void
 }
 
-export class SchemaIndexIsolated {
-  readonly defaultMetaSchemaURI: URI
-  constructor(configuration: SchemaIndexIsolatedConfiguration) {
-    this.defaultMetaSchemaURI = configuration?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
+export class SchemaIndex implements Index<Metadata> {
+  private foundReference: (reference: object, info: ReferenceInfo) => void
+  constructor(configuration: SchemaIndexConfiguration) {
+    this.foundReference = configuration.foundReference
   }
 
   // Indexes schemas and { $ref }
@@ -39,9 +42,32 @@ export class SchemaIndexIsolated {
   private infosBySchema = new Map<object, SchemaInfo>()
 
   // Indexes { $ref } in locations that are not schemas
-  private infosByJSONReference = new Map<object, SchemaInfo>()
+  // private infosByJSONReference = new Map<object, SchemaInfo>()
 
-  findWithURI(uri: URI) {
+  isObjectIndexed(object: object) {
+    if (this.infosBySchema.has(object)) {
+      return true
+    }
+    // if (this.infosByJSONReference.has(object)) {
+    //   return true
+    // }
+    return false
+  }
+
+  isURIIndexed(uri: string) {
+    if (this.schemasByURI.has(uri)) {
+      return true
+    }
+    if (this.schemasByAnchors.has(uri)) {
+      return true
+    }
+    if (this.schemasByDynamicAnchors.has(uri)) {
+      return true
+    }
+    return false
+  }
+
+  indexedObjectWithURI(uri: URI) {
     let schema = this.schemasByURI.get(uri)
     if (schema !== undefined) {
       return schema
@@ -60,18 +86,18 @@ export class SchemaIndexIsolated {
     return undefined
   }
 
-  infoForValue(value: any): SchemaInfo | undefined {
+  infoForIndexedObject(value: any): SchemaInfo | undefined {
     if (this.infosBySchema.has(value)) {
       return this.infosBySchema.get(value)
     }
-    if (this.infosByJSONReference.has(value)) {
-      return this.infosByJSONReference.get(value)
-    }
+    // if (this.infosByJSONReference.has(value)) {
+    //   return this.infosByJSONReference.get(value)
+    // }
     return undefined
   }
 
-  addSchemasFromDocument(root: object, locationFromNearestSchema: JSONPointer, document: any, documentURI: URI) {
-    let references = new Map<URI, { location: JSONPointer }>()
+  addSchemasFromRootObject(rootObject: object, baseURI: URI, rootObjectMetadata: Metadata) {
+    let foundReferences = new Map<object, ReferenceInfo>()
 
     const visitSubschemas = (metaSchemaURI: string) => {
       switch (metaSchemaURI) {
@@ -80,17 +106,16 @@ export class SchemaIndexIsolated {
         case 'http://json-schema.org/draft-04/schema#':
           return visitSubschemasDraft04
         default:
-          return visitSubschemas(this.defaultMetaSchemaURI)
+          return visitSubschemas(rootObjectMetadata.metaSchemaURI)
       }
     }
 
-    visitSubschemas(this.defaultMetaSchemaURI)(
-      root,
-      locationFromNearestSchema,
+    visitSubschemas(rootObjectMetadata.metaSchemaURI)(
+      rootObject,
       {
-        baseURI: documentURI,
+        baseURI,
         metadata: {
-          metaSchemaURI: this.defaultMetaSchemaURI
+          metaSchemaURI: rootObjectMetadata.metaSchemaURI
         }
       },
       (subschema, path, state) => {
@@ -130,15 +155,13 @@ export class SchemaIndexIsolated {
         this.infosBySchema.set(subschema, {
           baseURI: $id ?? baseURI,
           metadata: {
-            metaSchemaURI: $schema,
-            locationFromNearestSchema: ''
+            metaSchemaURI: $schema
           }
         })
 
         state.baseURI = $id ?? baseURI
         state.metadata = {
-          metaSchemaURI: $schema,
-          locationFromNearestSchema: ''
+          metaSchemaURI: $schema
         }
 
         let $anchor: string | undefined
@@ -155,252 +178,64 @@ export class SchemaIndexIsolated {
 
         if ('$ref' in subschema && typeof subschema.$ref === 'string') {
           const $ref = resolveURIReference(subschema.$ref, $id ?? baseURI)
+
+          // TODO: test location is from rootObject, where initial location supplied
+          const location = path.join('')
+          const i = location.lastIndexOf('/')
+          const parent = location === '' ? null : evaluateJSONPointer(location.slice(0, i) as JSONPointer, rootObject)
+          const key = unescapeReferenceToken(location.slice(i + 1))
+
           // Don't retrieve yet, because it may resolve to a nested schema with an id
-          references.set($ref, { location: '' })
+          // references.set($ref, { location: '' })
+          this.foundReference(subschema, {
+            resolvedURI: $ref,
+            parent,
+            key,
+            metadata: state.metadata,
+            isDynamic: false,
+            path
+          })
+          foundReferences.set(subschema, {
+            resolvedURI: $ref,
+            parent,
+            key,
+            metadata: state.metadata,
+            isDynamic: false,
+            path
+          })
         }
 
         if ('$dynamicRef' in subschema && typeof subschema.$dynamicRef === 'string') {
           const $dynamicRef = resolveURIReference(subschema.$dynamicRef, $id ?? baseURI)
+
+          // TODO: test location is from rootObject, where initial location supplied
+          const location = path.join('')
+          const i = location.lastIndexOf('/')
+          const parent = location === '' ? null : evaluateJSONPointer(location.slice(0, i) as JSONPointer, rootObject)
+          const key = unescapeReferenceToken(location.slice(i + 1))
+
           // Don't retrieve yet, because it may resolve to a nested schema with an id
-          references.set($dynamicRef, { location: '' })
+          // references.set($dynamicRef, { location: '' })
+          this.foundReference(subschema, {
+            resolvedURI: $dynamicRef,
+            parent,
+            key,
+            metadata: state.metadata,
+            isDynamic: true,
+            path
+          })
+          foundReferences.set(subschema, {
+            resolvedURI: $dynamicRef,
+            parent,
+            key,
+            metadata: state.metadata,
+            isDynamic: true,
+            path
+          })
         }
       }
     )
 
-    // technically shouldn't need this, but used for non-standard $refs
-    visitJSONReferences(
-      document,
-      {
-        baseURI: documentURI,
-        metadata: {
-          metaSchemaURI: this.defaultMetaSchemaURI
-        }
-      },
-      (reference, location, state) => {
-        if (this.infosBySchema.has(reference)) {
-          return
-        }
-        if (this.infosByJSONReference.has(reference)) {
-          return
-        }
-
-        const {
-          baseURI,
-          metadata: { metaSchemaURI }
-        } = state
-
-        this.infosByJSONReference.set(reference, {
-          baseURI,
-          metadata: {
-            metaSchemaURI,
-            locationFromNearestSchema: `${locationFromNearestSchema}${location}`
-          }
-        })
-
-        const uri = resolveURIReference(reference.$ref, baseURI)
-        if (references.has(uri)) {
-          return
-        }
-
-        references.set(uri, {
-          location: `${locationFromNearestSchema}${location}`
-        })
-      }
-    )
-
-    let unretrievedURIs = new Map<URI, Metadata>()
-    references.forEach(({ location }, reference) => {
-      if (this.schemasByURI.has(reference)) {
-        return
-      }
-      if (this.schemasByAnchors.has(reference)) {
-        return
-      }
-      if (this.schemasByDynamicAnchors.has(reference)) {
-        return
-      }
-
-      const { absoluteURI } = splitFragment(reference)
-      if (this.schemasByURI.has(absoluteURI)) {
-        return
-      }
-      if (this.schemasByAnchors.has(absoluteURI)) {
-        return
-      }
-      if (this.schemasByDynamicAnchors.has(absoluteURI)) {
-        return
-      }
-
-      unretrievedURIs.set(reference, {
-        metaSchemaURI: this.defaultMetaSchemaURI,
-        locationFromNearestSchema: location
-      })
-    })
-    return unretrievedURIs
-  }
-}
-
-export interface SchemaIndexConfiguration {
-  cloned?: boolean
-  retrieve?: (uri: URI) => any
-  defaultMetaSchemaURI: URI
-}
-
-export class SchemaIndex {
-  // Indexes documents
-  private documentIndex: DocumentIndex<Metadata>
-  private schemaIndex: SchemaIndexIsolated
-
-  readonly retrieve: (uri: URI) => any
-  readonly defaultMetaSchemaURI: string
-
-  constructor(configuration: SchemaIndexConfiguration) {
-    this.schemaIndex = new SchemaIndexIsolated({
-      defaultMetaSchemaURI: configuration.defaultMetaSchemaURI
-    })
-
-    this.documentIndex = new DocumentIndex<Metadata>({
-      cloned: configuration.cloned,
-      retrieve: configuration.retrieve,
-      findWithURI: (uri: URI) => {
-        return this.schemaIndex.findWithURI(uri)
-      },
-      infoForValue: (value: any) => {
-        return this.schemaIndex.infoForValue(value)
-      },
-      onDocumentAdded: (document, documentURI, documentMetadata) => {
-        const { fragment } = splitFragment(documentURI)
-        const rootSchema = fragment && isJSONPointer(fragment) ? evaluateJSONPointer(fragment, document) : document
-        const unretrievedURIs = this.schemaIndex.addSchemasFromDocument(
-          rootSchema,
-          documentMetadata.locationFromNearestSchema,
-          document,
-          documentURI
-        )
-
-        let result = new Map<URI, Metadata>()
-        unretrievedURIs.forEach(({ metaSchemaURI, locationFromNearestSchema }, unretrievedURI) => {
-          const isSchema = locationFromNearestSchema === ''
-          const { absoluteURI, fragment } = splitFragment(unretrievedURI)
-          if (this.documentIndex.hasDocumentWithURI(absoluteURI)) {
-            if (isJSONPointer(fragment)) {
-              const document = this.documentIndex.getDocument(absoluteURI)
-              const root = evaluateJSONPointer(fragment, document)
-              this.schemaIndex.addSchemasFromDocument(
-                root,
-                isSchema ? '' : `${locationFromNearestSchema}${fragment}`,
-                document,
-                absoluteURI
-              )
-            } else {
-              this.schemaIndex.addSchemasFromDocument(
-                document,
-                isSchema ? '' : locationFromNearestSchema,
-                document,
-                absoluteURI
-              )
-            }
-            return
-          } else {
-            result.set(unretrievedURI, { metaSchemaURI, locationFromNearestSchema })
-          }
-        })
-        return result
-      }
-    })
-
-    this.retrieve = this.documentIndex.retrieve
-    this.defaultMetaSchemaURI = this.schemaIndex.defaultMetaSchemaURI
-  }
-
-  documentURIs() {
-    return this.documentIndex.documentURIs()
-  }
-
-  infoForDocument(document: any) {
-    return this.documentIndex.infoForDocument(document)
-  }
-
-  baseURIForDocument(schema: any) {
-    return this.documentIndex.infoForValue(schema)?.baseURI
-  }
-
-  rootSchema() {
-    return this.documentIndex.rootDocument()
-  }
-
-  baseURIForSchema(schema: any) {
-    return this.schemaIndex.infoForValue(schema)?.baseURI
-  }
-
-  metaSchemaURIForSchema(schema: any) {
-    return this.schemaIndex.infoForValue(schema)?.metadata.metaSchemaURI
-  }
-
-  dereferenceReference(reference: URI, schema: object, path: JSONPointer[]): object {
-    const baseURI = this.baseURIForSchema(schema)
-    const uri = resolveURIReference(reference, baseURI)
-    return this.find(uri, { followReferences: false })
-  }
-
-  dereferenceDynamicReference(dynamicReference: URI, schema: object, path: JSONPointer[]): object {
-    const baseURI = this.baseURIForSchema(schema)
-    const uri = resolveURIReference(dynamicReference, baseURI)
-    const dereferencedSchema = this.find(uri, { followReferences: false })
-
-    // A $dynamicRef without anchor in fragment behaves identical to $ref
-    if (isJSONPointer(splitFragment(uri).fragment)) {
-      return dereferencedSchema
-    }
-
-    const root = this.rootSchema()
-    let candidate = root
-    for (const jsonPointer of path) {
-      candidate = evaluateJSONPointer(jsonPointer, candidate)
-
-      if (jsonPointer === '/$ref' && typeof candidate === 'string') {
-        const baseURI = this.baseURIForSchema(schema)
-        const uri = resolveURIReference(candidate, baseURI)
-        candidate = this.find(uri, { followReferences: false })
-      }
-
-      if (typeof candidate !== 'object') {
-        continue
-      }
-
-      if ('$dynamicAnchor' in candidate && candidate.$dynamicAnchor === dereferencedSchema.$dynamicAnchor) {
-        return candidate
-      }
-
-      if ('$id' in candidate && typeof candidate.$id === 'string') {
-        const outermostBaseURI = this.baseURIForSchema(candidate) ?? this.baseURIForSchema(root)
-        const outermostURI = resolveURIReference(candidate.$id, outermostBaseURI)
-        const anchorURI = resolveURIReference(`#${dereferencedSchema.$dynamicAnchor}`, outermostURI)
-        const candidateAnchor = this.find(anchorURI, { followReferences: false })
-        if (candidateAnchor) {
-          // An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution
-          if (
-            typeof candidateAnchor === 'object' &&
-            '$dynamicAnchor' in candidateAnchor &&
-            candidateAnchor.$dynamicAnchor === dereferencedSchema.$dynamicAnchor
-          ) {
-            return candidateAnchor
-          }
-        }
-      }
-    }
-
-    return dereferencedSchema
-  }
-
-  find(uri: URI, options?: { followReferences: boolean }) {
-    return this.documentIndex.find(uri, options) // delegates to schemaIndex, move common code into this?
-  }
-
-  addRootSchema(rootSchema: object, rootSchemaURI: URI) {
-    this.documentIndex.addDocument(rootSchema, rootSchemaURI, {
-      metaSchemaURI: this.schemaIndex.defaultMetaSchemaURI,
-      locationFromNearestSchema: ''
-    })
+    return foundReferences
   }
 }

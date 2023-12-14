@@ -27,7 +27,6 @@ function appendJSONPointer(path: JSONPointer[], jsonPointer: JSONPointer): JSONP
 
 export function visitSubschemas<State extends object = {}>(
   document: JSONSchema,
-  initialLocation: JSONPointer,
   initialState: State,
   visitor: (subschema: JSONSchema, path: JSONPointer[], state: State) => boolean | void
 ) {
@@ -140,13 +139,7 @@ export function visitSubschemas<State extends object = {}>(
     return stop
   }
 
-  visitObjects(document, (object, location, visitChildren) => {
-    if (isSubschema(`${initialLocation}${location}`)) {
-      visitSubschema(object, [location], [initialState])
-    } else {
-      visitChildren()
-    }
-  })
+  visitSubschema(document, [''], [initialState])
 }
 
 export function visitReferences(object: object, visitor: (parent, key) => void) {

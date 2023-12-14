@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { retrieveUsingLookup } from '../retrievers'
 import { metaSchemaURI as metaSchemaURIDraft04 } from '../specification/draft-04/JSONSchema'
-import { SchemaIndex } from './SchemaIndex'
+import { DereferencingSchemaIndex } from './DereferencingSchemaIndex'
 
 const schema = {
   id: 'http://example.com/root.json',
@@ -46,23 +46,25 @@ describe('SchemaIndex', () => {
             }
           }
         }
-        const index = new SchemaIndex({
+        const index = new DereferencingSchemaIndex({
           cloned: false,
           retrieve: retrieveUsingLookup(documents),
           defaultMetaSchemaURI: metaSchemaURIDraft04
         })
         index.addRootSchema(documents[''], '')
 
-        expect(index.baseURIForDocument(documents[''])).toBeDefined()
-        expect(index.baseURIForDocument(documents['http://localhost:1234/subSchemas.json'])).toBeDefined()
+        expect(index.infoForIndexedObject(documents[''])).toBeDefined()
+        expect(index.infoForIndexedObject(documents['http://localhost:1234/subSchemas.json'])).toBeDefined()
 
-        expect(index.baseURIForSchema(documents[''])).toBeDefined()
-        expect(index.baseURIForSchema(documents['http://localhost:1234/subSchemas.json'].integer)).toBeDefined()
-        expect(index.baseURIForSchema(documents['http://localhost:1234/subSchemas.json'].refToInteger)).toBeDefined()
+        expect(index.infoForIndexedObject(documents[''])).toBeDefined()
+        expect(index.infoForIndexedObject(documents['http://localhost:1234/subSchemas.json'].integer)).toBeDefined()
+        expect(
+          index.infoForIndexedObject(documents['http://localhost:1234/subSchemas.json'].refToInteger)
+        ).toBeDefined()
       })
     })
     describe('draft-04', () => {
-      const index = new SchemaIndex({
+      const index = new DereferencingSchemaIndex({
         cloned: true,
         defaultMetaSchemaURI: metaSchemaURIDraft04
       })

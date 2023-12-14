@@ -25,16 +25,10 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
   private schemasByDynamicAnchors = new Map<string, object>()
   private infosBySchema = new Map<object, SchemaInfo>()
 
-  // Indexes { $ref } in locations that are not schemas
-  // private infosByJSONReference = new Map<object, SchemaInfo>()
-
   isObjectIndexed(object: object) {
     if (this.infosBySchema.has(object)) {
       return true
     }
-    // if (this.infosByJSONReference.has(object)) {
-    //   return true
-    // }
     return false
   }
 
@@ -74,9 +68,6 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
     if (this.infosBySchema.has(value)) {
       return this.infosBySchema.get(value)
     }
-    // if (this.infosByJSONReference.has(value)) {
-    //   return this.infosByJSONReference.get(value)
-    // }
     return undefined
   }
 
@@ -94,7 +85,7 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
       }
     }
 
-    visitSubschemas(rootMetadata.metaSchemaURI)(
+    visitSubschemas(typeof root === 'object' && '$schema' in root ? root.$schema : rootMetadata.metaSchemaURI)(
       root,
       {
         baseURI,

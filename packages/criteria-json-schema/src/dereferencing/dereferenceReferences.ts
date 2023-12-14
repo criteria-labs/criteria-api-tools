@@ -1,36 +1,19 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { DocumentIndex } from '../schema-index/DocumentIndex'
 import { ReferenceInfo } from '../schema-index/types'
-import { mergeReferenceInto as mergeReferenceIntoDraft04 } from '../specification/draft-04/mergeReferenceInto'
-import { mergeReferenceInto as mergeReferenceIntoDraft2020_12 } from '../specification/draft-2020-12/mergeReferenceInto'
 import { URI, resolveURIReference } from '../util/uri'
-import { ReferenceMergePolicy } from './dereferenceJSONSchema'
 
 export function dereferenceReferences<Metadata extends { metaSchemaURI: URI }>(
   rootObject: any,
   references: Map<object, ReferenceInfo<Metadata>>,
   index: DocumentIndex,
-  options: {
-    defaultMetaSchemaURI: URI
-    referenceMergePolicy: ReferenceMergePolicy
-  }
+  merge: (reference: { $ref: string }, info: ReferenceInfo<Metadata>, dereferencedValue: any) => object
 ) {
   const dereferencedValues = new Map<object, object>()
   references.forEach((info, reference) => {
     const dereferencedValue = index.find(info.resolvedURI, { followReferences: true })
     dereferencedValues.set(reference, dereferencedValue)
   })
-
-  const mergeReferenceInto = (metaSchemaURI: string) => {
-    switch (metaSchemaURI) {
-      case 'https://json-schema.org/draft/2020-12/schema':
-        return mergeReferenceIntoDraft2020_12
-      case 'http://json-schema.org/draft-04/schema#':
-        return mergeReferenceIntoDraft04
-      default:
-        return mergeReferenceInto(options.defaultMetaSchemaURI)
-    }
-  }
 
   const mergeStaticReference = (info: ReferenceInfo<Metadata>, reference: { $ref: string }, dereferencedValue: any) => {
     let { parent, key } = info
@@ -70,9 +53,10 @@ export function dereferenceReferences<Metadata extends { metaSchemaURI: URI }>(
     })
 
     // $ref has siblings
-    const { $ref, ...siblings } = reference
-    const target = {}
-    mergeReferenceInto(info.metadata?.metaSchemaURI)(target, dereferencedValue, siblings, options.referenceMergePolicy)
+    // const { $ref, ...siblings } = reference
+    const target = merge(reference, info, dereferencedValue)
+    // const target = {}
+    // mergeReferenceInto(info.metadata?.metaSchemaURI)(target, dereferencedValue, siblings, options.referenceMergePolicy)
     parent[key] = target
 
     dereferencedValues.set(reference, target)

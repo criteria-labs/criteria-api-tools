@@ -1,11 +1,10 @@
-import { URI } from '../util/uri'
 import { SchemaIndex, SchemaIndexConfiguration } from '../schema-index/SchemaIndex'
+import { URI } from '../util/uri'
 import { dereferenceReferences } from './dereferenceReferences'
+import { ReferenceMergePolicy, mergeReference } from './mergeReference'
 
 // default options
 export const defaultReferenceMergePolicy = 'by_keyword'
-
-export type ReferenceMergePolicy = 'by_keyword' | 'overwrite' | 'none' | 'default'
 
 export type DereferenceOptions = SchemaIndexConfiguration & {
   baseURI?: URI
@@ -24,10 +23,8 @@ export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptio
   rootSchema = index.root()
 
   const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
-
-  dereferenceReferences(rootSchema, index.references, index, {
-    defaultMetaSchemaURI: index.defaultMetaSchemaURI,
-    referenceMergePolicy
+  dereferenceReferences(rootSchema, index.references, index, (reference, info, dereferencedValue) => {
+    return mergeReference(reference, info, dereferencedValue, referenceMergePolicy)
   })
 
   const root = index.root()

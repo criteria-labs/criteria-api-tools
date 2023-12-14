@@ -3,12 +3,12 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
-function isDynamicSchema(schema: object): schema is { $dynamicRef: string } {
+function isDynamicReference(schema: object): schema is { $dynamicRef: string } {
   return '$dynamicRef' in schema
 }
 
 export function $dynamicRefValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
-  if (!isDynamicSchema(schema)) {
+  if (!isDynamicReference(schema)) {
     return null
   }
 

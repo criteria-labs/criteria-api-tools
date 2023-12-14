@@ -3,8 +3,12 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
+function isReference(schema: object): schema is { $ref: string } {
+  return '$ref' in schema
+}
+
 export function $refValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
-  if (!('$ref' in schema)) {
+  if (!isReference(schema)) {
     return null
   }
 

@@ -3,8 +3,8 @@ import { DocumentIndex } from '../schema-index/DocumentIndex'
 import { JSONReferenceContentIndex } from '../schema-index/JSONReferenceContentIndex'
 import { SchemaContentIndex } from '../schema-index/SchemaContentIndex'
 import { ReferenceInfo } from '../schema-index/types'
-import { isJSONPointer } from '../util/JSONPointer'
-import { URI, splitFragment } from '../util/uri'
+import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
+import { URI, resolveURIReference, splitFragment } from '../util/uri'
 
 export interface Metadata {
   metaSchemaURI: URI
@@ -75,6 +75,60 @@ export class SchemaIndex extends DocumentIndex {
       return this.jsonReferenceContentIndex.infoForIndexedObject(object)
     }
     return super.infoForIndexedObject(object)
+  }
+
+  dereferenceReference(uri: URI, reference: { $ref: string }, schemaPath: JSONPointer[]) {
+    const resolvedURI = this.references.get(reference)?.resolvedURI
+    return this.find(resolvedURI, { followReferences: false })
+  }
+
+  dereferenceDynamicReference(uri: URI, dynamicReference: { $dynamicRef: string }, schemaPath: JSONPointer[]) {
+    const resolvedURI = this.references.get(dynamicReference)?.resolvedURI
+    const dereferencedSchema = this.find(resolvedURI, { followReferences: false })
+
+    // A $dynamicRef without anchor in fragment behaves identical to $ref
+    if (isJSONPointer(splitFragment(resolvedURI).fragment)) {
+      return dereferencedSchema
+    }
+
+    const root = this.root()
+    let candidate = root
+    for (const jsonPointer of schemaPath) {
+      candidate = evaluateJSONPointer(jsonPointer, candidate)
+
+      if (jsonPointer === '/$ref' && typeof candidate === 'string') {
+        const baseURI = this.infoForIndexedObject(dynamicReference).baseURI
+        const uri = resolveURIReference(candidate, baseURI)
+        candidate = this.find(uri, { followReferences: false })
+      }
+
+      if (typeof candidate !== 'object') {
+        continue
+      }
+
+      if ('$dynamicAnchor' in candidate && candidate.$dynamicAnchor === dereferencedSchema.$dynamicAnchor) {
+        return candidate
+      }
+
+      if ('$id' in candidate && typeof candidate.$id === 'string') {
+        const outermostBaseURI = (this.infoForIndexedObject(candidate) ?? this.infoForIndexedObject(root))?.baseURI
+        const outermostURI = resolveURIReference(candidate.$id, outermostBaseURI)
+        const anchorURI = resolveURIReference(`#${dereferencedSchema.$dynamicAnchor}`, outermostURI)
+        const candidateAnchor = this.find(anchorURI, { followReferences: false })
+        if (candidateAnchor) {
+          // An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution
+          if (
+            typeof candidateAnchor === 'object' &&
+            '$dynamicAnchor' in candidateAnchor &&
+            candidateAnchor.$dynamicAnchor === dereferencedSchema.$dynamicAnchor
+          ) {
+            return candidateAnchor
+          }
+        }
+      }
+    }
+
+    return dereferencedSchema
   }
 
   addRootSchema(rootSchema: object, baseURI: URI) {

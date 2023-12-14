@@ -29,7 +29,7 @@
             "$ref": "#string"
           }
         },
-        "definitions": {
+        "$defs": {
           "string": { "$anchor": "string" }
         }
       }

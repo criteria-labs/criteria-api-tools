@@ -16,8 +16,7 @@ describe('OpenAPI with circular $refs that extend each other', () => {
     it('dereferenceOpenAPI()', async () => {
       const output = dereferenceOpenAPI(selfOpenAPI as any, {
         baseURI: resolve(__dirname, 'self/openapi.json'),
-        retrieve: retrieveFromFilesystem,
-        merge: Object.assign // keep the test fixtures similar to JSON Schema
+        retrieve: retrieveFromFilesystem
       }) as any
       expect(output).toEqual(selfDereferenced)
     })
@@ -26,8 +25,7 @@ describe('OpenAPI with circular $refs that extend each other', () => {
     it('dereferenceOpenAPI()', async () => {
       const output = dereferenceOpenAPI(ancestorOpenAPI as any, {
         baseURI: resolve(__dirname, 'ancestor/openapi.json'),
-        retrieve: retrieveFromFilesystem,
-        merge: Object.assign // keep the test fixtures similar to JSON Schema
+        retrieve: retrieveFromFilesystem
       }) as any
       expect(output).toCircularEqual(ancestorDereferenced)
 
@@ -42,8 +40,7 @@ describe('OpenAPI with circular $refs that extend each other', () => {
     it('dereferenceOpenAPI()', async () => {
       const output = dereferenceOpenAPI(indirectOpenAPI as any, {
         baseURI: resolve(__dirname, 'indirect/openapi.json'),
-        retrieve: retrieveFromFilesystem,
-        merge: Object.assign // keep the test fixtures similar to JSON Schema
+        retrieve: retrieveFromFilesystem
       }) as any
       expect(output).toCircularEqual(indirectDereferenced)
 
@@ -61,8 +58,7 @@ describe('OpenAPI with circular $refs that extend each other', () => {
     it('dereferenceOpenAPI()', async () => {
       const output = dereferenceOpenAPI(indirectAncestorOpenAPI as any, {
         baseURI: resolve(__dirname, 'indirect-ancestor/openapi.json'),
-        retrieve: retrieveFromFilesystem,
-        merge: Object.assign // keep the test fixtures similar to JSON Schema
+        retrieve: retrieveFromFilesystem
       }) as any
       expect(output).toCircularEqual(indirectAncestorDereferenced)
 

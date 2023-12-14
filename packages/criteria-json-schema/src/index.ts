@@ -1,4 +1,6 @@
 export { DereferenceOptions } from './dereferencing/dereferenceJSONSchema'
+export { dereferenceReferences } from './dereferencing/dereferenceReferences'
+export * from './dereferencing/mergeReference'
 export {
   DereferencedJSONSchema as DereferencedJSONSchemaDraft04,
   JSONSchema as JSONSchemaDraft04,
@@ -16,4 +18,8 @@ export {
   metaSchemaURI as metaSchemaURIDraft2020_12
 } from './draft-2020-12'
 export * from './retrievers'
-export { SchemaIndex } from './schema-index/SchemaIndex'
+export * from './schema-index/DocumentIndex'
+export * from './schema-index/JSONReferenceContentIndex'
+export * from './schema-index/SchemaContentIndex'
+export * from './schema-index/SchemaIndex'
+export * from './schema-index/types'

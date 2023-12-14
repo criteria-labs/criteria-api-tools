@@ -26,7 +26,7 @@ const openAPI: any = {
         properties: {
           name: null
         },
-        definitions: {
+        $defs: {
           string: { $anchor: 'string' }
         }
       }
@@ -35,6 +35,6 @@ const openAPI: any = {
 }
 
 openAPI.components.schemas.pet.properties.name = openAPI.components.schemas.pet.definitions.string
-openAPI.components.schemas.person.properties.name = openAPI.components.schemas.person.definitions.string
+openAPI.components.schemas.person.properties.name = openAPI.components.schemas.person.$defs.string
 
 export default openAPI

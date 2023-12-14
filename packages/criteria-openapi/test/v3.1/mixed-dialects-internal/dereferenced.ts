@@ -20,7 +20,7 @@ const openAPI: any = {
         $defs: {
           '04-person': {
             $schema: 'http://json-schema.org/draft-04/schema#',
-            $id: 'https://example.com/04-person.json',
+            id: 'https://example.com/04-person.json',
             type: 'object',
             title: 'person',
             properties: {

@@ -18,3 +18,5 @@ export {
 export * from './retrievers'
 export * from './schema-index/SchemaIndex'
 export * from './schema-index/DocumentIndex'
+export * from './schema-index/SchemaContentIndex'
+export * from './schema-index/JSONReferenceContentIndex'

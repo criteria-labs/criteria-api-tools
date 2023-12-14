@@ -1,6 +1,6 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { DocumentIndex } from '../schema-index/DocumentIndex'
-import { ReferenceInfo } from '../schema-index/Index'
+import { ReferenceInfo } from '../schema-index/types'
 import { mergeReferenceInto as mergeReferenceIntoDraft04 } from '../specification/draft-04/mergeReferenceInto'
 import { mergeReferenceInto as mergeReferenceIntoDraft2020_12 } from '../specification/draft-2020-12/mergeReferenceInto'
 import { URI, resolveURIReference } from '../util/uri'

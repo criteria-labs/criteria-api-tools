@@ -1,8 +1,8 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { DocumentIndex } from '../schema-index/DocumentIndex'
-import { ReferenceInfo } from '../schema-index/Index'
 import { JSONReferenceContentIndex } from '../schema-index/JSONReferenceContentIndex'
 import { SchemaContentIndex } from '../schema-index/SchemaContentIndex'
+import { ReferenceInfo } from '../schema-index/types'
 import { isJSONPointer } from '../util/JSONPointer'
 import { URI, splitFragment } from '../util/uri'
 
@@ -10,17 +10,17 @@ export interface Metadata {
   metaSchemaURI: URI
 }
 
-export interface DereferencingSchemaIndexConfiguration {
+export interface SchemaIndexConfiguration {
   defaultMetaSchemaURI: URI
   cloned?: boolean
   retrieve?: (uri: URI) => any
 }
 
-export class DereferencingSchemaIndex extends DocumentIndex {
+export class SchemaIndex extends DocumentIndex {
   readonly schemaContentIndex: SchemaContentIndex
   readonly jsonReferenceContentIndex: JSONReferenceContentIndex<Metadata>
   readonly defaultMetaSchemaURI: string
-  constructor(configuration: DereferencingSchemaIndexConfiguration) {
+  constructor(configuration: SchemaIndexConfiguration) {
     super({
       cloned: configuration.cloned,
       retrieve: configuration.retrieve

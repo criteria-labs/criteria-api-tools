@@ -2,7 +2,7 @@ import { evaluateJSONPointer, unescapeReferenceToken } from '@criteria/json-poin
 import { JSONPointer } from '../util/JSONPointer'
 import { URI, resolveURIReference } from '../util/uri'
 import { visitJSONReferences } from '../util/visitJSONReferences'
-import { ContentIndex, Index, ReferenceInfo } from './Index'
+import { ContentIndex, ReferenceInfo } from './types'
 
 export interface JSONReferenceInfo<Metadata> {
   baseURI: URI

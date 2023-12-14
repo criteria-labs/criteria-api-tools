@@ -5,18 +5,18 @@ import { resolveID as resolveIDDraft2020_12 } from '../specification/draft-2020-
 import { visitSubschemas as visitSubschemasDraft2020_12 } from '../specification/draft-2020-12/visitSubschemas'
 import { JSONPointer } from '../util/JSONPointer'
 import { URI, resolveURIReference } from '../util/uri'
-import { ContentIndex, Index, ReferenceInfo } from './Index'
+import { ContentIndex, ReferenceInfo } from './types'
 
-export interface Metadata {
+export interface SchemaMetadata {
   metaSchemaURI: URI
 }
 
 export interface SchemaInfo {
   baseURI: URI
-  metadata: Metadata
+  metadata: SchemaMetadata
 }
 
-export class SchemaContentIndex implements ContentIndex<Metadata> {
+export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
   constructor() {}
 
   // Indexes schemas and { $ref }
@@ -80,8 +80,8 @@ export class SchemaContentIndex implements ContentIndex<Metadata> {
     return undefined
   }
 
-  addContentFromRoot(root: any, baseURI: URI, rootMetadata: Metadata) {
-    let foundReferences = new Map<object, ReferenceInfo<Metadata>>()
+  addContentFromRoot(root: any, baseURI: URI, rootMetadata: SchemaMetadata) {
+    let foundReferences = new Map<object, ReferenceInfo<SchemaMetadata>>()
 
     const visitSubschemas = (metaSchemaURI: string) => {
       switch (metaSchemaURI) {

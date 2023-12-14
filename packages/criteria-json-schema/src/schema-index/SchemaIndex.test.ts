@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { retrieveUsingLookup } from '../retrievers'
 import { metaSchemaURI as metaSchemaURIDraft04 } from '../specification/draft-04/JSONSchema'
-import { DereferencingSchemaIndex } from './DereferencingSchemaIndex'
+import { SchemaIndex } from './SchemaIndex'
 
 const schema = {
   id: 'http://example.com/root.json',
@@ -46,7 +46,7 @@ describe('SchemaIndex', () => {
             }
           }
         }
-        const index = new DereferencingSchemaIndex({
+        const index = new SchemaIndex({
           cloned: false,
           retrieve: retrieveUsingLookup(documents),
           defaultMetaSchemaURI: metaSchemaURIDraft04
@@ -64,7 +64,7 @@ describe('SchemaIndex', () => {
       })
     })
     describe('draft-04', () => {
-      const index = new DereferencingSchemaIndex({
+      const index = new SchemaIndex({
         cloned: true,
         defaultMetaSchemaURI: metaSchemaURIDraft04
       })

@@ -5,7 +5,7 @@ import { resolveID as resolveIDDraft2020_12 } from '../specification/draft-2020-
 import { visitSubschemas as visitSubschemasDraft2020_12 } from '../specification/draft-2020-12/visitSubschemas'
 import { JSONPointer } from '../util/JSONPointer'
 import { URI, resolveURIReference } from '../util/uri'
-import { Index } from './Index'
+import { ContentIndex, Index, ReferenceInfo } from './Index'
 
 export interface Metadata {
   metaSchemaURI: URI
@@ -16,24 +16,8 @@ export interface SchemaInfo {
   metadata: Metadata
 }
 
-export interface ReferenceInfo {
-  resolvedURI: URI
-  parent: any | null
-  key: string
-  metadata: Metadata
-  isDynamic: boolean
-  path: JSONPointer[]
-}
-
-export interface SchemaIndexConfiguration {
-  foundReference: (reference: object, info: ReferenceInfo) => void
-}
-
-export class SchemaIndex implements Index<Metadata> {
-  private foundReference: (reference: object, info: ReferenceInfo) => void
-  constructor(configuration: SchemaIndexConfiguration) {
-    this.foundReference = configuration.foundReference
-  }
+export class SchemaContentIndex implements ContentIndex<Metadata> {
+  constructor() {}
 
   // Indexes schemas and { $ref }
   private schemasByURI = new Map<string, object>()
@@ -96,8 +80,8 @@ export class SchemaIndex implements Index<Metadata> {
     return undefined
   }
 
-  addSchemasFromRootObject(rootObject: object, baseURI: URI, rootObjectMetadata: Metadata) {
-    let foundReferences = new Map<object, ReferenceInfo>()
+  addContentFromRoot(root: any, baseURI: URI, rootMetadata: Metadata) {
+    let foundReferences = new Map<object, ReferenceInfo<Metadata>>()
 
     const visitSubschemas = (metaSchemaURI: string) => {
       switch (metaSchemaURI) {
@@ -106,16 +90,16 @@ export class SchemaIndex implements Index<Metadata> {
         case 'http://json-schema.org/draft-04/schema#':
           return visitSubschemasDraft04
         default:
-          return visitSubschemas(rootObjectMetadata.metaSchemaURI)
+          return visitSubschemas(rootMetadata.metaSchemaURI)
       }
     }
 
-    visitSubschemas(rootObjectMetadata.metaSchemaURI)(
-      rootObject,
+    visitSubschemas(rootMetadata.metaSchemaURI)(
+      root,
       {
         baseURI,
         metadata: {
-          metaSchemaURI: rootObjectMetadata.metaSchemaURI
+          metaSchemaURI: rootMetadata.metaSchemaURI
         }
       },
       (subschema, path, state) => {
@@ -182,19 +166,10 @@ export class SchemaIndex implements Index<Metadata> {
           // TODO: test location is from rootObject, where initial location supplied
           const location = path.join('')
           const i = location.lastIndexOf('/')
-          const parent = location === '' ? null : evaluateJSONPointer(location.slice(0, i) as JSONPointer, rootObject)
+          const parent = location === '' ? null : evaluateJSONPointer(location.slice(0, i) as JSONPointer, root)
           const key = unescapeReferenceToken(location.slice(i + 1))
 
           // Don't retrieve yet, because it may resolve to a nested schema with an id
-          // references.set($ref, { location: '' })
-          this.foundReference(subschema, {
-            resolvedURI: $ref,
-            parent,
-            key,
-            metadata: state.metadata,
-            isDynamic: false,
-            path
-          })
           foundReferences.set(subschema, {
             resolvedURI: $ref,
             parent,
@@ -211,19 +186,10 @@ export class SchemaIndex implements Index<Metadata> {
           // TODO: test location is from rootObject, where initial location supplied
           const location = path.join('')
           const i = location.lastIndexOf('/')
-          const parent = location === '' ? null : evaluateJSONPointer(location.slice(0, i) as JSONPointer, rootObject)
+          const parent = location === '' ? null : evaluateJSONPointer(location.slice(0, i) as JSONPointer, root)
           const key = unescapeReferenceToken(location.slice(i + 1))
 
           // Don't retrieve yet, because it may resolve to a nested schema with an id
-          // references.set($dynamicRef, { location: '' })
-          this.foundReference(subschema, {
-            resolvedURI: $dynamicRef,
-            parent,
-            key,
-            metadata: state.metadata,
-            isDynamic: true,
-            path
-          })
           foundReferences.set(subschema, {
             resolvedURI: $dynamicRef,
             parent,

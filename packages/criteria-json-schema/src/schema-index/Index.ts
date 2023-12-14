@@ -1,3 +1,4 @@
+import { JSONPointer } from '../util/JSONPointer'
 import { URI } from '../util/uri'
 
 export type IndexedObjectInfo<Metadata> = [Metadata] extends [never]
@@ -14,4 +15,17 @@ export interface Index<Metadata> {
   isURIIndexed: (uri: URI) => boolean
   indexedObjectWithURI: (uri: URI) => any | undefined
   infoForIndexedObject: (value: any) => IndexedObjectInfo<Metadata> | undefined
+}
+
+export interface ReferenceInfo<Metadata> {
+  resolvedURI: URI
+  parent: any | null
+  key: string
+  metadata: Metadata
+  isDynamic: boolean
+  path: JSONPointer[]
+}
+
+export interface ContentIndex<Metadata> extends Index<Metadata> {
+  addContentFromRoot: (root: any, baseURI: URI, rootMetadata: Metadata) => Map<object, ReferenceInfo<Metadata>>
 }

@@ -1,9 +1,10 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { DocumentIndex } from '../schema-index/DocumentIndex'
-import { SchemaIndex } from '../schema-index/SchemaIndex'
-import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
+import { ReferenceInfo } from '../schema-index/Index'
+import { JSONReferenceContentIndex } from '../schema-index/JSONReferenceContentIndex'
+import { SchemaContentIndex } from '../schema-index/SchemaContentIndex'
+import { isJSONPointer } from '../util/JSONPointer'
 import { URI, splitFragment } from '../util/uri'
-import { JSONReferenceIndex } from '../schema-index/JSONReferenceIndex'
 
 export interface Metadata {
   metaSchemaURI: URI
@@ -15,79 +16,63 @@ export interface DereferencingSchemaIndexConfiguration {
   retrieve?: (uri: URI) => any
 }
 
-export interface ReferenceInfo {
-  resolvedURI: URI
-  parent: any | null
-  key: string
-  metadata: Metadata
-  isDynamic: boolean
-  path: JSONPointer[]
-}
-
 export class DereferencingSchemaIndex extends DocumentIndex {
-  readonly schemaIndex: SchemaIndex
-  readonly jsonReferenceIndex: JSONReferenceIndex<Metadata>
+  readonly schemaContentIndex: SchemaContentIndex
+  readonly jsonReferenceContentIndex: JSONReferenceContentIndex<Metadata>
   readonly defaultMetaSchemaURI: string
   constructor(configuration: DereferencingSchemaIndexConfiguration) {
     super({
       cloned: configuration.cloned,
       retrieve: configuration.retrieve
     })
-    this.schemaIndex = new SchemaIndex({
-      foundReference: (reference, info) => {
-        this.references.set(reference, info)
-      }
-    })
-    this.jsonReferenceIndex = new JSONReferenceIndex({
+    this.schemaContentIndex = new SchemaContentIndex()
+    this.jsonReferenceContentIndex = new JSONReferenceContentIndex({
       shouldIndexObject: (object) => {
         // don't index as JSON Reference if already indexed as schema or document
         return !this.isObjectIndexed(object)
-      },
-      foundReference: (reference, info) => {
-        this.references.set(reference, { ...info, isDynamic: false, path: [info.location] })
       }
     })
     this.defaultMetaSchemaURI = configuration.defaultMetaSchemaURI
   }
 
-  readonly references = new Map<object, ReferenceInfo>()
+  readonly references = new Map<object, ReferenceInfo<Metadata>>()
 
   override isObjectIndexed(object: object): boolean {
-    if (this.schemaIndex.isObjectIndexed(object)) {
+    if (this.schemaContentIndex.isObjectIndexed(object)) {
       return true
     }
-    if (this.jsonReferenceIndex.isObjectIndexed(object)) {
+    if (this.jsonReferenceContentIndex.isObjectIndexed(object)) {
       return true
     }
     return super.isObjectIndexed(object)
   }
 
   override isURIIndexed(uri: string): boolean {
-    if (this.schemaIndex.isURIIndexed(uri)) {
+    if (this.schemaContentIndex.isURIIndexed(uri)) {
       return true
     }
-    if (this.jsonReferenceIndex.isURIIndexed(uri)) {
+    if (this.jsonReferenceContentIndex.isURIIndexed(uri)) {
       return true
     }
     return super.indexedObjectWithURI(uri)
   }
 
   override indexedObjectWithURI(uri: URI) {
-    if (this.schemaIndex.isURIIndexed(uri)) {
-      return this.schemaIndex.indexedObjectWithURI(uri)
+    if (this.schemaContentIndex.isURIIndexed(uri)) {
+      return this.schemaContentIndex.indexedObjectWithURI(uri)
     }
-    if (this.jsonReferenceIndex.isURIIndexed(uri)) {
-      return this.jsonReferenceIndex.indexedObjectWithURI(uri)
+    if (this.jsonReferenceContentIndex.isURIIndexed(uri)) {
+      return this.jsonReferenceContentIndex.indexedObjectWithURI(uri)
     }
     return super.indexedObjectWithURI(uri)
   }
 
   override infoForIndexedObject(object: any) {
-    if (this.schemaIndex.isObjectIndexed(object)) {
-      return this.schemaIndex.infoForIndexedObject(object)
+    if (this.schemaContentIndex.isObjectIndexed(object)) {
+      return this.schemaContentIndex.infoForIndexedObject(object)
     }
-    if (this.jsonReferenceIndex.isObjectIndexed(object)) {
-      return this.jsonReferenceIndex.infoForIndexedObject(object)
+    if (this.jsonReferenceContentIndex.isObjectIndexed(object)) {
+      return this.jsonReferenceContentIndex.infoForIndexedObject(object)
     }
     return super.infoForIndexedObject(object)
   }
@@ -104,7 +89,10 @@ export class DereferencingSchemaIndex extends DocumentIndex {
   }
 
   addSchemas(rootSchema: any, baseURI: URI, metadata: Metadata) {
-    const foundSchemaReferences = this.schemaIndex.addSchemasFromRootObject(rootSchema, baseURI, metadata)
+    const foundSchemaReferences = this.schemaContentIndex.addContentFromRoot(rootSchema, baseURI, metadata)
+    foundSchemaReferences.forEach((info, reference) => {
+      this.references.set(reference, info)
+    })
 
     foundSchemaReferences.forEach((info, reference) => {
       if (this.isURIIndexed(info.resolvedURI)) {
@@ -136,8 +124,10 @@ export class DereferencingSchemaIndex extends DocumentIndex {
   }
 
   addJSONReferences(rootObject: any, baseURI: URI, metadata: Metadata) {
-    // should be on entire document?
-    const foundJSONReferences = this.jsonReferenceIndex.addJSONReferences(rootObject, baseURI, metadata)
+    const foundJSONReferences = this.jsonReferenceContentIndex.addContentFromRoot(rootObject, baseURI, metadata)
+    foundJSONReferences.forEach((info, reference) => {
+      this.references.set(reference, info)
+    })
 
     foundJSONReferences.forEach((info, reference) => {
       if (this.isURIIndexed(info.resolvedURI)) {

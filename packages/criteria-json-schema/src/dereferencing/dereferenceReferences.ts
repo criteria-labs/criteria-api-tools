@@ -1,14 +1,14 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { DocumentIndex } from '../schema-index/DocumentIndex'
+import { ReferenceInfo } from '../schema-index/Index'
 import { mergeReferenceInto as mergeReferenceIntoDraft04 } from '../specification/draft-04/mergeReferenceInto'
 import { mergeReferenceInto as mergeReferenceIntoDraft2020_12 } from '../specification/draft-2020-12/mergeReferenceInto'
 import { URI, resolveURIReference } from '../util/uri'
-import { ReferenceInfo } from './DereferencingSchemaIndex'
 import { ReferenceMergePolicy } from './dereferenceJSONSchema'
 
-export function dereferenceReferences(
+export function dereferenceReferences<Metadata extends { metaSchemaURI: URI }>(
   rootObject: any,
-  references: Map<object, ReferenceInfo>,
+  references: Map<object, ReferenceInfo<Metadata>>,
   index: DocumentIndex,
   options: {
     defaultMetaSchemaURI: URI
@@ -32,7 +32,7 @@ export function dereferenceReferences(
     }
   }
 
-  const mergeStaticReference = (info: ReferenceInfo, reference: { $ref: string }, dereferencedValue: any) => {
+  const mergeStaticReference = (info: ReferenceInfo<Metadata>, reference: { $ref: string }, dereferencedValue: any) => {
     let { parent, key } = info
 
     // detect $ref to self
@@ -81,7 +81,7 @@ export function dereferenceReferences(
   }
 
   // replace dynamic anchors with outermost value
-  const mergeDynamicReference = (info: ReferenceInfo, reference: object, dereferencedValue: any) => {
+  const mergeDynamicReference = (info: ReferenceInfo<Metadata>, reference: object, dereferencedValue: any) => {
     if (!('$dynamicRef' in reference)) {
       return
     }
@@ -119,7 +119,7 @@ export function dereferenceReferences(
   }
 
   const seen = new Set()
-  const mergeAnyReference = (info: ReferenceInfo, reference: object) => {
+  const mergeAnyReference = (info: ReferenceInfo<Metadata>, reference: object) => {
     if (seen.has(reference)) {
       return
     }

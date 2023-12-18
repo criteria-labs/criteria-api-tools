@@ -1,125 +1,125 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid closing Z after time-zone offset validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-19T08:30:06.28123+01:00Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings an invalid closing Z after time-zone offset validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-19T08:30:06.28123+01:00Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time past leap second, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:59:61Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings an invalid date-time past leap second, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:59:61Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '06/19/1963 08:30:06 PST' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings an invalid date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '06/19/1963 08:30:06 PST' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong hour, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T22:59:60Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong hour, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T22:59:60Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong minute, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:58:60Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong minute, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:58:60Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid day in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-02-31T15:59:59.123-08:00' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings an invalid day in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-02-31T15:59:59.123-08:00' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid offset in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-12-31T15:59:59-24:00' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings an invalid offset in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-12-31T15:59:59-24:00' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in date portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1৪T00:00:00Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in date portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1৪T00:00:00Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in time portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-11T0৪:00:00Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in time portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-11T0৪:00:00Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-padded day dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1T08:30:06.283185Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings invalid non-padded day dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1T08:30:06.283185Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-padded month dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-6-19T08:30:06.283185Z' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings invalid non-padded month dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-6-19T08:30:06.283185Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '2013-350T01:01:01' instead"`;
+exports[`tests/draft4/optiona/format/date-time.json validation of date-time strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '2013-350T01:01:01' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses an invalid e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '2962' instead"`;
+exports[`tests/draft4/optiona/format/email.json validation of e-mail addresses an invalid e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '2962' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses dot after local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'test.@example.com' instead"`;
+exports[`tests/draft4/optiona/format/email.json validation of e-mail addresses dot after local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'test.@example.com' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses dot before local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '.test@example.com' instead"`;
+exports[`tests/draft4/optiona/format/email.json validation of e-mail addresses dot before local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '.test@example.com' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses two subsequent dots inside local part are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'te..st@example.com' instead"`;
+exports[`tests/draft4/optiona/format/email.json validation of e-mail addresses two subsequent dots inside local part are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'te..st@example.com' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names a host name containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'not_a_valid_host_name' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names a host name containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'not_a_valid_host_name' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names a host name starting with an illegal character validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-a-host-name-that-starts-with--' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names a host name starting with an illegal character validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-a-host-name-that-starts-with--' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names a host name with a component too long validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'a-vvvvvvvvvvvvvvvveeeeeeeeeeeeeeeerrrrrrrrrrrrrrrryyyyyyyyyyyyyyyy-long-host-name-component' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names a host name with a component too long validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'a-vvvvvvvvvvvvvvvveeeeeeeeeeeeeeeerrrrrrrrrrrrrrrryyyyyyyyyyyyyyyy-long-host-name-component' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names contains underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'host_name' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names contains underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'host_name' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names ends with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname-' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names ends with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname-' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names ends with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname_' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names ends with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname_' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names exceeds maximum label length validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names exceeds maximum label length validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names starts with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-hostname' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names starts with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-hostname' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names starts with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '_hostname' instead"`;
+exports[`tests/draft4/optiona/format/hostname.json validation of host names starts with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '_hostname' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address as an integer (decimal) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '2130706433' instead"`;
+exports[`tests/draft4/optiona/format/ipv4.json validation of IP addresses an IP address as an integer (decimal) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '2130706433' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address as an integer validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '0x7f000001' instead"`;
+exports[`tests/draft4/optiona/format/ipv4.json validation of IP addresses an IP address as an integer validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '0x7f000001' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '256.256.256.256' instead"`;
+exports[`tests/draft4/optiona/format/ipv4.json validation of IP addresses an IP address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '256.256.256.256' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0.0.0.1' instead"`;
+exports[`tests/draft4/optiona/format/ipv4.json validation of IP addresses an IP address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0.0.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address without 4 components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0' instead"`;
+exports[`tests/draft4/optiona/format/ipv4.json validation of IP addresses an IP address without 4 components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses invalid leading zeroes, as they are treated as octals validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '087.10.0.1' instead"`;
+exports[`tests/draft4/optiona/format/ipv4.json validation of IP addresses invalid leading zeroes, as they are treated as octals validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '087.10.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '1২7.0.0.1' instead"`;
+exports[`tests/draft4/optiona/format/ipv4.json validation of IP addresses invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '1২7.0.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, first validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:255.255.255.255.255' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, first validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:255.255.255.255.255' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, second validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:100:255.255.255.255' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, second validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:100:255.255.255.255' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses an IPv6 address containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::laptop' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses an IPv6 address containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::laptop' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses an IPv6 address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '12345::' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses an IPv6 address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '12345::' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses an IPv6 address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses an IPv6 address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses insufficient octets without double colons validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses insufficient octets without double colons validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) in the IPv4 portion validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2::192.16৪.0.1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) in the IPv4 portion validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2::192.16৪.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:৪' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:৪' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses ipv4 is not ipv6 validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '127.0.0.1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses ipv4 is not ipv6 validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '127.0.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses ipv4 segment must have 4 octets validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:1.2.3' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses ipv4 segment must have 4 octets validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:1.2.3' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses leading whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '  ::1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses leading whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '  ::1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses missing leading octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4:5:6:7:8' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses missing leading octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4:5:6:7:8' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses missing leading octet with omitted octets later validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4::8' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses missing leading octet with omitted octets later validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4::8' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses missing trailing octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses missing trailing octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with a hex octet validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.ff.1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with a hex octet validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.ff.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with octet out of range validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.256.1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with octet out of range validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.256.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses netmask is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::/64' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses netmask is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::/64' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses no colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses no colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses trailing 5 hex symbols is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::abcef' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses trailing 5 hex symbols is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::abcef' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses trailing whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::1  ' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses trailing whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::1  ' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses triple colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:::8' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses triple colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:::8' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses two sets of double colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::d6::42' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses two sets of double colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::d6::42' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses zone id is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::a%eth1' instead"`;
+exports[`tests/draft4/optiona/format/ipv6.json validation of IPv6 addresses zone id is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::a%eth1' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI though valid URI reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'abc' instead"`;
+exports[`tests/draft4/optiona/format/uri.json validation of URIs an invalid URI though valid URI reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'abc' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '\\\\WINDOWS\\fileshare' instead"`;
+exports[`tests/draft4/optiona/format/uri.json validation of URIs an invalid URI validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '\\\\WINDOWS\\fileshare' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI with comma in scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'bar,baz:foo' instead"`;
+exports[`tests/draft4/optiona/format/uri.json validation of URIs an invalid URI with comma in scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'bar,baz:foo' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI with spaces and missing scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is ':// should fail' instead"`;
+exports[`tests/draft4/optiona/format/uri.json validation of URIs an invalid URI with spaces and missing scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is ':// should fail' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI with spaces validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'http:// shouldfail.com' instead"`;
+exports[`tests/draft4/optiona/format/uri.json validation of URIs an invalid URI with spaces validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'http:// shouldfail.com' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid protocol-relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '//foo.bar/?baz=qux#quux' instead"`;
+exports[`tests/draft4/optiona/format/uri.json validation of URIs an invalid protocol-relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '//foo.bar/?baz=qux#quux' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '/abc' instead"`;
+exports[`tests/draft4/optiona/format/uri.json validation of URIs an invalid relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '/abc' instead"`;

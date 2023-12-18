@@ -25,7 +25,7 @@ const retrieveRemote = (uri: string): JSONSchemaDraft2020_12 => {
   }
 }
 
-describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
+describe.each(testFilesTable)(`tests/draft2020-12/optional/format/%s`, (testFilename) => {
   const testFilePath = path.resolve(testCasesDirectory, testFilename)
   const testFileContents = fs.readFileSync(testFilePath, { encoding: 'utf-8' })
   const testCases = JSON.parse(testFileContents)

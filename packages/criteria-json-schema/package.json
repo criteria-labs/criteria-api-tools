@@ -8,6 +8,8 @@
     "jsonschema",
     "draft-04",
     "draft04",
+    "draft-06",
+    "draft06",
     "draft-2020-12",
     "draft202012"
   ],
@@ -25,6 +27,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./draft-04": "./dist/draft-04.js",
+    "./draft-06": "./dist/draft-06.js",
     "./draft-2020-12": "./dist/draft-2020-12.js"
   },
   "main": "dist/index.js",

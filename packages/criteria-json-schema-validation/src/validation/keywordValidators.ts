@@ -1,7 +1,16 @@
-import { JSONSchemaDraft04, JSONSchemaDraft2020_12, SchemaIndex, metaSchemaURIDraft04 } from '@criteria/json-schema'
+import {
+  JSONSchemaDraft04,
+  JSONSchemaDraft06,
+  JSONSchemaDraft2020_12,
+  SchemaIndex,
+  metaSchemaURIDraft04,
+  metaSchemaURIDraft06
+} from '@criteria/json-schema'
 import { SchemaError } from '../errors/SchemaError'
 import { coreValidators as coreValidatorsDraft04 } from '../specification/draft-04/vocabularies/core'
 import { validationValidators as validationValidatorsDraft04 } from '../specification/draft-04/vocabularies/validation'
+import { coreValidators as coreValidatorsDraft06 } from '../specification/draft-06/vocabularies/core'
+import { validationValidators as validationValidatorsDraft06 } from '../specification/draft-06/vocabularies/validation'
 import { applicatorValidators as applicatorValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/applicator'
 import { coreValidators as coreValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/core'
 import { unevaluatedValidators as unevaluatedValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/unevaluated'
@@ -11,7 +20,7 @@ import { JSONPointer } from '../util/JSONPointer'
 import { BoundValidatorWithAnnotationResults } from './BoundValidator'
 import { BoundValidatorForSchema } from './validatorBinder'
 
-export type JSONSchemaKeyword = keyof JSONSchemaDraft2020_12 | keyof JSONSchemaDraft04
+export type JSONSchemaKeyword = keyof JSONSchemaDraft04 | keyof JSONSchemaDraft06 | keyof JSONSchemaDraft2020_12
 
 export type ValidatorContext = {
   failFast: boolean
@@ -48,6 +57,15 @@ export function keywordValidatorsForMetaSchemaURIFactory({
       const validators = {
         ...coreValidatorsDraft04,
         ...validationValidatorsDraft04
+      }
+      cache.set(metaSchemaURI, validators)
+      return validators
+    }
+
+    if (metaSchemaURI === metaSchemaURIDraft06) {
+      const validators = {
+        ...coreValidatorsDraft06,
+        ...validationValidatorsDraft06
       }
       cache.set(metaSchemaURI, validators)
       return validators

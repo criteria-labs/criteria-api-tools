@@ -1,331 +1,331 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`tests/draft2020-12/date.json validation of date strings 2021 is not a leap year validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2021-02-29' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings 2021 is not a leap year validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2021-02-29' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings ISO8601 / non-RFC3339: YYYYMMDD without dashes (2023-03-28) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '20230328' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings ISO8601 / non-RFC3339: YYYYMMDD without dashes (2023-03-28) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '20230328' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings ISO8601 / non-RFC3339: week number implicit day of week (2023-01-02) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2023-W01' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings ISO8601 / non-RFC3339: week number implicit day of week (2023-01-02) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2023-W01' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings ISO8601 / non-RFC3339: week number rollover to next year (2023-01-01) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2022W527' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings ISO8601 / non-RFC3339: week number rollover to next year (2023-01-01) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2022W527' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings ISO8601 / non-RFC3339: week number with day of week (2023-03-28) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2023-W13-2' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings ISO8601 / non-RFC3339: week number with day of week (2023-03-28) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2023-W13-2' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 29 days in February (normal) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2021-02-29' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 29 days in February (normal) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2021-02-29' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 30 days in February (leap) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-02-30' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 30 days in February (leap) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-02-30' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 31 days in April validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-04-31' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 31 days in April validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-04-31' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 31 days in June validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-06-31' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 31 days in June validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-06-31' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 31 days in November validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-11-31' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 31 days in November validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-11-31' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 31 days in September validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-09-31' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 31 days in September validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-09-31' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 32 days in August validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-08-32' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 32 days in August validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-08-32' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 32 days in December validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-12-32' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 32 days in December validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-12-32' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 32 days in January validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-01-32' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 32 days in January validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-01-32' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 32 days in July validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-07-32' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 32 days in July validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-07-32' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 32 days in March validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-03-32' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 32 days in March validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-03-32' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 32 days in May validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-05-32' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 32 days in May validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-05-32' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with 32 days in October validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-10-32' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with 32 days in October validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-10-32' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings a invalid date string with invalid month validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-13-01' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings a invalid date string with invalid month validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2020-13-01' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings an invalid date string validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '06/19/1963' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings an invalid date string validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '06/19/1963' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings invalid month validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-13-01' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings invalid month validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-13-01' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings invalid month-day combination validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-04-31' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings invalid month-day combination validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-04-31' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings invalid non-ASCII '৪' (a Bengali 4) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1963-06-1৪' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings invalid non-ASCII '৪' (a Bengali 4) validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1963-06-1৪' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings non-padded day dates are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-01-1' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings non-padded day dates are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-01-1' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings non-padded month dates are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-1-20' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings non-padded month dates are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '1998-1-20' instead"`;
 
-exports[`tests/draft2020-12/date.json validation of date strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2013-350' instead"`;
+exports[`tests/draft2020-12/optional/format/date.json validation of date strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date but is '2013-350' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid closing Z after time-zone offset validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-19T08:30:06.28123+01:00Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings an invalid closing Z after time-zone offset validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-19T08:30:06.28123+01:00Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time past leap second, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:59:61Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings an invalid date-time past leap second, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:59:61Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '06/19/1963 08:30:06 PST' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings an invalid date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '06/19/1963 08:30:06 PST' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong hour, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T22:59:60Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong hour, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T22:59:60Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong minute, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:58:60Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings an invalid date-time with leap second on a wrong minute, UTC validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1998-12-31T23:58:60Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid day in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-02-31T15:59:59.123-08:00' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings an invalid day in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-02-31T15:59:59.123-08:00' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings an invalid offset in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-12-31T15:59:59-24:00' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings an invalid offset in date-time string validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1990-12-31T15:59:59-24:00' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in date portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1৪T00:00:00Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in date portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1৪T00:00:00Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in time portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-11T0৪:00:00Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings invalid non-ASCII '৪' (a Bengali 4) in time portion validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-11T0৪:00:00Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-padded day dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1T08:30:06.283185Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings invalid non-padded day dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-06-1T08:30:06.283185Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings invalid non-padded month dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-6-19T08:30:06.283185Z' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings invalid non-padded month dates validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '1963-6-19T08:30:06.283185Z' instead"`;
 
-exports[`tests/draft2020-12/date-time.json validation of date-time strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '2013-350T01:01:01' instead"`;
+exports[`tests/draft2020-12/optional/format/date-time.json validation of date-time strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as date-time but is '2013-350T01:01:01' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings an invalid duration string validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'PT1D' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings an invalid duration string validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'PT1D' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings element without unit validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings element without unit validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings elements out of order validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P2D1Y' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings elements out of order validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P2D1Y' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P২Y' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P২Y' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings missing time separator validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1D2H' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings missing time separator validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1D2H' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings no date or time elements present validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'PT' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings no date or time elements present validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'PT' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings no elements present validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings no elements present validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings no time elements present validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1YT' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings no time elements present validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1YT' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings time element in the date position validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P2S' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings time element in the date position validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P2S' instead"`;
 
-exports[`tests/draft2020-12/duration.json validation of duration strings weeks cannot be combined with other units validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1Y2W' instead"`;
+exports[`tests/draft2020-12/optional/format/duration.json validation of duration strings weeks cannot be combined with other units validateJSON() returns correct error message 1`] = `"The value should be formatted as duration but is 'P1Y2W' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses an invalid IPv4-address-literal validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'joe.bloggs@[127.0.0.300]' instead"`;
+exports[`tests/draft2020-12/optional/format/email.json validation of e-mail addresses an invalid IPv4-address-literal validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'joe.bloggs@[127.0.0.300]' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses an invalid domain validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'joe.bloggs@invalid=domain.com' instead"`;
+exports[`tests/draft2020-12/optional/format/email.json validation of e-mail addresses an invalid domain validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'joe.bloggs@invalid=domain.com' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses an invalid e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '2962' instead"`;
+exports[`tests/draft2020-12/optional/format/email.json validation of e-mail addresses an invalid e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '2962' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses dot after local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'test.@example.com' instead"`;
+exports[`tests/draft2020-12/optional/format/email.json validation of e-mail addresses dot after local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'test.@example.com' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses dot before local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '.test@example.com' instead"`;
+exports[`tests/draft2020-12/optional/format/email.json validation of e-mail addresses dot before local part is not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is '.test@example.com' instead"`;
 
-exports[`tests/draft2020-12/email.json validation of e-mail addresses two subsequent dots inside local part are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'te..st@example.com' instead"`;
+exports[`tests/draft2020-12/optional/format/email.json validation of e-mail addresses two subsequent dots inside local part are not valid validateJSON() returns correct error message 1`] = `"The value should be formatted as email but is 'te..st@example.com' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names a host name containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'not_a_valid_host_name' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names a host name containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'not_a_valid_host_name' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names a host name starting with an illegal character validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-a-host-name-that-starts-with--' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names a host name starting with an illegal character validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-a-host-name-that-starts-with--' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names a host name with a component too long validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'a-vvvvvvvvvvvvvvvveeeeeeeeeeeeeeeerrrrrrrrrrrrrrrryyyyyyyyyyyyyyyy-long-host-name-component' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names a host name with a component too long validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'a-vvvvvvvvvvvvvvvveeeeeeeeeeeeeeeerrrrrrrrrrrrrrrryyyyyyyyyyyyyyyy-long-host-name-component' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names contains underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'host_name' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names contains underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'host_name' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names ends with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname-' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names ends with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname-' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names ends with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname_' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names ends with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'hostname_' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names exceeds maximum label length validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names exceeds maximum label length validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names starts with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-hostname' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names starts with hyphen validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '-hostname' instead"`;
 
-exports[`tests/draft2020-12/hostname.json validation of host names starts with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '_hostname' instead"`;
+exports[`tests/draft2020-12/optional/format/hostname.json validation of host names starts with underscore validateJSON() returns correct error message 1`] = `"The value should be formatted as hostname but is '_hostname' instead"`;
 
-exports[`tests/draft2020-12/idn-email.json validation of an internationalized e-mail addresses an invalid e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as idn-email but is '2962' instead"`;
+exports[`tests/draft2020-12/optional/format/idn-email.json validation of an internationalized e-mail addresses an invalid e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as idn-email but is '2962' instead"`;
 
-exports[`tests/draft2020-12/idn-email.json validation of an internationalized e-mail addresses an invalid idn e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as idn-email but is '2962' instead"`;
+exports[`tests/draft2020-12/optional/format/idn-email.json validation of an internationalized e-mail addresses an invalid idn e-mail address validateJSON() returns correct error message 1`] = `"The value should be formatted as idn-email but is '2962' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address as an integer (decimal) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '2130706433' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv4.json validation of IP addresses an IP address as an integer (decimal) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '2130706433' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address as an integer validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '0x7f000001' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv4.json validation of IP addresses an IP address as an integer validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '0x7f000001' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '256.256.256.256' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv4.json validation of IP addresses an IP address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '256.256.256.256' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0.0.0.1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv4.json validation of IP addresses an IP address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0.0.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses an IP address without 4 components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv4.json validation of IP addresses an IP address without 4 components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '127.0' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses invalid leading zeroes, as they are treated as octals validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '087.10.0.1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv4.json validation of IP addresses invalid leading zeroes, as they are treated as octals validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '087.10.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv4.json validation of IP addresses invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '1২7.0.0.1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv4.json validation of IP addresses invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv4 but is '1২7.0.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, first validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:255.255.255.255.255' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, first validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:255.255.255.255.255' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, second validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:100:255.255.255.255' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses a long invalid ipv6, below length limit, second validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '100:100:100:100:100:100:100:255.255.255.255' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses an IPv6 address containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::laptop' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses an IPv6 address containing illegal characters validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::laptop' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses an IPv6 address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '12345::' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses an IPv6 address with out-of-range values validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '12345::' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses an IPv6 address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses an IPv6 address with too many components validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses insufficient octets without double colons validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses insufficient octets without double colons validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) in the IPv4 portion validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2::192.16৪.0.1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) in the IPv4 portion validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2::192.16৪.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:৪' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses invalid non-ASCII '৪' (a Bengali 4) validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:৪' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses ipv4 is not ipv6 validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '127.0.0.1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses ipv4 is not ipv6 validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '127.0.0.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses ipv4 segment must have 4 octets validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:1.2.3' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses ipv4 segment must have 4 octets validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:1.2.3' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses leading whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '  ::1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses leading whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '  ::1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses missing leading octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4:5:6:7:8' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses missing leading octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4:5:6:7:8' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses missing leading octet with omitted octets later validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4::8' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses missing leading octet with omitted octets later validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is ':2:3:4::8' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses missing trailing octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses missing trailing octet is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:6:7:' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with a hex octet validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.ff.1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with a hex octet validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.ff.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with octet out of range validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.256.1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses mixed format with ipv4 section with octet out of range validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::2:192.168.256.1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses netmask is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::/64' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses netmask is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::/64' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses no colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses no colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses trailing 5 hex symbols is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::abcef' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses trailing 5 hex symbols is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::abcef' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses trailing whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::1  ' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses trailing whitespace is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '::1  ' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses triple colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:::8' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses triple colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1:2:3:4:5:::8' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses two sets of double colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::d6::42' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses two sets of double colons is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is '1::d6::42' instead"`;
 
-exports[`tests/draft2020-12/ipv6.json validation of IPv6 addresses zone id is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::a%eth1' instead"`;
+exports[`tests/draft2020-12/optional/format/ipv6.json validation of IPv6 addresses zone id is not a part of ipv6 address validateJSON() returns correct error message 1`] = `"The value should be formatted as ipv6 but is 'fe80::a%eth1' instead"`;
 
-exports[`tests/draft2020-12/iri.json validation of IRIs an invalid IRI based on IPv6 validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is 'http://2001:0db8:85a3:0000:0000:8a2e:0370:7334' instead"`;
+exports[`tests/draft2020-12/optional/format/iri.json validation of IRIs an invalid IRI based on IPv6 validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is 'http://2001:0db8:85a3:0000:0000:8a2e:0370:7334' instead"`;
 
-exports[`tests/draft2020-12/iri.json validation of IRIs an invalid IRI though valid IRI reference validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is 'âππ' instead"`;
+exports[`tests/draft2020-12/optional/format/iri.json validation of IRIs an invalid IRI though valid IRI reference validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is 'âππ' instead"`;
 
-exports[`tests/draft2020-12/iri.json validation of IRIs an invalid IRI validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is '\\\\WINDOWS\\filëßåré' instead"`;
+exports[`tests/draft2020-12/optional/format/iri.json validation of IRIs an invalid IRI validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is '\\\\WINDOWS\\filëßåré' instead"`;
 
-exports[`tests/draft2020-12/iri.json validation of IRIs an invalid relative IRI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is '/abc' instead"`;
+exports[`tests/draft2020-12/optional/format/iri.json validation of IRIs an invalid relative IRI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as iri but is '/abc' instead"`;
 
-exports[`tests/draft2020-12/iri-reference.json validation of IRI References an invalid IRI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as iri-reference but is '\\\\WINDOWS\\filëßåré' instead"`;
+exports[`tests/draft2020-12/optional/format/iri-reference.json validation of IRI References an invalid IRI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as iri-reference but is '\\\\WINDOWS\\filëßåré' instead"`;
 
-exports[`tests/draft2020-12/iri-reference.json validation of IRI References an invalid IRI fragment validateJSON() returns correct error message 1`] = `"The value should be formatted as iri-reference but is '#ƒräg\\mênt' instead"`;
+exports[`tests/draft2020-12/optional/format/iri-reference.json validation of IRI References an invalid IRI fragment validateJSON() returns correct error message 1`] = `"The value should be formatted as iri-reference but is '#ƒräg\\mênt' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (~ not escaped) validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/foo/bar~' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (~ not escaped) validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/foo/bar~' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (URI Fragment Identifier) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '#' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (URI Fragment Identifier) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '#' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (URI Fragment Identifier) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '#/' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (URI Fragment Identifier) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '#/' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (URI Fragment Identifier) #3 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '#a' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (URI Fragment Identifier) #3 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '#a' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (isn't empty nor starts with /) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is 'a' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (isn't empty nor starts with /) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is 'a' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (isn't empty nor starts with /) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '0' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (isn't empty nor starts with /) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '0' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (isn't empty nor starts with /) #3 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is 'a/a' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (isn't empty nor starts with /) #3 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is 'a/a' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (multiple characters not escaped) validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~~' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (multiple characters not escaped) validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~~' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (some escaped, but not all) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~0~' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (some escaped, but not all) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~0~' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (some escaped, but not all) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~0/~' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (some escaped, but not all) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~0/~' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (wrong escape character) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~2' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (wrong escape character) #1 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~2' instead"`;
 
-exports[`tests/draft2020-12/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (wrong escape character) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~-1' instead"`;
+exports[`tests/draft2020-12/optional/format/json-pointer.json validation of JSON-pointers (JSON String Representation) not a valid JSON-pointer (wrong escape character) #2 validateJSON() returns correct error message 1`] = `"The value should be formatted as json-pointer but is '/~-1' instead"`;
 
-exports[`tests/draft2020-12/regex.json validation of regular expressions a regular expression with unclosed parens is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as regex but is '^(abc]' instead"`;
+exports[`tests/draft2020-12/optional/format/regex.json validation of regular expressions a regular expression with unclosed parens is invalid validateJSON() returns correct error message 1`] = `"The value should be formatted as regex but is '^(abc]' instead"`;
 
-exports[`tests/draft2020-12/relative-json-pointer.json validation of Relative JSON Pointers (RJP) ## is not a valid json-pointer validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '0##' instead"`;
+exports[`tests/draft2020-12/optional/format/relative-json-pointer.json validation of Relative JSON Pointers (RJP) ## is not a valid json-pointer validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '0##' instead"`;
 
-exports[`tests/draft2020-12/relative-json-pointer.json validation of Relative JSON Pointers (RJP) an invalid RJP that is a valid JSON Pointer validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '/foo/bar' instead"`;
+exports[`tests/draft2020-12/optional/format/relative-json-pointer.json validation of Relative JSON Pointers (RJP) an invalid RJP that is a valid JSON Pointer validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '/foo/bar' instead"`;
 
-exports[`tests/draft2020-12/relative-json-pointer.json validation of Relative JSON Pointers (RJP) empty string validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '' instead"`;
+exports[`tests/draft2020-12/optional/format/relative-json-pointer.json validation of Relative JSON Pointers (RJP) empty string validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '' instead"`;
 
-exports[`tests/draft2020-12/relative-json-pointer.json validation of Relative JSON Pointers (RJP) explicit positive prefix validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '+1/foo/bar' instead"`;
+exports[`tests/draft2020-12/optional/format/relative-json-pointer.json validation of Relative JSON Pointers (RJP) explicit positive prefix validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '+1/foo/bar' instead"`;
 
-exports[`tests/draft2020-12/relative-json-pointer.json validation of Relative JSON Pointers (RJP) negative prefix validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '-1/foo/bar' instead"`;
+exports[`tests/draft2020-12/optional/format/relative-json-pointer.json validation of Relative JSON Pointers (RJP) negative prefix validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '-1/foo/bar' instead"`;
 
-exports[`tests/draft2020-12/relative-json-pointer.json validation of Relative JSON Pointers (RJP) zero cannot be followed by other digits, plus json-pointer validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '01/a' instead"`;
+exports[`tests/draft2020-12/optional/format/relative-json-pointer.json validation of Relative JSON Pointers (RJP) zero cannot be followed by other digits, plus json-pointer validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '01/a' instead"`;
 
-exports[`tests/draft2020-12/relative-json-pointer.json validation of Relative JSON Pointers (RJP) zero cannot be followed by other digits, plus octothorpe validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '01#' instead"`;
+exports[`tests/draft2020-12/optional/format/relative-json-pointer.json validation of Relative JSON Pointers (RJP) zero cannot be followed by other digits, plus octothorpe validateJSON() returns correct error message 1`] = `"The value should be formatted as relative-json-pointer but is '01#' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid offset indicator validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '08:30:06 PST' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid offset indicator validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '08:30:06 PST' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid hour validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '24:00:00Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid hour validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '24:00:00Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid leap second (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '22:59:60Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid leap second (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '22:59:60Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid leap second (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:58:60Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid leap second (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:58:60Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid minute validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '00:60:00Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid minute validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '00:60:00Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid second validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '00:00:61Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid second validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '00:00:61Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid time numoffset hour validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:02:03+24:00' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid time numoffset hour validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:02:03+24:00' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid time numoffset minute validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:02:03+00:60' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid time numoffset minute validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:02:03+00:60' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings an invalid time string with invalid time with both Z and numoffset validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:02:03Z+00:30' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings an invalid time string with invalid time with both Z and numoffset validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:02:03Z+00:30' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings contains letters validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is 'ab:cd:ef' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings contains letters validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is 'ab:cd:ef' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings hour, minute in time-offset must be two digits validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '08:30:06-8:000' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings hour, minute in time-offset must be two digits validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '08:30:06-8:000' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings hour, minute, second must be two digits validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '8:0030:6Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings hour, minute, second must be two digits validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '8:0030:6Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, Zulu (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '22:59:60Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, Zulu (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '22:59:60Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, Zulu (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:58:60Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, Zulu (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:58:60Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, negative time-offset (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60-01:00' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, negative time-offset (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60-01:00' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, negative time-offset (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60-00:30' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, negative time-offset (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60-00:30' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, positive time-offset (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60+01:00' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, positive time-offset (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60+01:00' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, positive time-offset (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60+00:30' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, positive time-offset (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:59:60+00:30' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, zero time-offset (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '22:59:60+00:00' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, zero time-offset (wrong hour) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '22:59:60+00:00' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid leap second, zero time-offset (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:58:60+00:00' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid leap second, zero time-offset (wrong minute) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '23:58:60+00:00' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '1২:00:00Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid non-ASCII '২' (a Bengali 2) validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '1২:00:00Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid time string with extra leading zeros validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '008:030:006Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid time string with extra leading zeros validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '008:030:006Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings invalid time string with no leading zero for single digit validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '8:3:6Z' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings invalid time string with no leading zero for single digit validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '8:3:6Z' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings no time offset validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '12:00:00' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings no time offset validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '12:00:00' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings no time offset with second fraction validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '12:00:00.52' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings no time offset with second fraction validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '12:00:00.52' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings offset not starting with plus or minus validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '08:30:06#00:20' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings offset not starting with plus or minus validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '08:30:06#00:20' instead"`;
 
-exports[`tests/draft2020-12/time.json validation of time strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:01:01,1111' instead"`;
+exports[`tests/draft2020-12/optional/format/time.json validation of time strings only RFC3339 not all of ISO 8601 are valid validateJSON() returns correct error message 1`] = `"The value should be formatted as time but is '01:01:01,1111' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI though valid URI reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'abc' instead"`;
+exports[`tests/draft2020-12/optional/format/uri.json validation of URIs an invalid URI though valid URI reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'abc' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '\\\\WINDOWS\\fileshare' instead"`;
+exports[`tests/draft2020-12/optional/format/uri.json validation of URIs an invalid URI validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '\\\\WINDOWS\\fileshare' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI with comma in scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'bar,baz:foo' instead"`;
+exports[`tests/draft2020-12/optional/format/uri.json validation of URIs an invalid URI with comma in scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'bar,baz:foo' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI with spaces and missing scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is ':// should fail' instead"`;
+exports[`tests/draft2020-12/optional/format/uri.json validation of URIs an invalid URI with spaces and missing scheme validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is ':// should fail' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid URI with spaces validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'http:// shouldfail.com' instead"`;
+exports[`tests/draft2020-12/optional/format/uri.json validation of URIs an invalid URI with spaces validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is 'http:// shouldfail.com' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid protocol-relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '//foo.bar/?baz=qux#quux' instead"`;
+exports[`tests/draft2020-12/optional/format/uri.json validation of URIs an invalid protocol-relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '//foo.bar/?baz=qux#quux' instead"`;
 
-exports[`tests/draft2020-12/uri.json validation of URIs an invalid relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '/abc' instead"`;
+exports[`tests/draft2020-12/optional/format/uri.json validation of URIs an invalid relative URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri but is '/abc' instead"`;
 
-exports[`tests/draft2020-12/uri-reference.json validation of URI References an invalid URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri-reference but is '\\\\WINDOWS\\fileshare' instead"`;
+exports[`tests/draft2020-12/optional/format/uri-reference.json validation of URI References an invalid URI Reference validateJSON() returns correct error message 1`] = `"The value should be formatted as uri-reference but is '\\\\WINDOWS\\fileshare' instead"`;
 
-exports[`tests/draft2020-12/uri-reference.json validation of URI References an invalid URI fragment validateJSON() returns correct error message 1`] = `"The value should be formatted as uri-reference but is '#frag\\ment' instead"`;
+exports[`tests/draft2020-12/optional/format/uri-reference.json validation of URI References an invalid URI fragment validateJSON() returns correct error message 1`] = `"The value should be formatted as uri-reference but is '#frag\\ment' instead"`;
 
-exports[`tests/draft2020-12/uri-template.json format: uri-template an invalid uri-template validateJSON() returns correct error message 1`] = `"The value should be formatted as uri-template but is 'http://example.com/dictionary/{term:1}/{term' instead"`;
+exports[`tests/draft2020-12/optional/format/uri-template.json format: uri-template an invalid uri-template validateJSON() returns correct error message 1`] = `"The value should be formatted as uri-template but is 'http://example.com/dictionary/{term:1}/{term' instead"`;
 
-exports[`tests/draft2020-12/uuid.json uuid format bad characters (not hex) validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08-aa98-11ea-b4ga-73b441d16380' instead"`;
+exports[`tests/draft2020-12/optional/format/uuid.json uuid format bad characters (not hex) validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08-aa98-11ea-b4ga-73b441d16380' instead"`;
 
-exports[`tests/draft2020-12/uuid.json uuid format dashes in the wrong spot validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08aa9811eab4aa73b441d16380----' instead"`;
+exports[`tests/draft2020-12/optional/format/uuid.json uuid format dashes in the wrong spot validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08aa9811eab4aa73b441d16380----' instead"`;
 
-exports[`tests/draft2020-12/uuid.json uuid format missing section validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08-aa98-11ea-73b441d16380' instead"`;
+exports[`tests/draft2020-12/optional/format/uuid.json uuid format missing section validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08-aa98-11ea-73b441d16380' instead"`;
 
-exports[`tests/draft2020-12/uuid.json uuid format no dashes validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08aa9811eab4aa73b441d16380' instead"`;
+exports[`tests/draft2020-12/optional/format/uuid.json uuid format no dashes validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08aa9811eab4aa73b441d16380' instead"`;
 
-exports[`tests/draft2020-12/uuid.json uuid format too few dashes validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08aa98-11ea-b4aa73b441d16380' instead"`;
+exports[`tests/draft2020-12/optional/format/uuid.json uuid format too few dashes validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08aa98-11ea-b4aa73b441d16380' instead"`;
 
-exports[`tests/draft2020-12/uuid.json uuid format too many dashes validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8-aa08-aa98-11ea-b4aa73b44-1d16380' instead"`;
+exports[`tests/draft2020-12/optional/format/uuid.json uuid format too many dashes validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8-aa08-aa98-11ea-b4aa73b44-1d16380' instead"`;
 
-exports[`tests/draft2020-12/uuid.json uuid format wrong length validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08-aa98-11ea-b4aa-73b441d1638' instead"`;
+exports[`tests/draft2020-12/optional/format/uuid.json uuid format wrong length validateJSON() returns correct error message 1`] = `"The value should be formatted as uuid but is '2eb8aa08-aa98-11ea-b4aa-73b441d1638' instead"`;

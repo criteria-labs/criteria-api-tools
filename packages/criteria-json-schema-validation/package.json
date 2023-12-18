@@ -37,7 +37,8 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc --build",
-    "test": "jest ."
+    "test": "jest .",
+    "clean": "rimraf tsconfig.build.tsbuildinfo ./dist"
   },
   "devDependencies": {
     "@types/jest": "^29.2.4",

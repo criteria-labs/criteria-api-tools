@@ -31,7 +31,8 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "test": "jest ."
+    "test": "jest .",
+    "clean": "rimraf tsconfig.build.tsbuildinfo ./dist"
   },
   "dependencies": {
     "@criteria/json-schema": "^0.6.0",

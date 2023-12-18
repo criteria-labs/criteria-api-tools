@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { JSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchemaDraft06 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
 import { jsonValidatorDraft06 } from '../../src'
@@ -10,7 +10,7 @@ let testFilesTable: [string][] = testFiles.map((testFile) => [testFile])
 
 const remotesDirectoryPath = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/remotes')
 
-const retrieveRemote = (uri: string): JSONSchemaDraft04 => {
+const retrieveRemote = (uri: string): JSONSchemaDraft06 => {
   if (uri.startsWith('http://localhost:1234/')) {
     const remotePath = uri.replace('http://localhost:1234', remotesDirectoryPath)
     const remoteContents = fs.readFileSync(remotePath, { encoding: 'utf-8' })

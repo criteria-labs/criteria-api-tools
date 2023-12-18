@@ -1,6 +1,6 @@
 {
   "name": "@criteria/openapi",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "TypeScript implementation of the OpenAPI specification.",
   "keywords": [
     "openapi",
@@ -34,7 +34,7 @@
     "test": "jest ."
   },
   "dependencies": {
-    "@criteria/json-schema": "^0.5.0",
+    "@criteria/json-schema": "^0.6.0",
     "@criteria/json-pointer": "^0.1.0"
   },
   "devDependencies": {

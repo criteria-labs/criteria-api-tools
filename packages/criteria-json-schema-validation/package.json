@@ -1,6 +1,6 @@
 {
   "name": "@criteria/json-schema-validation",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Validate JSON instances using JSON Schema.",
   "keywords": [
     "json",
@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@criteria/json-pointer": "^0.1.0",
-    "@criteria/json-schema": "^0.5.0",
+    "@criteria/json-schema": "^0.6.0",
     "punycode": "^2.3.1",
     "smtp-address-parser": "^1.0.10",
     "uri-js": "^4.4.1"

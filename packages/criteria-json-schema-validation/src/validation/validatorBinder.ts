@@ -1,4 +1,4 @@
-import { SchemaIndex, metaSchemaURIDraft04 } from '@criteria/json-schema'
+import { SchemaIndex, metaSchemaURIDraft04, metaSchemaURIDraft06 } from '@criteria/json-schema'
 import { reduceAnnotationResults } from '../specification/draft-2020-12/vocabularies/reduceAnnotationResults'
 import { JSONPointer } from '../util/JSONPointer'
 import { formatList } from '../util/formatList'
@@ -62,9 +62,9 @@ export function validatorBinder(
       return validator
     }
 
-    // draft 04: ref overrides any sibling keywords
+    // draft 04/06: ref overrides any sibling keywords
     const keywordsFilter =
-      metaSchemaURI === metaSchemaURIDraft04 && '$ref' in schema
+      (metaSchemaURI === metaSchemaURIDraft04 || metaSchemaURI === metaSchemaURIDraft06) && '$ref' in schema
         ? (keyword: string) => keyword === '$ref'
         : (keyword: string) => true
 

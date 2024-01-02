@@ -10,6 +10,8 @@ export function oneOfValidator(schema: JSONSchema, schemaPath: JSONPointer[], co
 
   const oneOf = schema['oneOf']
   const validators = oneOf.map((subschema, i) => context.validatorForSchema(subschema, [...schemaPath, `/oneOf/${i}`]))
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     const outputs = validators.map((validator) => validator(instance, instanceLocation))
@@ -24,15 +26,21 @@ export function oneOfValidator(schema: JSONSchema, schemaPath: JSONPointer[], co
         annotationResults: 'annotationResults' in validOutput ? validOutput.annotationResults : {}
       }
     } else {
-      const validCount = outputs.filter((output) => output.valid).length
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'oneOf',
-        instanceLocation,
-        message: `should validate against exactly one subschema but validated against ${
-          validCount === 0 ? 'none' : validCount
-        }`
+      if (outputFormat === 'flag') {
+        return {
+          valid: false
+        }
+      } else {
+        const validCount = outputs.filter((output) => output.valid).length
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'oneOf',
+          instanceLocation,
+          message: `should validate against exactly one subschema but validates against ${
+            validCount === 0 ? 'none' : validCount
+          }`
+        }
       }
     }
   }

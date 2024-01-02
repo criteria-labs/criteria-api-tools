@@ -4,7 +4,7 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { BoundValidator } from '../../../../validation/BoundValidator'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
+import { InvalidOutput, InvalidVerboseOutput, Output, ValidOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function propertiesValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -13,74 +13,123 @@ export function propertiesValidator(schema: JSONSchemaObject, schemaPath: JSONPo
   }
 
   const properties = schema['properties']
-  const propertyValidators: [string, BoundValidator][] = Object.keys(properties).map((propertyName) => {
+  const propertyValidators: [string, string, BoundValidator][] = Object.keys(properties).map((propertyName) => {
     const subschema = properties[propertyName]
     const subschemaValidator = context.validatorForSchema(subschema, [
       ...schemaPath,
       `/properties/${escapeReferenceToken(propertyName)}`
     ])
-    return [propertyName, subschemaValidator]
+    return [propertyName, escapeReferenceToken(propertyName), subschemaValidator]
   })
 
+  const outputFormat = context.outputFormat
   const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
-  return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
-    if (!isJSONObject(instance)) {
-      return { valid: true, schemaLocation, instanceLocation }
-    }
 
-    let validOutputs = new Map<string, ValidOutput>()
-    let invalidOutputs = new Map<string, InvalidOutput>()
-    for (const [propertyName, subschemaValidator] of propertyValidators) {
-      if (!instance.hasOwnProperty(propertyName)) {
-        continue
+  if (outputFormat === 'flag') {
+    return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
+      if (!isJSONObject(instance)) {
+        return { valid: true, schemaLocation, instanceLocation }
       }
 
-      const output = subschemaValidator(
-        instance[propertyName],
-        `${instanceLocation}/${escapeReferenceToken(propertyName)}`
-      )
-      if (output.valid) {
-        validOutputs.set(propertyName, output)
-      } else {
-        invalidOutputs.set(propertyName, output as InvalidOutput)
-      }
+      let validOutputs = new Map<string, ValidOutput>()
+      const errors: InvalidOutput[] = []
+      for (const [propertyName, escapedPropertyName, subschemaValidator] of propertyValidators) {
+        if (!instance.hasOwnProperty(propertyName)) {
+          continue
+        }
 
-      if (!output.valid && failFast) {
-        break
-      }
-    }
-
-    const valid = invalidOutputs.size === 0
-    if (valid) {
-      return {
-        valid: true,
-        schemaLocation,
-        schemaKeyword: 'properties',
-        instanceLocation,
-        annotationResults: {
-          properties: Array.from(validOutputs.keys())
+        const output = subschemaValidator(instance[propertyName], `${instanceLocation}/${escapedPropertyName}`)
+        if (output.valid) {
+          validOutputs.set(propertyName, output)
+        } else {
+          return { valid: false }
         }
       }
-    } else {
-      const entries = Array.from(invalidOutputs.entries())
-      let message
-      if (entries.length === 1) {
-        message = `has an invalid property ('${entries[0][0]}' ${entries[0][1].message})`
+
+      if (errors.length === 0) {
+        return {
+          valid: true,
+          schemaLocation,
+          schemaKeyword: 'properties',
+          instanceLocation,
+          annotationResults: {
+            properties: Array.from(validOutputs.keys())
+          }
+        }
       } else {
-        message = `has invalid properties (${formatList(
-          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
-          'and'
-        )})`
+        return { valid: false }
       }
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'properties',
-        instanceLocation,
-        message,
-        errors: Array.from(invalidOutputs.values())
+    }
+  } else {
+    return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
+      if (!isJSONObject(instance)) {
+        return { valid: true, schemaLocation, instanceLocation }
+      }
+
+      let validOutputs = new Map<string, ValidOutput>()
+      const invalidPropertyNames: string[] = []
+      const errors: InvalidOutput[] = []
+      for (const [propertyName, escapedPropertyName, subschemaValidator] of propertyValidators) {
+        if (!instance.hasOwnProperty(propertyName)) {
+          continue
+        }
+
+        const output = subschemaValidator(instance[propertyName], `${instanceLocation}/${escapedPropertyName}`)
+        if (output.valid) {
+          validOutputs.set(propertyName, output)
+        } else {
+          if (failFast) {
+            return {
+              valid: false,
+              schemaLocation,
+              schemaKeyword: 'properties',
+              instanceLocation,
+              message: `has an invalid property (${propertyName} ${(output as InvalidVerboseOutput).message})`,
+              errors: [output as InvalidVerboseOutput]
+            }
+          }
+          invalidPropertyNames.push(propertyName)
+          errors.push(output as InvalidVerboseOutput)
+        }
+      }
+
+      if (errors.length === 0) {
+        return {
+          valid: true,
+          schemaLocation,
+          schemaKeyword: 'properties',
+          instanceLocation,
+          annotationResults: {
+            properties: Array.from(validOutputs.keys())
+          }
+        }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'properties',
+          instanceLocation,
+          message: formatMessage(errors as InvalidVerboseOutput[], invalidPropertyNames),
+          errors: errors as InvalidVerboseOutput[]
+        }
       }
     }
   }
+}
+
+export function formatMessage(errors: InvalidVerboseOutput[] | null, invalidPropertyNames: string[]) {
+  let message
+  if (invalidPropertyNames.length === 1) {
+    message = `has an invalid property ${invalidPropertyNames[0]}`
+  } else {
+    message = `has invalid properties ${formatList(
+      invalidPropertyNames.map((propertyName) => `'${propertyName}'`),
+      'and'
+    )}`
+  }
+  if (errors !== null) {
+    message += ` (${errors.map((error) => error.message).join('; ')})`
+  }
+  return message
 }

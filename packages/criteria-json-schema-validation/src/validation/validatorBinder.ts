@@ -1,9 +1,9 @@
 import { SchemaIndex, metaSchemaURIDraft04, metaSchemaURIDraft06 } from '@criteria/json-schema'
-import { reduceAnnotationResults } from '../specification/draft-2020-12/vocabularies/reduceAnnotationResults'
 import { JSONPointer } from '../util/JSONPointer'
 import { formatList } from '../util/formatList'
 import { BoundValidator, BoundValidatorWithAnnotationResults } from './BoundValidator'
-import { InvalidOutput, Output } from './Output'
+import { FlagOutput, InvalidVerboseOutput, Output, OutputFormat, VerboseOutput } from './Output'
+import { annotationResultsReducerForMetaSchemaURI } from './annotationResultsReducerForMetaSchemaURI'
 import { booleanValidator } from './booleanValidator'
 import { JSONSchemaKeyword, JSONSchemaKeywordValidator, ValidatorContext } from './keywordValidators'
 
@@ -19,9 +19,11 @@ export type BoundValidatorForSchemaKeyword = (
 export function validatorBinder(
   index: SchemaIndex,
   {
+    outputFormat,
     failFast,
     validatorsForMetaSchemaURI
   }: {
+    outputFormat: OutputFormat
     failFast: boolean
     validatorsForMetaSchemaURI: (uri: string) => { [Keyword in JSONSchemaKeyword]: JSONSchemaKeywordValidator }
   }
@@ -34,7 +36,7 @@ export function validatorBinder(
   ): { validator: BoundValidator; isDynamic: boolean } => {
     if (typeof schema === 'boolean') {
       return {
-        validator: booleanValidator(schema, schemaPath),
+        validator: booleanValidator(schema, schemaPath, { outputFormat }),
         isDynamic: false
       }
     }
@@ -54,6 +56,7 @@ export function validatorBinder(
 
     const metaSchemaURI = index.infoForIndexedObject(schema).metadata.metaSchemaURI
     const vocabularyValidators = validatorsForMetaSchemaURI(metaSchemaURI)
+    const annotationResultsReducer = annotationResultsReducerForMetaSchemaURI(metaSchemaURI)
 
     let isChildDynamic = false
     const validatorForSchema = (schema: object | boolean, schemaPath: JSONPointer[]) => {
@@ -72,6 +75,7 @@ export function validatorBinder(
       .filter(([keyword, vocabularyValidator]) => keywordsFilter(keyword))
       .map(([keyword, vocabularyValidator]) => {
         return boundValidatorForSchemaKeyword(schema, schemaPath, keyword, vocabularyValidator, {
+          outputFormat,
           failFast,
           validatorForSchema,
           index
@@ -79,11 +83,50 @@ export function validatorBinder(
       })
       .filter((validator) => typeof validator === 'function')
 
-    validator = boundValidatorWithSchema(schema, schemaPath, {
-      failFast,
-      boundKeywordValidators,
-      index
-    })
+    const schemaLocation = schemaPath.join('') as JSONPointer
+    if (outputFormat === 'flag') {
+      validator = (instance: unknown, instanceLocation: JSONPointer) => {
+        let outputs: VerboseOutput[] = []
+        let accumulatedAnnotationResults: Record<string, any> = {}
+        for (const boundKeywordValidator of boundKeywordValidators) {
+          const output = boundKeywordValidator(instance, instanceLocation, accumulatedAnnotationResults)
+          if (!output.valid && failFast) {
+            return output
+          }
+
+          outputs.push(output as VerboseOutput)
+          if ('annotationResults' in output) {
+            accumulatedAnnotationResults = annotationResultsReducer(
+              accumulatedAnnotationResults,
+              output.annotationResults
+            )
+          }
+        }
+
+        return reduceFlagOutputs(outputs, schemaLocation, instanceLocation, accumulatedAnnotationResults)
+      }
+    } else {
+      validator = (instance: unknown, instanceLocation: JSONPointer) => {
+        let outputs: VerboseOutput[] = []
+        let accumulatedAnnotationResults: Record<string, any> = {}
+        for (const boundKeywordValidator of boundKeywordValidators) {
+          const output = boundKeywordValidator(instance, instanceLocation, accumulatedAnnotationResults)
+          if (!output.valid && failFast) {
+            return output
+          }
+
+          outputs.push(output as VerboseOutput)
+          if ('annotationResults' in output) {
+            accumulatedAnnotationResults = annotationResultsReducer(
+              accumulatedAnnotationResults,
+              output.annotationResults
+            )
+          }
+        }
+
+        return reduceVerboseOutputs(outputs, schemaLocation, instanceLocation, accumulatedAnnotationResults)
+      }
+    }
 
     const isDynamic = schemaPath.includes('/$dynamicRef') || isChildDynamic
 
@@ -102,57 +145,43 @@ export function validatorBinder(
   }
 }
 
-function boundValidatorWithSchema(
-  schema: object,
-  schemaPath: JSONPointer[],
-  {
-    failFast,
-    boundKeywordValidators,
-    index
-  }: {
-    failFast: boolean
-    boundKeywordValidators: BoundValidatorWithAnnotationResults[]
-    index: SchemaIndex
+function reduceFlagOutputs(
+  outputs: FlagOutput[],
+  schemaLocation: JSONPointer,
+  instanceLocation: JSONPointer,
+  annotationResults: Record<string, any>
+): FlagOutput {
+  if (outputs.every((output) => output.valid)) {
+    return { valid: true, schemaLocation, instanceLocation, annotationResults }
+  } else {
+    return { valid: false }
   }
-): BoundValidator {
-  const schemaLocation = schemaPath.join('') as JSONPointer
-  return (instance: unknown, instanceLocation: JSONPointer) => {
-    let outputs: Output[] = []
-    let accumulatedAnnotationResults: Record<string, any> = {}
-    for (const boundKeywordValidator of boundKeywordValidators) {
-      const output = boundKeywordValidator(instance, instanceLocation, accumulatedAnnotationResults)
-      outputs.push(output)
-      if ('annotationResults' in output) {
-        accumulatedAnnotationResults = reduceAnnotationResults(accumulatedAnnotationResults, output.annotationResults)
-      }
-      if (!output.valid && failFast) {
-        break
-      }
-    }
+}
 
-    const invalidOutputs = outputs.filter((output) => !output.valid) as InvalidOutput[]
-    const valid = invalidOutputs.length === 0
-    if (valid) {
-      return {
-        valid: true,
-        schemaLocation,
-        instanceLocation: instanceLocation,
-        annotationResults: accumulatedAnnotationResults
-      }
+function reduceVerboseOutputs(
+  outputs: VerboseOutput[],
+  schemaLocation: JSONPointer,
+  instanceLocation: JSONPointer,
+  annotationResults: Record<string, any>
+): VerboseOutput {
+  if (outputs.every((output) => output.valid)) {
+    return {
+      valid: true,
+      schemaLocation,
+      instanceLocation,
+      annotationResults
+    }
+  } else {
+    if (outputs.length === 1) {
+      return outputs[0] as InvalidVerboseOutput
     } else {
-      if (invalidOutputs.length === 1) {
-        return invalidOutputs[0]
-      } else {
-        return {
-          valid: false,
-          schemaLocation,
-          instanceLocation,
-          message: formatList(
-            invalidOutputs.map((output) => output.message),
-            'and'
-          ),
-          errors: invalidOutputs
-        }
+      const errors = outputs.filter((output) => !output.valid) as InvalidVerboseOutput[]
+      return {
+        valid: false,
+        schemaLocation,
+        instanceLocation,
+        message: errors.map((output) => (output as InvalidVerboseOutput).message).join('; '),
+        errors: errors
       }
     }
   }

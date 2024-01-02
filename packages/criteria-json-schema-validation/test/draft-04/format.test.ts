@@ -2,6 +2,7 @@
 import { JSONSchemaDraft04 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
+import { OutputFormat } from '../../dist'
 import { jsonValidatorDraft04 } from '../../src'
 
 const testCasesDirectory = path.resolve(
@@ -35,38 +36,46 @@ describe.each(testFilesTable)(`tests/draft4/optiona/format/%s`, (testFilename) =
   ])
 
   describe.each(testCasesTable)('%s', (testCaseDescription, testCaseSchema, testCaseTests) => {
-    let testCaseSchemaValidator
+    describe.each([
+      ['flag', true],
+      ['flag', false],
+      ['verbose', true],
+      ['verbose', false]
+    ])('outputFormat = %s, failFast = %s', (outputFormat, failFast) => {
+      let testCaseSchemaValidator
 
-    beforeAll(() => {
-      expect(() => {
-        testCaseSchemaValidator = jsonValidatorDraft04(testCaseSchema, {
-          failFast: false,
-          assertFormat: true,
-          retrieve: retrieveRemote
-        })
-      }).not.toThrow()
-    })
+      beforeAll(() => {
+        expect(() => {
+          testCaseSchemaValidator = jsonValidatorDraft04(testCaseSchema, {
+            outputFormat: outputFormat as OutputFormat,
+            failFast,
+            assertFormat: true,
+            retrieve: retrieveRemote
+          })
+        }).not.toThrow()
+      })
 
-    const testsTable: [string, any, boolean][] = testCaseTests.map((test) => [test.description, test.data, test.valid])
-    describe.each(testsTable)('%s', (testDescription, testData, testValid) => {
-      if (testValid) {
-        test('validateJSON() succeeds', () => {
-          expect(() => {
-            testCaseSchemaValidator(testData)
-          }).not.toThrow()
-        })
-      } else {
-        test('validateJSON() throws', () => {
-          expect(() => {
-            testCaseSchemaValidator(testData)
-          }).toThrow()
-        })
-        test('validateJSON() returns correct error message', () => {
-          expect(() => {
-            testCaseSchemaValidator(testData)
-          }).toThrowErrorMatchingSnapshot()
-        })
-      }
+      const testsTable: [string, any, boolean][] = testCaseTests.map((test) => [
+        test.description,
+        test.data,
+        test.valid
+      ])
+      describe.each(testsTable)('%s', (testDescription, testData, testValid) => {
+        if (testValid) {
+          test('validateJSON() succeeds', () => {
+            const { valid } = testCaseSchemaValidator(testData)
+            expect(valid).toEqual(true)
+          })
+        } else {
+          test('validateJSON() fails', () => {
+            const { valid, message } = testCaseSchemaValidator(testData)
+            expect(valid).toEqual(false)
+            if (outputFormat === 'verbose') {
+              expect(message).toMatchSnapshot()
+            }
+          })
+        }
+      })
     })
   })
 })

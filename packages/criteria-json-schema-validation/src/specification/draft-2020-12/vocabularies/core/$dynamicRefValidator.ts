@@ -1,6 +1,5 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 function isDynamicReference(schema: object): schema is { $dynamicRef: string } {
@@ -14,8 +13,5 @@ export function $dynamicRefValidator(schema: JSONSchemaObject, schemaPath: JSONP
 
   const $dynamicRef = schema['$dynamicRef']
   const dereferencedSchema = context.index.dereferenceDynamicReference($dynamicRef, schema, schemaPath)
-  const validator = context.validatorForSchema(dereferencedSchema, [...schemaPath, '/$dynamicRef'])
-  return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
-    return validator(instance, instanceLocation)
-  }
+  return context.validatorForSchema(dereferencedSchema, [...schemaPath, '/$dynamicRef'])
 }

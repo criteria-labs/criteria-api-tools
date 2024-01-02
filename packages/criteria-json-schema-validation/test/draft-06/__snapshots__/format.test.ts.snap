@@ -1,0 +1,309 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false an invalid closing Z after time-zone offset validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-19T08:30:06.28123+01:00Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false an invalid date-time past leap second, UTC validateJSON() fails 1`] = `"should be formatted as date-time but is '1998-12-31T23:59:61Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false an invalid date-time string validateJSON() fails 1`] = `"should be formatted as date-time but is '06/19/1963 08:30:06 PST' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false an invalid date-time with leap second on a wrong hour, UTC validateJSON() fails 1`] = `"should be formatted as date-time but is '1998-12-31T22:59:60Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false an invalid date-time with leap second on a wrong minute, UTC validateJSON() fails 1`] = `"should be formatted as date-time but is '1998-12-31T23:58:60Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false an invalid day in date-time string validateJSON() fails 1`] = `"should be formatted as date-time but is '1990-02-31T15:59:59.123-08:00' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false an invalid offset in date-time string validateJSON() fails 1`] = `"should be formatted as date-time but is '1990-12-31T15:59:59-24:00' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false invalid non-ASCII '৪' (a Bengali 4) in date portion validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-1৪T00:00:00Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false invalid non-ASCII '৪' (a Bengali 4) in time portion validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-11T0৪:00:00Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false invalid non-padded day dates validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-1T08:30:06.283185Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false invalid non-padded month dates validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-6-19T08:30:06.283185Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = false only RFC3339 not all of ISO 8601 are valid validateJSON() fails 1`] = `"should be formatted as date-time but is '2013-350T01:01:01' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true an invalid closing Z after time-zone offset validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-19T08:30:06.28123+01:00Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true an invalid date-time past leap second, UTC validateJSON() fails 1`] = `"should be formatted as date-time but is '1998-12-31T23:59:61Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true an invalid date-time string validateJSON() fails 1`] = `"should be formatted as date-time but is '06/19/1963 08:30:06 PST' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true an invalid date-time with leap second on a wrong hour, UTC validateJSON() fails 1`] = `"should be formatted as date-time but is '1998-12-31T22:59:60Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true an invalid date-time with leap second on a wrong minute, UTC validateJSON() fails 1`] = `"should be formatted as date-time but is '1998-12-31T23:58:60Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true an invalid day in date-time string validateJSON() fails 1`] = `"should be formatted as date-time but is '1990-02-31T15:59:59.123-08:00' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true an invalid offset in date-time string validateJSON() fails 1`] = `"should be formatted as date-time but is '1990-12-31T15:59:59-24:00' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true invalid non-ASCII '৪' (a Bengali 4) in date portion validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-1৪T00:00:00Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true invalid non-ASCII '৪' (a Bengali 4) in time portion validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-11T0৪:00:00Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true invalid non-padded day dates validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-06-1T08:30:06.283185Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true invalid non-padded month dates validateJSON() fails 1`] = `"should be formatted as date-time but is '1963-6-19T08:30:06.283185Z' instead"`;
+
+exports[`tests/draft6/optiona/format/date-time.json validation of date-time strings outputFormat = verbose, failFast = true only RFC3339 not all of ISO 8601 are valid validateJSON() fails 1`] = `"should be formatted as date-time but is '2013-350T01:01:01' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = false an invalid e-mail address validateJSON() fails 1`] = `"should be formatted as email but is '2962' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = false dot after local part is not valid validateJSON() fails 1`] = `"should be formatted as email but is 'test.@example.com' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = false dot before local part is not valid validateJSON() fails 1`] = `"should be formatted as email but is '.test@example.com' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = false two subsequent dots inside local part are not valid validateJSON() fails 1`] = `"should be formatted as email but is 'te..st@example.com' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = true an invalid e-mail address validateJSON() fails 1`] = `"should be formatted as email but is '2962' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = true dot after local part is not valid validateJSON() fails 1`] = `"should be formatted as email but is 'test.@example.com' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = true dot before local part is not valid validateJSON() fails 1`] = `"should be formatted as email but is '.test@example.com' instead"`;
+
+exports[`tests/draft6/optiona/format/email.json validation of e-mail addresses outputFormat = verbose, failFast = true two subsequent dots inside local part are not valid validateJSON() fails 1`] = `"should be formatted as email but is 'te..st@example.com' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false a host name containing illegal characters validateJSON() fails 1`] = `"should be formatted as hostname but is 'not_a_valid_host_name' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false a host name starting with an illegal character validateJSON() fails 1`] = `"should be formatted as hostname but is '-a-host-name-that-starts-with--' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false a host name with a component too long validateJSON() fails 1`] = `"should be formatted as hostname but is 'a-vvvvvvvvvvvvvvvveeeeeeeeeeeeeeeerrrrrrrrrrrrrrrryyyyyyyyyyyyyyyy-long-host-name-component' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false contains underscore validateJSON() fails 1`] = `"should be formatted as hostname but is 'host_name' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false ends with hyphen validateJSON() fails 1`] = `"should be formatted as hostname but is 'hostname-' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false ends with underscore validateJSON() fails 1`] = `"should be formatted as hostname but is 'hostname_' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false exceeds maximum label length validateJSON() fails 1`] = `"should be formatted as hostname but is 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false starts with hyphen validateJSON() fails 1`] = `"should be formatted as hostname but is '-hostname' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = false starts with underscore validateJSON() fails 1`] = `"should be formatted as hostname but is '_hostname' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true a host name containing illegal characters validateJSON() fails 1`] = `"should be formatted as hostname but is 'not_a_valid_host_name' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true a host name starting with an illegal character validateJSON() fails 1`] = `"should be formatted as hostname but is '-a-host-name-that-starts-with--' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true a host name with a component too long validateJSON() fails 1`] = `"should be formatted as hostname but is 'a-vvvvvvvvvvvvvvvveeeeeeeeeeeeeeeerrrrrrrrrrrrrrrryyyyyyyyyyyyyyyy-long-host-name-component' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true contains underscore validateJSON() fails 1`] = `"should be formatted as hostname but is 'host_name' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true ends with hyphen validateJSON() fails 1`] = `"should be formatted as hostname but is 'hostname-' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true ends with underscore validateJSON() fails 1`] = `"should be formatted as hostname but is 'hostname_' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true exceeds maximum label length validateJSON() fails 1`] = `"should be formatted as hostname but is 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true starts with hyphen validateJSON() fails 1`] = `"should be formatted as hostname but is '-hostname' instead"`;
+
+exports[`tests/draft6/optiona/format/hostname.json validation of host names outputFormat = verbose, failFast = true starts with underscore validateJSON() fails 1`] = `"should be formatted as hostname but is '_hostname' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = false an IP address as an integer (decimal) validateJSON() fails 1`] = `"should be formatted as ipv4 but is '2130706433' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = false an IP address as an integer validateJSON() fails 1`] = `"should be formatted as ipv4 but is '0x7f000001' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = false an IP address with out-of-range values validateJSON() fails 1`] = `"should be formatted as ipv4 but is '256.256.256.256' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = false an IP address with too many components validateJSON() fails 1`] = `"should be formatted as ipv4 but is '127.0.0.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = false an IP address without 4 components validateJSON() fails 1`] = `"should be formatted as ipv4 but is '127.0' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = false invalid leading zeroes, as they are treated as octals validateJSON() fails 1`] = `"should be formatted as ipv4 but is '087.10.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = false invalid non-ASCII '২' (a Bengali 2) validateJSON() fails 1`] = `"should be formatted as ipv4 but is '1২7.0.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = true an IP address as an integer (decimal) validateJSON() fails 1`] = `"should be formatted as ipv4 but is '2130706433' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = true an IP address as an integer validateJSON() fails 1`] = `"should be formatted as ipv4 but is '0x7f000001' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = true an IP address with out-of-range values validateJSON() fails 1`] = `"should be formatted as ipv4 but is '256.256.256.256' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = true an IP address with too many components validateJSON() fails 1`] = `"should be formatted as ipv4 but is '127.0.0.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = true an IP address without 4 components validateJSON() fails 1`] = `"should be formatted as ipv4 but is '127.0' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = true invalid leading zeroes, as they are treated as octals validateJSON() fails 1`] = `"should be formatted as ipv4 but is '087.10.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv4.json validation of IP addresses outputFormat = verbose, failFast = true invalid non-ASCII '২' (a Bengali 2) validateJSON() fails 1`] = `"should be formatted as ipv4 but is '1২7.0.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false a long invalid ipv6, below length limit, first validateJSON() fails 1`] = `"should be formatted as ipv6 but is '100:100:100:100:100:100:255.255.255.255.255' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false a long invalid ipv6, below length limit, second validateJSON() fails 1`] = `"should be formatted as ipv6 but is '100:100:100:100:100:100:100:255.255.255.255' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false an IPv6 address containing illegal characters validateJSON() fails 1`] = `"should be formatted as ipv6 but is '::laptop' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false an IPv6 address with out-of-range values validateJSON() fails 1`] = `"should be formatted as ipv6 but is '12345::' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false an IPv6 address with too many components validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false insufficient octets without double colons validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:6:7' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false invalid non-ASCII '৪' (a Bengali 4) in the IPv4 portion validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2::192.16৪.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false invalid non-ASCII '৪' (a Bengali 4) validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:6:7:৪' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false ipv4 is not ipv6 validateJSON() fails 1`] = `"should be formatted as ipv6 but is '127.0.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false ipv4 segment must have 4 octets validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:1.2.3' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false leading whitespace is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '  ::1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false missing leading octet is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is ':2:3:4:5:6:7:8' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false missing leading octet with omitted octets later validateJSON() fails 1`] = `"should be formatted as ipv6 but is ':2:3:4::8' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false missing trailing octet is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:6:7:' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false mixed format with ipv4 section with a hex octet validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1::2:192.168.ff.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false mixed format with ipv4 section with octet out of range validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1::2:192.168.256.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false netmask is not a part of ipv6 address validateJSON() fails 1`] = `"should be formatted as ipv6 but is 'fe80::/64' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false no colons is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false trailing 5 hex symbols is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '::abcef' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false trailing whitespace is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '::1  ' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false triple colons is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:::8' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false two sets of double colons is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1::d6::42' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = false zone id is not a part of ipv6 address validateJSON() fails 1`] = `"should be formatted as ipv6 but is 'fe80::a%eth1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true a long invalid ipv6, below length limit, first validateJSON() fails 1`] = `"should be formatted as ipv6 but is '100:100:100:100:100:100:255.255.255.255.255' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true a long invalid ipv6, below length limit, second validateJSON() fails 1`] = `"should be formatted as ipv6 but is '100:100:100:100:100:100:100:255.255.255.255' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true an IPv6 address containing illegal characters validateJSON() fails 1`] = `"should be formatted as ipv6 but is '::laptop' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true an IPv6 address with out-of-range values validateJSON() fails 1`] = `"should be formatted as ipv6 but is '12345::' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true an IPv6 address with too many components validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true insufficient octets without double colons validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:6:7' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true invalid non-ASCII '৪' (a Bengali 4) in the IPv4 portion validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2::192.16৪.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true invalid non-ASCII '৪' (a Bengali 4) validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:6:7:৪' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true ipv4 is not ipv6 validateJSON() fails 1`] = `"should be formatted as ipv6 but is '127.0.0.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true ipv4 segment must have 4 octets validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:1.2.3' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true leading whitespace is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '  ::1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true missing leading octet is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is ':2:3:4:5:6:7:8' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true missing leading octet with omitted octets later validateJSON() fails 1`] = `"should be formatted as ipv6 but is ':2:3:4::8' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true missing trailing octet is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:6:7:' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true mixed format with ipv4 section with a hex octet validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1::2:192.168.ff.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true mixed format with ipv4 section with octet out of range validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1::2:192.168.256.1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true netmask is not a part of ipv6 address validateJSON() fails 1`] = `"should be formatted as ipv6 but is 'fe80::/64' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true no colons is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true trailing 5 hex symbols is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '::abcef' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true trailing whitespace is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '::1  ' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true triple colons is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1:2:3:4:5:::8' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true two sets of double colons is invalid validateJSON() fails 1`] = `"should be formatted as ipv6 but is '1::d6::42' instead"`;
+
+exports[`tests/draft6/optiona/format/ipv6.json validation of IPv6 addresses outputFormat = verbose, failFast = true zone id is not a part of ipv6 address validateJSON() fails 1`] = `"should be formatted as ipv6 but is 'fe80::a%eth1' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (~ not escaped) validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/foo/bar~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (URI Fragment Identifier) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '#' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (URI Fragment Identifier) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '#/' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (URI Fragment Identifier) #3 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '#a' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (isn't empty nor starts with /) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is 'a' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (isn't empty nor starts with /) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '0' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (isn't empty nor starts with /) #3 validateJSON() fails 1`] = `"should be formatted as json-pointer but is 'a/a' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (multiple characters not escaped) validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (some escaped, but not all) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~0~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (some escaped, but not all) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~0/~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (wrong escape character) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~2' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = false not a valid JSON-pointer (wrong escape character) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~-1' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (~ not escaped) validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/foo/bar~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (URI Fragment Identifier) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '#' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (URI Fragment Identifier) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '#/' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (URI Fragment Identifier) #3 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '#a' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (isn't empty nor starts with /) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is 'a' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (isn't empty nor starts with /) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '0' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (isn't empty nor starts with /) #3 validateJSON() fails 1`] = `"should be formatted as json-pointer but is 'a/a' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (multiple characters not escaped) validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (some escaped, but not all) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~0~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (some escaped, but not all) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~0/~' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (wrong escape character) #1 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~2' instead"`;
+
+exports[`tests/draft6/optiona/format/json-pointer.json validation of JSON-pointers (JSON String Representation) outputFormat = verbose, failFast = true not a valid JSON-pointer (wrong escape character) #2 validateJSON() fails 1`] = `"should be formatted as json-pointer but is '/~-1' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = false an invalid URI though valid URI reference validateJSON() fails 1`] = `"should be formatted as uri but is 'abc' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = false an invalid URI validateJSON() fails 1`] = `"should be formatted as uri but is '\\\\WINDOWS\\fileshare' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = false an invalid URI with comma in scheme validateJSON() fails 1`] = `"should be formatted as uri but is 'bar,baz:foo' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = false an invalid URI with spaces and missing scheme validateJSON() fails 1`] = `"should be formatted as uri but is ':// should fail' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = false an invalid URI with spaces validateJSON() fails 1`] = `"should be formatted as uri but is 'http:// shouldfail.com' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = false an invalid protocol-relative URI Reference validateJSON() fails 1`] = `"should be formatted as uri but is '//foo.bar/?baz=qux#quux' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = false an invalid relative URI Reference validateJSON() fails 1`] = `"should be formatted as uri but is '/abc' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = true an invalid URI though valid URI reference validateJSON() fails 1`] = `"should be formatted as uri but is 'abc' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = true an invalid URI validateJSON() fails 1`] = `"should be formatted as uri but is '\\\\WINDOWS\\fileshare' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = true an invalid URI with comma in scheme validateJSON() fails 1`] = `"should be formatted as uri but is 'bar,baz:foo' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = true an invalid URI with spaces and missing scheme validateJSON() fails 1`] = `"should be formatted as uri but is ':// should fail' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = true an invalid URI with spaces validateJSON() fails 1`] = `"should be formatted as uri but is 'http:// shouldfail.com' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = true an invalid protocol-relative URI Reference validateJSON() fails 1`] = `"should be formatted as uri but is '//foo.bar/?baz=qux#quux' instead"`;
+
+exports[`tests/draft6/optiona/format/uri.json validation of URIs outputFormat = verbose, failFast = true an invalid relative URI Reference validateJSON() fails 1`] = `"should be formatted as uri but is '/abc' instead"`;
+
+exports[`tests/draft6/optiona/format/uri-reference.json validation of URI References outputFormat = verbose, failFast = false an invalid URI Reference validateJSON() fails 1`] = `"should be formatted as uri-reference but is '\\\\WINDOWS\\fileshare' instead"`;
+
+exports[`tests/draft6/optiona/format/uri-reference.json validation of URI References outputFormat = verbose, failFast = false an invalid URI fragment validateJSON() fails 1`] = `"should be formatted as uri-reference but is '#frag\\ment' instead"`;
+
+exports[`tests/draft6/optiona/format/uri-reference.json validation of URI References outputFormat = verbose, failFast = true an invalid URI Reference validateJSON() fails 1`] = `"should be formatted as uri-reference but is '\\\\WINDOWS\\fileshare' instead"`;
+
+exports[`tests/draft6/optiona/format/uri-reference.json validation of URI References outputFormat = verbose, failFast = true an invalid URI fragment validateJSON() fails 1`] = `"should be formatted as uri-reference but is '#frag\\ment' instead"`;
+
+exports[`tests/draft6/optiona/format/uri-template.json format: uri-template outputFormat = verbose, failFast = false an invalid uri-template validateJSON() fails 1`] = `"should be formatted as uri-template but is 'http://example.com/dictionary/{term:1}/{term' instead"`;
+
+exports[`tests/draft6/optiona/format/uri-template.json format: uri-template outputFormat = verbose, failFast = true an invalid uri-template validateJSON() fails 1`] = `"should be formatted as uri-template but is 'http://example.com/dictionary/{term:1}/{term' instead"`;

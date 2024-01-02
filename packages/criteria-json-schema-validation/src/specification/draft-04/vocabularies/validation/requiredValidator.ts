@@ -3,7 +3,6 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function requiredValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -12,6 +11,8 @@ export function requiredValidator(schema: JSONSchema, schemaPath: JSONPointer[],
   }
 
   const required = schema['required']
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONObject(instance)) {
@@ -25,17 +26,23 @@ export function requiredValidator(schema: JSONSchema, schemaPath: JSONPointer[],
       }
     }
 
-    return assert(
-      missingProperties.length === 0,
-      `is missing ${formatList(
-        missingProperties.map((name) => `'${name}'`),
-        'and'
-      )}`,
-      {
-        schemaLocation,
-        schemaKeyword: 'required',
-        instanceLocation
+    if (missingProperties.length === 0) {
+      return { valid: true, schemaLocation, schemaKeyword: 'required', instanceLocation }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'required',
+          instanceLocation,
+          message: `is missing ${formatList(
+            missingProperties.map((name) => `'${name}'`),
+            'and'
+          )}`
+        }
       }
-    )
+    }
   }
 }

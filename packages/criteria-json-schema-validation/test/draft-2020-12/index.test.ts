@@ -2,7 +2,7 @@
 import { JSONSchemaDraft2020_12 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
-import { jsonValidatorDraft2020_12 } from '../../src'
+import { OutputFormat, jsonValidatorDraft2020_12 } from '../../src'
 
 const testCasesDirectory = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/tests/draft2020-12')
 const testFiles = fs.readdirSync(testCasesDirectory).filter((filename) => filename.endsWith('.json'))
@@ -32,37 +32,45 @@ describe.each(testFilesTable)(`tests/draft2020-12/%s`, (testFilename) => {
   ])
 
   describe.each(testCasesTable)('%s', (testCaseDescription, testCaseSchema, testCaseTests) => {
-    let testCaseSchemaValidator
+    describe.each([
+      ['flag', true],
+      ['flag', false],
+      ['verbose', true],
+      ['verbose', false]
+    ])('outputFormat = %s, failFast = %s', (outputFormat, failFast) => {
+      let testCaseSchemaValidator
 
-    beforeAll(() => {
-      expect(() => {
-        testCaseSchemaValidator = jsonValidatorDraft2020_12(testCaseSchema, {
-          failFast: false,
-          retrieve: retrieveRemote
-        })
-      }).not.toThrow()
-    })
+      beforeAll(() => {
+        expect(() => {
+          testCaseSchemaValidator = jsonValidatorDraft2020_12(testCaseSchema, {
+            outputFormat: outputFormat as OutputFormat,
+            failFast,
+            retrieve: retrieveRemote
+          })
+        }).not.toThrow()
+      })
 
-    const testsTable: [string, any, boolean][] = testCaseTests.map((test) => [test.description, test.data, test.valid])
-    describe.each(testsTable)('%s', (testDescription, testData, testValid) => {
-      if (testValid) {
-        test('validateJSON() succeeds', () => {
-          expect(() => {
-            testCaseSchemaValidator(testData)
-          }).not.toThrow()
-        })
-      } else {
-        test('validateJSON() throws', () => {
-          expect(() => {
-            testCaseSchemaValidator(testData)
-          }).toThrow()
-        })
-        test('validateJSON() returns correct error message', () => {
-          expect(() => {
-            testCaseSchemaValidator(testData)
-          }).toThrowErrorMatchingSnapshot()
-        })
-      }
+      const testsTable: [string, any, boolean][] = testCaseTests.map((test) => [
+        test.description,
+        test.data,
+        test.valid
+      ])
+      describe.each(testsTable)('%s', (testDescription, testData, testValid) => {
+        if (testValid) {
+          test('validateJSON() succeeds', () => {
+            const { valid } = testCaseSchemaValidator(testData)
+            expect(valid).toEqual(true)
+          })
+        } else {
+          test('validateJSON() fails', () => {
+            const { valid, message } = testCaseSchemaValidator(testData)
+            expect(valid).toEqual(false)
+            if (outputFormat === 'verbose') {
+              expect(message).toMatchSnapshot()
+            }
+          })
+        }
+      })
     })
   })
 })

@@ -1,50 +1,79 @@
-export function reduceAnnotationResults(lhs: Record<string, any>, rhs: Record<string, any>) {
-  let result: Record<string, any> = {}
+export function reduceAnnotationResults(lhs: Record<string, any> | undefined, rhs: Record<string, any> | undefined) {
+  if (rhs === undefined) {
+    return lhs ?? {}
+  }
   const {
-    properties: lhsProperties,
-    patternProperties: lhsPatternProperties,
-    additionalProperties: lhsAdditionalProperties,
-    unevaluatedProperties: lhsUnevaluatedProperties,
-    items: lhsItems,
-    prefixItems: lhsPrefixItems,
-    contains: lhsContains,
-    unevaluatedItems: lhsUnevaluatedItems,
-    ...lhsRest
-  } = lhs ?? {}
-  const {
-    properties: rhsProperties,
-    patternProperties: rhsPatternProperties,
-    additionalProperties: rhsAdditionalProperties,
-    unevaluatedProperties: rhsUnevaluatedProperties,
-    items: rhsItems,
-    prefixItems: rhsPrefixItems,
-    contains: rhsContains,
-    unevaluatedItems: rhsUnevaluatedItems,
-    ...rhsRest
-  } = rhs ?? {}
-  result = {
-    ...lhsRest,
-    ...rhsRest,
-    properties: reducePropertiesAnnotationResults(lhsProperties, rhsProperties),
-    patternProperties: reducePropertiesAnnotationResults(lhsPatternProperties, rhsPatternProperties),
-    additionalProperties: reducePropertiesAnnotationResults(lhsAdditionalProperties, rhsAdditionalProperties),
-    unevaluatedProperties: reducePropertiesAnnotationResults(lhsUnevaluatedProperties, rhsUnevaluatedProperties),
-    items: reduceItemsAnnotationResults(lhsItems, rhsItems),
-    prefixItems: reduceItemsAnnotationResults(lhsPrefixItems, rhsPrefixItems),
-    contains: reduceContainsAnnotationResults(lhsContains, rhsContains),
-    unevaluatedItems: reduceItemsAnnotationResults(lhsUnevaluatedItems, rhsUnevaluatedItems)
+    properties,
+    patternProperties,
+    additionalProperties,
+    unevaluatedProperties,
+    items,
+    prefixItems,
+    contains,
+    unevaluatedItems,
+    ...rest
+  } = rhs
+  const result = Object.assign({}, lhs, rest)
+  if (properties !== undefined) {
+    if (result.properties !== undefined) {
+      result.properties.push(...properties)
+    } else {
+      result.properties = properties
+    }
+  }
+  if (patternProperties !== undefined) {
+    if (result.patternProperties !== undefined) {
+      result.patternProperties.push(...patternProperties)
+    } else {
+      result.patternProperties = patternProperties
+    }
+  }
+  if (additionalProperties !== undefined) {
+    if (result.additionalProperties !== undefined) {
+      result.additionalProperties.push(...additionalProperties)
+    } else {
+      result.additionalProperties = additionalProperties
+    }
+  }
+  if (unevaluatedProperties !== undefined) {
+    if (result.unevaluatedProperties !== undefined) {
+      result.unevaluatedProperties.push(...unevaluatedProperties)
+    } else {
+      result.unevaluatedProperties = unevaluatedProperties
+    }
+  }
+  if (items !== undefined) {
+    if (result.items !== undefined) {
+      result.items = reduceItems(result.items, items)
+    } else {
+      result.items = items
+    }
+  }
+  if (prefixItems !== undefined) {
+    if (result.prefixItems !== undefined) {
+      result.prefixItems = reduceItems(result.prefixItems, prefixItems)
+    } else {
+      result.prefixItems = prefixItems
+    }
+  }
+  if (contains !== undefined) {
+    if (result.contains !== undefined) {
+      result.contains = Array.from(new Set([...result.contains, ...contains]))
+    } else {
+      result.contains = contains
+    }
+  }
+  if (unevaluatedItems !== undefined) {
+    if (result.unevaluatedItems !== undefined) {
+      result.unevaluatedItems = reduceItems(result.unevaluatedItems, unevaluatedItems)
+    } else {
+      result.unevaluatedItems = unevaluatedItems
+    }
   }
   return result
 }
 
-function reducePropertiesAnnotationResults(lhs: string[] | undefined, rhs: string[] | undefined) {
-  if (lhs !== undefined || rhs !== undefined) {
-    return [...(lhs ?? []), ...(rhs ?? [])]
-  }
-  return undefined
-}
-
-function reduceItemsAnnotationResults(lhs: true | number | undefined, rhs: true | number | undefined) {
+function reduceItems(lhs: true | number | undefined, rhs: true | number | undefined) {
   if (lhs === true) {
     return true
   }
@@ -59,13 +88,6 @@ function reduceItemsAnnotationResults(lhs: true | number | undefined, rhs: true 
   }
   if (typeof rhs === 'number') {
     return rhs
-  }
-  return undefined
-}
-
-function reduceContainsAnnotationResults(lhs: string[] | undefined, rhs: string[] | undefined) {
-  if (lhs !== undefined || rhs !== undefined) {
-    return Array.from(new Set([...(lhs ?? []), ...(rhs ?? [])]))
   }
   return undefined
 }

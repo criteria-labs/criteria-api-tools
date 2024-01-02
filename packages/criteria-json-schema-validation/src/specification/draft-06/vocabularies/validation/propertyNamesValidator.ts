@@ -2,7 +2,7 @@ import { JSONSchemaObject } from '@criteria/json-schema/draft-06'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
+import { InvalidOutput, InvalidVerboseOutput, Output, ValidOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function propertyNamesValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -12,6 +12,9 @@ export function propertyNamesValidator(schema: JSONSchemaObject, schemaPath: JSO
 
   const propertyNames = schema['propertyNames']
   const validator = context.validatorForSchema(propertyNames, [...schemaPath, `/propertyNames`])
+
+  const outputFormat = context.outputFormat
+  const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONObject(instance)) {
@@ -19,19 +22,34 @@ export function propertyNamesValidator(schema: JSONSchemaObject, schemaPath: JSO
     }
 
     let validOutputs = new Map<string, ValidOutput>()
-    let invalidOutputs = new Map<string, InvalidOutput>()
+    const invalidPropertyNames: string[] = []
+    const errors: InvalidOutput[] = []
     for (const propertyName of Object.keys(instance)) {
       // property names don't have a path from the root
       const output = validator(propertyName, '')
       if (output.valid) {
         validOutputs.set(propertyName, output)
       } else {
-        invalidOutputs.set(propertyName, output as InvalidOutput)
+        if (failFast) {
+          if (outputFormat === 'flag') {
+            return { valid: false }
+          } else {
+            return {
+              valid: false,
+              schemaLocation,
+              schemaKeyword: 'propertyNames',
+              instanceLocation,
+              message: formatMessage([output as InvalidVerboseOutput], [propertyName]),
+              errors: [output as InvalidVerboseOutput]
+            }
+          }
+        }
+        invalidPropertyNames.push(propertyName)
+        errors.push(output as InvalidOutput)
       }
     }
 
-    const valid = invalidOutputs.size === 0
-    if (valid) {
+    if (errors.length === 0) {
       return {
         valid: true,
         schemaLocation,
@@ -39,24 +57,34 @@ export function propertyNamesValidator(schema: JSONSchemaObject, schemaPath: JSO
         instanceLocation
       }
     } else {
-      const entries = Array.from(invalidOutputs.entries())
-      let message
-      if (entries.length === 1) {
-        message = `has an invalid property name ('${entries[0][0]}' ${entries[0][1].message})`
+      if (outputFormat === 'flag') {
+        return { valid: false }
       } else {
-        message = `has an invalid property names (${formatList(
-          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
-          'and'
-        )})`
-      }
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'propertyNames',
-        instanceLocation,
-        message,
-        errors: Array.from(invalidOutputs.values())
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'propertyNames',
+          instanceLocation,
+          message: formatMessage(errors as InvalidVerboseOutput[], invalidPropertyNames),
+          errors: errors as InvalidVerboseOutput[]
+        }
       }
     }
   }
+}
+
+export function formatMessage(errors: InvalidVerboseOutput[] | null, invalidPropertyNames: string[]) {
+  let message
+  if (invalidPropertyNames.length === 1) {
+    message = `has an invalid property name ${invalidPropertyNames[0]}`
+  } else {
+    message = `has invalid property names ${formatList(
+      invalidPropertyNames.map((propertyName) => `'${propertyName}'`),
+      'and'
+    )}`
+  }
+  if (errors !== null) {
+    message += ` (${errors.map((error) => error.message).join('; ')})`
+  }
+  return message
 }

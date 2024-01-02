@@ -19,7 +19,7 @@ export function notValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[]
         schemaLocation,
         schemaKeyword: 'not',
         instanceLocation,
-        message: 'should not validate against subschema'
+        message: formatMessage()
       }
     } else {
       return {
@@ -30,4 +30,8 @@ export function notValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[]
       }
     }
   }
+}
+
+export function formatMessage() {
+  return 'validates against a subschema that is not allowed'
 }

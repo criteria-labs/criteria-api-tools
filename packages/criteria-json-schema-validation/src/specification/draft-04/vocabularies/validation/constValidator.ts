@@ -1,6 +1,6 @@
 import { JSONSchema } from '@criteria/json-schema/draft-04'
+import equal from 'fast-deep-equal'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import circularEqual from '../../../../util/circularEqual'
 import { format } from '../../../../util/format'
 import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
@@ -11,26 +11,31 @@ export function constValidator(schema: JSONSchema, schemaPath: JSONPointer[], co
   }
 
   const constValue = schema['const']
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
-    const equal = circularEqual(instance, constValue)
-    if (equal) {
+    if (equal(instance, constValue)) {
       return {
         valid: true,
         schemaLocation,
         schemaKeyword: 'const',
         instanceLocation,
         annotationResults: {
-          const: `${instance} = ${constValue}`
+          const: constValue
         }
       }
     } else {
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'const',
-        instanceLocation,
-        message: `should be ${format(constValue)} but is ${format(instance)} instead`
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'const',
+          instanceLocation,
+          message: `should be ${format(constValue)} but is ${format(instance)} instead`
+        }
       }
     }
   }

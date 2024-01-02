@@ -1,11 +1,10 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import circularEqual from '../../../../util/circularEqual'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
+import { FlagOutput, VerboseOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
+import equal from 'fast-deep-equal'
 
 export function uniqueItemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('uniqueItems' in schema)) {
@@ -17,9 +16,14 @@ export function uniqueItemsValidator(schema: JSONSchemaObject, schemaPath: JSONP
     return null
   }
 
+  const outputFormat = context.outputFormat
   const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
-  return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
+  return (
+    instance: any,
+    instanceLocation: JSONPointer,
+    annotationResults: Record<string, any>
+  ): FlagOutput | VerboseOutput => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }
     }
@@ -27,8 +31,7 @@ export function uniqueItemsValidator(schema: JSONSchemaObject, schemaPath: JSONP
     const matchingPairs: [number, number][] = []
     for (let i = 0; i < instance.length; i++) {
       for (let j = i + 1; j < instance.length; j++) {
-        const equal = circularEqual(instance[i], instance[j])
-        if (equal) {
+        if (equal(instance[i], instance[j])) {
           if (failFast) {
             return {
               valid: false,
@@ -43,17 +46,28 @@ export function uniqueItemsValidator(schema: JSONSchemaObject, schemaPath: JSONP
       }
     }
 
-    return assert(
-      matchingPairs.length === 0,
-      `should have unique items but ${formatList(
-        matchingPairs.map((pair) => `items at ${pair[0]} and ${pair[1]} are equal`),
-        'and'
-      )} instead`,
-      {
+    if (matchingPairs.length === 0) {
+      return {
+        valid: true,
         schemaLocation,
         schemaKeyword: 'uniqueItems',
         instanceLocation
       }
-    )
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'uniqueItems',
+          instanceLocation,
+          message: `should have unique items but ${formatList(
+            matchingPairs.map((pair) => `items at ${pair[0]} and ${pair[1]} are equal`),
+            'and'
+          )} instead`
+        }
+      }
+    }
   }
 }

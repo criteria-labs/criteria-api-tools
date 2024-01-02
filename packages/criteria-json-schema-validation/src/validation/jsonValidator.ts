@@ -1,32 +1,34 @@
 import { DereferenceOptions, SchemaIndex } from '@criteria/json-schema'
-import { ValidationError } from '../errors/ValidationError'
-import { InvalidOutput } from './Output'
+import { FlagOutput, Output, OutputFormat, VerboseOutput } from './Output'
 import { booleanValidator } from './booleanValidator'
 import { keywordValidatorsForMetaSchemaURIFactory } from './keywordValidators'
 import { validatorBinder } from './validatorBinder'
 
 // default options
+export const defaultOutputFormat = 'flag'
 export const defaultFailFast = false
 export const defaultAssertFormat = false
 
 export type ValidateOptions = DereferenceOptions & {
+  outputFormat?: OutputFormat
   failFast?: boolean
   assertFormat?: boolean
 }
 
-export function jsonValidator(schema: object | boolean, options?: ValidateOptions): (instance: unknown) => void {
+export function jsonValidator(
+  schema: object | boolean,
+  options?: ValidateOptions
+): (instance: unknown) => FlagOutput | VerboseOutput {
+  const outputFormat = options.outputFormat ?? defaultOutputFormat
+  const failFast = outputFormat === 'flag' ? true : options.failFast ?? defaultFailFast // flag output format is effectively the same as fail fast
+  const assertFormat = options.assertFormat ?? defaultAssertFormat
+
   if (typeof schema === 'boolean') {
-    const validator = booleanValidator(schema, [''])
+    const validator = booleanValidator(schema, [''], { outputFormat })
     return (instance: unknown) => {
-      const output = validator(instance, '')
-      if (!output.valid) {
-        throw new ValidationError(`The value ${(output as InvalidOutput).message ?? 'is invalid'}`, { output })
-      }
+      return validator(instance, '')
     }
   }
-
-  const failFast = options.failFast ?? defaultFailFast
-  const assertFormat = options.assertFormat ?? defaultAssertFormat
 
   // Index root schema
   const index = new SchemaIndex({
@@ -41,15 +43,13 @@ export function jsonValidator(schema: object | boolean, options?: ValidateOption
     retrieve: index.retrieve
   })
   const boundValidatorForSchema = validatorBinder(index, {
+    outputFormat,
     failFast,
     validatorsForMetaSchemaURI
   })
 
   const boundValidator = boundValidatorForSchema(schema, [''])
-  return (instance: unknown) => {
-    const output = boundValidator(instance, '')
-    if (!output.valid) {
-      throw new ValidationError(`The value ${(output as InvalidOutput).message ?? 'is invalid'}`, { output })
-    }
+  return function validateInstance(instance: unknown) {
+    return boundValidator(instance, '')
   }
 }

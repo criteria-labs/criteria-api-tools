@@ -1,12 +1,11 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
-import { JSONPointer } from '../../../../util/JSONPointer'
-import { format as formatInstance } from '../../../../util/format'
-import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
-import { ValidatorContext } from '../../../../validation/keywordValidators'
 import { toASCII } from 'punycode'
 import { parse as parseSMTPAddress } from 'smtp-address-parser'
 import { parse as parseURI } from 'uri-js'
+import { JSONPointer } from '../../../../util/JSONPointer'
+import { format as formatInstance } from '../../../../util/format'
+import { FlagOutput, VerboseOutput } from '../../../../validation/Output'
+import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 const DATE_TIME_SEPARATOR = /t|\s/i
 const isDateTime = (instance: string) => {
@@ -244,6 +243,7 @@ const formatPredicate = (format: string): ((instance: unknown) => boolean) => {
     case 'time':
       return isTime
     case 'unknown':
+      return (instance: unknown) => true
     case 'uri-reference':
       return isURIReference
     case 'uri-template':
@@ -264,16 +264,37 @@ export function formatValidator(schema: JSONSchemaObject, schemaPath: JSONPointe
 
   const format = schema['format']
   const predicate = formatPredicate(format)
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
-  return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
+  return (
+    instance: any,
+    instanceLocation: JSONPointer,
+    annotationResults: Record<string, any>
+  ): FlagOutput | VerboseOutput => {
     if (typeof instance !== 'string') {
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(predicate(instance), `should be formatted as ${format} but is ${formatInstance(instance)} instead`, {
-      schemaLocation,
-      schemaKeyword: 'format',
-      instanceLocation
-    })
+    if (predicate(instance)) {
+      return {
+        valid: true,
+        schemaLocation,
+        schemaKeyword: 'format',
+        instanceLocation
+      }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'format',
+          instanceLocation,
+          message: `should be formatted as ${format} but is ${formatInstance(instance)} instead`
+        }
+      }
+    }
   }
 }

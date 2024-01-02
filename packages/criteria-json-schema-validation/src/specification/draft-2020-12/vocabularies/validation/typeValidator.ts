@@ -6,7 +6,6 @@ import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { isJSONString } from '../../../../util/isJSONString'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 const formattedType = (primitiveType: JSONSchemaPrimitiveType): string => {
@@ -96,13 +95,30 @@ export function typeValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[
   } else {
     const predicate = jsonTypePredicate(type)
     const expectation = formattedType(type)
+
+    const outputFormat = context.outputFormat
     const schemaLocation = schemaPath.join('') as JSONPointer
     return (instance: unknown, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
-      return assert(predicate(instance), `should be ${expectation} but is ${formattedTypeOf(instance)} instead`, {
-        schemaLocation,
-        schemaKeyword: 'type',
-        instanceLocation
-      })
+      if (predicate(instance)) {
+        return {
+          valid: true,
+          schemaLocation,
+          schemaKeyword: 'type',
+          instanceLocation
+        }
+      } else {
+        if (outputFormat === 'flag') {
+          return { valid: false }
+        } else {
+          return {
+            valid: false,
+            schemaLocation,
+            schemaKeyword: 'type',
+            instanceLocation,
+            message: `should be ${expectation} but is ${formattedTypeOf(instance)} instead`
+          }
+        }
+      }
     }
   }
 }

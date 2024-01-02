@@ -1,6 +1,6 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { Output } from '../../../../validation/Output'
+import { Output, ValidVerboseOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 import { reduceAnnotationResults } from '../reduceAnnotationResults'
 
@@ -9,6 +9,7 @@ export function ifValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[],
     return null
   }
 
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
 
   const trueValidator = (instance: unknown, instanceLocation: JSONPointer): Output => {
@@ -35,7 +36,10 @@ export function ifValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[],
           valid: true,
           schemaLocation,
           instanceLocation,
-          annotationResults: reduceAnnotationResults(ifOutput.annotationResults, thenOutput.annotationResults)
+          annotationResults: reduceAnnotationResults(
+            (ifOutput as ValidVerboseOutput).annotationResults,
+            (thenOutput as ValidVerboseOutput).annotationResults
+          )
         }
       } else {
         return thenOutput
@@ -47,7 +51,7 @@ export function ifValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[],
           valid: true,
           schemaLocation,
           instanceLocation,
-          annotationResults: elseOutput.annotationResults
+          annotationResults: (elseOutput as ValidVerboseOutput).annotationResults
         }
       } else {
         return elseOutput

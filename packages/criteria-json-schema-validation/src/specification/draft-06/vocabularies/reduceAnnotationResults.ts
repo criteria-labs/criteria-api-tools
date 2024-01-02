@@ -1,5 +1,5 @@
 export function reduceAnnotationResults(lhs: Record<string, any>, rhs: Record<string, any>) {
-  const { properties, patternProperties, additionalProperties, items, additionalItems, ...rest } = rhs
+  const { properties, patternProperties, additionalProperties, items, additionalItems, contains, ...rest } = rhs
   const result = Object.assign({}, lhs, rest)
   if (properties !== undefined) {
     if (result.properties !== undefined) {
@@ -34,6 +34,13 @@ export function reduceAnnotationResults(lhs: Record<string, any>, rhs: Record<st
       result.additionalItems = reduceItems(result.additionalItems, additionalItems)
     } else {
       result.additionalItems = additionalItems
+    }
+  }
+  if (contains !== undefined) {
+    if (result.contains !== undefined) {
+      result.contains = Array.from(new Set([...result.contains, ...contains]))
+    } else {
+      result.contains = contains
     }
   }
   return result

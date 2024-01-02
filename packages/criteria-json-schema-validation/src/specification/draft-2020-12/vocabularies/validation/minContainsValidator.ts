@@ -3,7 +3,6 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 const formatErrorMessage = (minContains: number, indices: number[]) => {
@@ -27,6 +26,8 @@ export function minContainsValidator(schema: JSONSchemaObject, schemaPath: JSONP
   }
 
   const minContains = schema['minContains']
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
@@ -35,10 +36,20 @@ export function minContainsValidator(schema: JSONSchemaObject, schemaPath: JSONP
 
     const containsAnnotationResult = annotationResults['contains'] // array of matched indices
     const count = Array.isArray(containsAnnotationResult) ? containsAnnotationResult.length : 0
-    return assert(count >= minContains, formatErrorMessage(minContains, containsAnnotationResult), {
-      schemaLocation,
-      schemaKeyword: 'minContains',
-      instanceLocation
-    })
+    if (count >= minContains) {
+      return { valid: true, schemaLocation, schemaKeyword: 'contains', instanceLocation }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'contains',
+          instanceLocation,
+          message: formatErrorMessage(minContains, containsAnnotationResult ?? [])
+        }
+      }
+    }
   }
 }

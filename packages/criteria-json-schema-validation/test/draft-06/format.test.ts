@@ -1,17 +1,19 @@
 /* eslint-env jest */
-import { JSONSchemaDraft04 } from '@criteria/json-schema'
+import { JSONSchemaDraft06 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
-import { jsonValidatorDraft04 } from '../../src'
-import { OutputFormat } from '../../src/validation/Output'
+import { OutputFormat, jsonValidatorDraft06 } from '../../src'
 
-const testCasesDirectory = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/tests/draft4')
+const testCasesDirectory = path.resolve(
+  __dirname,
+  '../__fixtures__/json-schema-test-suite/tests/draft6/optional/format'
+)
 const testFiles = fs.readdirSync(testCasesDirectory).filter((filename) => filename.endsWith('.json'))
 let testFilesTable: [string][] = testFiles.map((testFile) => [testFile])
 
 const remotesDirectoryPath = path.resolve(__dirname, '../__fixtures__/json-schema-test-suite/remotes')
 
-const retrieveRemote = (uri: string): JSONSchemaDraft04 => {
+const retrieveRemote = (uri: string): JSONSchemaDraft06 => {
   if (uri.startsWith('http://localhost:1234/')) {
     const remotePath = uri.replace('http://localhost:1234', remotesDirectoryPath)
     const remoteContents = fs.readFileSync(remotePath, { encoding: 'utf-8' })
@@ -22,7 +24,7 @@ const retrieveRemote = (uri: string): JSONSchemaDraft04 => {
   }
 }
 
-describe.each(testFilesTable)(`tests/draft4/%s`, (testFilename) => {
+describe.each(testFilesTable)(`tests/draft6/optiona/format/%s`, (testFilename) => {
   const testFilePath = path.resolve(testCasesDirectory, testFilename)
   const testFileContents = fs.readFileSync(testFilePath, { encoding: 'utf-8' })
   const testCases = JSON.parse(testFileContents)
@@ -43,9 +45,10 @@ describe.each(testFilesTable)(`tests/draft4/%s`, (testFilename) => {
 
       beforeAll(() => {
         expect(() => {
-          testCaseSchemaValidator = jsonValidatorDraft04(testCaseSchema, {
+          testCaseSchemaValidator = jsonValidatorDraft06(testCaseSchema, {
             outputFormat: outputFormat as OutputFormat,
             failFast,
+            assertFormat: true,
             retrieve: retrieveRemote
           })
         }).not.toThrow()

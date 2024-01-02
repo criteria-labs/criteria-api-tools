@@ -6,7 +6,6 @@ import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { isJSONString } from '../../../../util/isJSONString'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 const formattedType = (primitiveType: JSONSchemaPrimitiveType): string => {
@@ -77,6 +76,8 @@ export function typeValidator(schema: JSONSchema, schemaPath: JSONPointer[], con
   if (Array.isArray(type)) {
     const predicates = type.map((candidate) => jsonTypePredicate(candidate))
     const expectations = formatList(type.map(formattedType), 'or')
+
+    const outputFormat = context.outputFormat
     const schemaLocation = schemaPath.join('') as JSONPointer
     return (instance: unknown, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
       for (const predicate of predicates) {
@@ -85,24 +86,42 @@ export function typeValidator(schema: JSONSchema, schemaPath: JSONPointer[], con
         }
       }
 
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'type',
-        instanceLocation,
-        message: `should be either ${expectations} but is ${formattedTypeOf(instance)} instead`
+      if (outputFormat === 'flag') {
+        return {
+          valid: false
+        }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'type',
+          instanceLocation,
+          message: `should be either ${expectations} but is ${formattedTypeOf(instance)} instead`
+        }
       }
     }
   } else {
     const predicate = jsonTypePredicate(type)
     const expectation = formattedType(type)
+
+    const outputFormat = context.outputFormat
     const schemaLocation = schemaPath.join('') as JSONPointer
     return (instance: unknown, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
-      return assert(predicate(instance), `should be ${expectation} but is ${formattedTypeOf(instance)} instead`, {
-        schemaLocation,
-        schemaKeyword: 'type',
-        instanceLocation
-      })
+      if (predicate(instance)) {
+        return { valid: true, schemaLocation, schemaKeyword: 'type', instanceLocation }
+      } else {
+        if (outputFormat === 'flag') {
+          return { valid: false }
+        } else {
+          return {
+            valid: false,
+            schemaLocation,
+            schemaKeyword: 'type',
+            instanceLocation,
+            message: `should be ${expectation} but is ${formattedTypeOf(instance)} instead`
+          }
+        }
+      }
     }
   }
 }

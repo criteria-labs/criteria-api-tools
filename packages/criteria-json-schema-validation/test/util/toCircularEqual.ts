@@ -1,5 +1,5 @@
 import { matcherHint, printDiffOrStringify, printExpected, printReceived, stringify } from 'jest-matcher-utils'
-import circularEqual from '../../src/util/circularEqual'
+import equal from 'fast-deep-equal'
 
 // Omit colon and one or more spaces, so can call getLabelPrinter.
 const EXPECTED_LABEL = 'Expected'
@@ -11,7 +11,7 @@ const isExpand = (expand?: boolean): boolean => expand !== false
 export function toCircularEqual(received: unknown, expected: unknown) {
   const matcherName = 'toCircularEqual'
 
-  const pass = circularEqual(received, expected)
+  const pass = equal(received, expected)
 
   const message = pass
     ? () =>

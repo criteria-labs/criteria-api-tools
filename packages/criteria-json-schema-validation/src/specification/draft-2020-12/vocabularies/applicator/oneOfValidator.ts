@@ -30,7 +30,7 @@ export function oneOfValidator(schema: JSONSchemaObject, schemaPath: JSONPointer
         schemaLocation,
         schemaKeyword: 'oneOf',
         instanceLocation,
-        message: `should validate against exactly one subschema but validated against ${
+        message: `should validate against exactly one subschema but validates against ${
           validCount === 0 ? 'none' : validCount
         }`
       }

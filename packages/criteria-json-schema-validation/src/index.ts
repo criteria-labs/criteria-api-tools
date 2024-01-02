@@ -5,3 +5,4 @@ export {
   validateJSON as validateJSONDraft2020_12
 } from './specification/draft-2020-12'
 export { ValidationError } from './errors/ValidationError'
+export { OutputFormat } from './validation/Output'

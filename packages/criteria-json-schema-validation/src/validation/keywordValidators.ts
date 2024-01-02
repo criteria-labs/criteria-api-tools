@@ -19,10 +19,12 @@ import { formatAssertionValidators as formatAssertionValidatorsDraft2020_12 } fr
 import { JSONPointer } from '../util/JSONPointer'
 import { BoundValidatorWithAnnotationResults } from './BoundValidator'
 import { BoundValidatorForSchema } from './validatorBinder'
+import { OutputFormat } from './Output'
 
 export type JSONSchemaKeyword = keyof JSONSchemaDraft04 | keyof JSONSchemaDraft06 | keyof JSONSchemaDraft2020_12
 
 export type ValidatorContext = {
+  outputFormat: OutputFormat
   failFast: boolean
   validatorForSchema: BoundValidatorForSchema
   index: SchemaIndex

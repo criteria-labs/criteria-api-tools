@@ -3,7 +3,6 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { format } from '../../../../util/format'
 import { isJSONNumber } from '../../../../util/isJSONNumber'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function exclusiveMinimumValidator(
@@ -16,16 +15,28 @@ export function exclusiveMinimumValidator(
   }
 
   const exclusiveMinimum = schema['exclusiveMinimum']
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONNumber(instance)) {
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(
-      instance > exclusiveMinimum,
-      `should be greater than ${exclusiveMinimum} but is ${format(instance)} instead`,
-      { schemaLocation, schemaKeyword: 'exclusiveMinimum', instanceLocation }
-    )
+    if (instance > exclusiveMinimum) {
+      return { valid: true, schemaLocation, schemaKeyword: 'multipleOf', instanceLocation }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'exclusiveMinimum',
+          instanceLocation,
+          message: `should be greater than ${exclusiveMinimum} but is ${format(instance)} instead`
+        }
+      }
+    }
   }
 }

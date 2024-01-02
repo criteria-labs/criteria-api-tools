@@ -2,7 +2,7 @@ import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { InvalidOutput, Output } from '../../../../validation/Output'
+import { InvalidOutput, InvalidVerboseOutput, Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function unevaluatedItemsValidator(
@@ -17,6 +17,7 @@ export function unevaluatedItemsValidator(
   const unevaluatedItems = schema['unevaluatedItems']
   const validator = context.validatorForSchema(unevaluatedItems, [...schemaPath, '/unevaluatedItems'])
 
+  const outputFormat = context.outputFormat
   const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
@@ -43,7 +44,7 @@ export function unevaluatedItemsValidator(
       firstUnevaluatedItem = Math.max(firstUnevaluatedItem, instance.length)
     }
 
-    const outputs = []
+    const errors = []
     const invalidIndices = []
     for (let i = firstUnevaluatedItem; i < instance.length; i++) {
       if (containsAnnotationResult && containsAnnotationResult.includes(i)) {
@@ -51,19 +52,27 @@ export function unevaluatedItemsValidator(
       }
 
       const output = validator(instance[i], `${instanceLocation}/${i}`)
-      outputs.push(output)
       if (!output.valid) {
+        if (failFast) {
+          if (outputFormat === 'flag') {
+            return { valid: false }
+          } else {
+            return {
+              valid: false,
+              schemaLocation,
+              schemaKeyword: 'unevaluatedItems',
+              instanceLocation,
+              message: formatMessage([output as InvalidVerboseOutput], [i]),
+              errors: [output as InvalidVerboseOutput]
+            }
+          }
+        }
+        errors.push(output)
         invalidIndices.push(i)
-      }
-
-      if (!output.valid && failFast) {
-        break
       }
     }
 
-    const invalidOutputs = outputs.filter((output) => !output.valid) as InvalidOutput[]
-    const valid = invalidOutputs.length === 0
-    if (valid) {
+    if (errors.length === 0) {
       return {
         valid: true,
         schemaLocation,
@@ -72,25 +81,36 @@ export function unevaluatedItemsValidator(
         annotationResults: {
           unevaluatedItems: true // TODO: only true if actually applied to items
         }
-      } as any
-    } else {
-      let message
-      if (invalidIndices.length === 1) {
-        message = `has invalid item (item at ${invalidIndices[0]} ${invalidOutputs[0].message})`
-      } else {
-        message = `has invalid items (${formatList(
-          invalidIndices.map((i, offset) => `item at ${i} ${invalidOutputs[offset].message}`),
-          'and'
-        )})`
       }
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'unevaluatedItems',
-        instanceLocation,
-        message,
-        errors: invalidOutputs
-      } as any
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'unevaluatedItems',
+          instanceLocation,
+          message: formatMessage(errors, invalidIndices),
+          errors
+        }
+      }
     }
   }
+}
+
+export function formatMessage(errors: InvalidVerboseOutput[] | null, invalidIndices: number[]) {
+  let message
+  if (invalidIndices.length === 1) {
+    message = `has an invalid item at position ${invalidIndices[0]}`
+  } else {
+    message = `has invalid items at positions ${formatList(
+      invalidIndices.map((invalidIndex) => `${invalidIndex}`),
+      'and'
+    )}`
+  }
+  if (errors !== null) {
+    message += ` (${errors.map((error) => error.message).join('; ')})`
+  }
+  return message
 }

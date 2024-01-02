@@ -4,7 +4,7 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { BoundValidator } from '../../../../validation/BoundValidator'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
+import { InvalidOutput, InvalidVerboseOutput, Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function patternPropertiesValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -13,16 +13,17 @@ export function patternPropertiesValidator(schema: JSONSchema, schemaPath: JSONP
   }
 
   const patternProperties = schema['patternProperties']
-  const patternValidators: [string, RegExp, BoundValidator][] = Object.keys(patternProperties).map((pattern) => {
+  const patternValidators: [RegExp, BoundValidator][] = Object.keys(patternProperties).map((pattern) => {
     const regexp = new RegExp(pattern)
     const subschema = patternProperties[pattern]
     const subschemaValidator = context.validatorForSchema(subschema, [
       ...schemaPath,
       `/patternProperties/${escapeReferenceToken(pattern)}`
     ])
-    return [pattern, regexp, subschemaValidator]
+    return [regexp, subschemaValidator]
   })
 
+  const outputFormat = context.outputFormat
   const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
@@ -30,68 +31,75 @@ export function patternPropertiesValidator(schema: JSONSchema, schemaPath: JSONP
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    let validOutputs = new Map<string, ValidOutput>()
-    let invalidOutputs = new Map<string, InvalidOutput>()
-    for (const [propertyName, propertyValue] of Object.entries(instance)) {
-      for (const [pattern, regexp, validator] of patternValidators) {
-        // what if multiple patterns match the property?
-
-        if (propertyName.match(regexp) === null) {
-          continue
-        }
-
-        const output = validator(propertyValue, `${instanceLocation}/${escapeReferenceToken(propertyName)}`)
+    const validKeys = new Set()
+    const invalidPropertyNames: string[] = []
+    const errors: InvalidOutput[] = []
+    const allPropertyNames = Object.keys(instance)
+    for (const [regexp, validator] of patternValidators) {
+      const propertyNames = allPropertyNames.filter((propertyName) => regexp.test(propertyName))
+      for (const propertyName of propertyNames) {
+        const output = validator(instance[propertyName], `${instanceLocation}/${escapeReferenceToken(propertyName)}`)
         if (output.valid) {
-          validOutputs.set(propertyName, output)
+          validKeys.add(propertyName)
         } else {
-          invalidOutputs.set(propertyName, output as InvalidOutput)
-        }
-
-        if (!output.valid && failFast) {
-          return {
-            valid: false,
-            schemaLocation,
-            schemaKeyword: 'patternProperties',
-            instanceLocation,
-            message: `Invalid property ${propertyName}`,
-            errors: [output as InvalidOutput]
+          if (failFast) {
+            if (outputFormat === 'flag') {
+              return { valid: false }
+            } else {
+              return {
+                valid: false,
+                schemaLocation,
+                schemaKeyword: 'patternProperties',
+                instanceLocation,
+                message: formatMessage([output as InvalidVerboseOutput], [propertyName]),
+                errors: [output as InvalidVerboseOutput]
+              }
+            }
           }
+          errors.push(output as InvalidOutput)
         }
       }
-
-      // Property didn't match name or pattern
     }
 
-    const valid = invalidOutputs.size === 0
-    if (valid) {
+    if (errors.length === 0) {
       return {
         valid: true,
         schemaLocation,
         schemaKeyword: 'patternProperties',
         instanceLocation,
         annotationResults: {
-          patternProperties: Array.from(validOutputs.keys())
+          patternProperties: Array.from(validKeys)
         }
       }
     } else {
-      const entries = Array.from(invalidOutputs.entries())
-      let message
-      if (entries.length === 1) {
-        message = `has an invalid property ('${entries[0][0]}' ${entries[0][1].message})`
+      if (outputFormat === 'flag') {
+        return { valid: false }
       } else {
-        message = `has invalid properties (${formatList(
-          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
-          'and'
-        )})`
-      }
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'patternProperties',
-        instanceLocation,
-        message,
-        errors: Array.from(invalidOutputs.values())
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'patternProperties',
+          instanceLocation,
+          message: formatMessage(errors as InvalidVerboseOutput[], invalidPropertyNames),
+          errors: errors as InvalidVerboseOutput[]
+        }
       }
     }
   }
+}
+
+export function formatMessage(errors: InvalidVerboseOutput[] | null, invalidPropertyNames: string[]) {
+  let message
+  if (invalidPropertyNames.length === 1) {
+    message = `has an invalid property '${invalidPropertyNames[0]}'`
+  } else {
+    message = `has invalid properties ${formatList(
+      invalidPropertyNames.map((propertyName) => `'${propertyName}'`),
+      'and'
+    )}`
+  }
+  if (errors !== null) {
+    message += ` (${errors.map((error) => error.message).join('; ')})`
+  }
+  return message
 }

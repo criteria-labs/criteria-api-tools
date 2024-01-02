@@ -1,7 +1,7 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { InvalidOutput, Output } from '../../../../validation/Output'
+import { InvalidVerboseOutput, Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function containsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -16,6 +16,8 @@ export function containsValidator(schema: JSONSchemaObject, schemaPath: JSONPoin
   if ('minContains' in schema) {
     minContains = Math.min(minContains, schema['minContains'])
   }
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
@@ -32,8 +34,7 @@ export function containsValidator(schema: JSONSchemaObject, schemaPath: JSONPoin
       }
     }
 
-    const valid = matchedIndices.length >= minContains
-    if (valid) {
+    if (matchedIndices.length >= minContains) {
       return {
         valid: true,
         schemaLocation,
@@ -41,17 +42,25 @@ export function containsValidator(schema: JSONSchemaObject, schemaPath: JSONPoin
         instanceLocation,
         annotationResults: {
           contains: matchedIndices
-        } as any
+        }
       }
     } else {
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'contains',
-        instanceLocation,
-        message: 'should have an item that validates against subschema',
-        errors: outputs.filter((output) => !output.valid) as InvalidOutput[]
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'contains',
+          instanceLocation,
+          message: formatMessage(),
+          errors: outputs.filter((output) => !output.valid) as InvalidVerboseOutput[]
+        }
       }
     }
   }
+}
+
+export function formatMessage() {
+  return 'does not contain an item that validates against a subschema'
 }

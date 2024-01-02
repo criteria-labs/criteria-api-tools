@@ -3,7 +3,6 @@ import { JSONPointer } from '../../../../util/JSONPointer'
 import { format } from '../../../../util/format'
 import { isJSONString } from '../../../../util/isJSONString'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function patternValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -13,16 +12,28 @@ export function patternValidator(schema: JSONSchema, schemaPath: JSONPointer[], 
 
   const pattern = schema['pattern']
   const regexp = new RegExp(pattern)
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONString(instance)) {
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(instance.match(regexp), `should match '${pattern}' but is ${format(instance)} instead`, {
-      schemaLocation,
-      schemaKeyword: 'pattern',
-      instanceLocation
-    })
+    if (regexp.test(instance)) {
+      return { valid: true, schemaLocation, schemaKeyword: 'multipleOf', instanceLocation }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'pattern',
+          instanceLocation,
+          message: `should match '${pattern}' but is ${format(instance)} instead`
+        }
+      }
+    }
   }
 }

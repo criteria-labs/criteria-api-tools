@@ -2,7 +2,6 @@ import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function minItemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -11,18 +10,31 @@ export function minItemsValidator(schema: JSONSchemaObject, schemaPath: JSONPoin
   }
 
   const minItems = schema['minItems']
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    return assert(
-      instance.length >= minItems,
-      minItems === 1
-        ? `should have at least 1 item but has ${instance.length} instead`
-        : `should have at least ${minItems} items but has ${instance.length} instead`,
-      { schemaLocation, schemaKeyword: 'minItems', instanceLocation }
-    )
+    if (instance.length >= minItems) {
+      return { valid: true, schemaLocation, schemaKeyword: 'minItems', instanceLocation }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'minItems',
+          instanceLocation,
+          message:
+            minItems === 1
+              ? `should have at least 1 item but has ${instance.length} instead`
+              : `should have at least ${minItems} items but has ${instance.length} instead`
+        }
+      }
+    }
   }
 }

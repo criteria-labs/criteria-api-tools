@@ -1,7 +1,8 @@
 import { validationValidators as validationValidatorsDraft04 } from '../../../draft-04/vocabularies/validation'
 import { containsValidator } from './containsValidator'
-import { exclusiveMinimumValidator } from './exclusiveMinimumValidator'
 import { exclusiveMaximumValidator } from './exclusiveMaximumValidator'
+import { exclusiveMinimumValidator } from './exclusiveMinimumValidator'
+import { formatValidator } from './formatValidator'
 import { propertyNamesValidator } from './propertyNamesValidator'
 
 export const validationValidators = {
@@ -9,5 +10,6 @@ export const validationValidators = {
   contains: containsValidator,
   exclusiveMinimum: exclusiveMinimumValidator,
   exclusiveMaximum: exclusiveMaximumValidator,
-  propertyNames: propertyNamesValidator
+  propertyNames: propertyNamesValidator,
+  format: formatValidator
 }

@@ -2,7 +2,6 @@ import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONString } from '../../../../util/isJSONString'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function maxLengthValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -11,6 +10,8 @@ export function maxLengthValidator(schema: JSONSchema, schemaPath: JSONPointer[]
   }
 
   const maxLength = schema['maxLength']
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONString(instance)) {
@@ -20,12 +21,23 @@ export function maxLengthValidator(schema: JSONSchema, schemaPath: JSONPointer[]
     // count unicode characters, not UTF-16 code points
     const charactersCount = [...instance].length
 
-    return assert(
-      charactersCount <= maxLength,
-      maxLength === 1
-        ? `should have up to 1 character but has ${instance.length} instead`
-        : `should have up to ${maxLength} characters but has ${instance.length} instead`,
-      { schemaLocation, schemaKeyword: 'maxLength', instanceLocation }
-    )
+    if (charactersCount <= maxLength) {
+      return { valid: true, schemaLocation, schemaKeyword: 'maxLength', instanceLocation }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'maxLength',
+          instanceLocation,
+          message:
+            maxLength === 1
+              ? `should have up to 1 character but has ${instance.length} instead`
+              : `should have up to ${maxLength} characters but has ${instance.length} instead`
+        }
+      }
+    }
   }
 }

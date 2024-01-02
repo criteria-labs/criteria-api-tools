@@ -1,10 +1,9 @@
 import { JSONSchema } from '@criteria/json-schema/draft-04'
+import equal from 'fast-deep-equal'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import circularEqual from '../../../../util/circularEqual'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { Output } from '../../../../validation/Output'
-import { assert } from '../../../../validation/assert'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function uniqueItemsValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -17,6 +16,7 @@ export function uniqueItemsValidator(schema: JSONSchema, schemaPath: JSONPointer
     return null
   }
 
+  const outputFormat = context.outputFormat
   const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
@@ -27,15 +27,18 @@ export function uniqueItemsValidator(schema: JSONSchema, schemaPath: JSONPointer
     const matchingPairs: [number, number][] = []
     for (let i = 0; i < instance.length; i++) {
       for (let j = i + 1; j < instance.length; j++) {
-        const equal = circularEqual(instance[i], instance[j])
-        if (equal) {
+        if (equal(instance[i], instance[j])) {
           if (failFast) {
-            return {
-              valid: false,
-              schemaLocation,
-              schemaKeyword: 'uniqueItems',
-              instanceLocation,
-              message: `should have unique items but items at ${i} and ${j} are equal instead`
+            if (outputFormat === 'flag') {
+              return { valid: false }
+            } else {
+              return {
+                valid: false,
+                schemaLocation,
+                schemaKeyword: 'uniqueItems',
+                instanceLocation,
+                message: `should have unique items but items at ${i} and ${j} are equal instead`
+              }
             }
           }
           matchingPairs.push([i, j])
@@ -43,17 +46,23 @@ export function uniqueItemsValidator(schema: JSONSchema, schemaPath: JSONPointer
       }
     }
 
-    return assert(
-      matchingPairs.length === 0,
-      `should have unique items but ${formatList(
-        matchingPairs.map((pair) => `items at ${pair[0]} and ${pair[1]} are equal`),
-        'and'
-      )} instead`,
-      {
-        schemaLocation,
-        schemaKeyword: 'uniqueItems',
-        instanceLocation
+    if (matchingPairs.length === 0) {
+      return { valid: true, schemaLocation, schemaKeyword: 'uniqueItems', instanceLocation }
+    } else {
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'uniqueItems',
+          instanceLocation,
+          message: `should have unique items but ${formatList(
+            matchingPairs.map((pair) => `items at ${pair[0]} and ${pair[1]} are equal`),
+            'and'
+          )} instead`
+        }
       }
-    )
+    }
   }
 }

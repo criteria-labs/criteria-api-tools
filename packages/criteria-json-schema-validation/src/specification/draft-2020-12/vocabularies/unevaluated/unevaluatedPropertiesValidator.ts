@@ -3,7 +3,7 @@ import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
+import { InvalidOutput, InvalidVerboseOutput, Output, ValidOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function unevaluatedPropertiesValidator(
@@ -18,6 +18,7 @@ export function unevaluatedPropertiesValidator(
   const unevaluatedProperties = schema['unevaluatedProperties']
   const validator = context.validatorForSchema(unevaluatedProperties, [...schemaPath, '/unevaluatedProperties'])
 
+  const outputFormat = context.outputFormat
   const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
@@ -38,7 +39,8 @@ export function unevaluatedPropertiesValidator(
     ])
 
     let validOutputs = new Map<string, ValidOutput>()
-    let invalidOutputs = new Map<string, InvalidOutput>()
+    const invalidPropertyNames: string[] = []
+    const errors: InvalidOutput[] = []
     for (const [propertyName, propertyValue] of Object.entries(instance)) {
       if (evaluatedProperties.has(propertyName)) {
         continue
@@ -46,19 +48,30 @@ export function unevaluatedPropertiesValidator(
 
       // unevaluated property
       const output = validator(propertyValue, `${instanceLocation}/${escapeReferenceToken(propertyName)}`)
+      if (!output.valid && failFast) {
+        if (outputFormat === 'flag') {
+          return { valid: false }
+        } else {
+          return {
+            valid: false,
+            schemaLocation,
+            schemaKeyword: 'unevaluatedProperties',
+            instanceLocation,
+            message: formatMessage([output as InvalidVerboseOutput], [propertyName]),
+            errors: [output as InvalidVerboseOutput]
+          }
+        }
+      }
+
       if (output.valid) {
         validOutputs.set(propertyName, output)
       } else {
-        invalidOutputs.set(propertyName, output as InvalidOutput)
-      }
-
-      if (!output.valid && failFast) {
-        break
+        invalidPropertyNames.push(propertyName)
+        errors.push(output as InvalidOutput)
       }
     }
 
-    const valid = invalidOutputs.size === 0
-    if (valid) {
+    if (errors.length === 0) {
       return {
         valid: true,
         schemaLocation,
@@ -69,24 +82,34 @@ export function unevaluatedPropertiesValidator(
         }
       }
     } else {
-      const entries = Array.from(invalidOutputs.entries())
-      let message
-      if (entries.length === 1) {
-        message = `has an invalid property ('${entries[0][0]}' ${entries[0][1].message})`
+      if (outputFormat === 'flag') {
+        return { valid: false }
       } else {
-        message = `has invalid properties (${formatList(
-          entries.map((entry) => `'${entry[0]}' ${entry[1].message}`),
-          'and'
-        )})`
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'unevaluatedProperties',
+          instanceLocation,
+          message: formatMessage(errors as InvalidVerboseOutput[], invalidPropertyNames),
+          errors: errors as InvalidVerboseOutput[]
+        }
       }
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'unevaluatedProperties',
-        instanceLocation,
-        message,
-        errors: Array.from(invalidOutputs.values())
-      } as any
     }
   }
+}
+
+export function formatMessage(errors: InvalidVerboseOutput[] | null, invalidPropertyNames: string[]) {
+  let message
+  if (invalidPropertyNames.length === 1) {
+    message = `has an invalid property ${invalidPropertyNames[0]}`
+  } else {
+    message = `has invalid properties ${formatList(
+      invalidPropertyNames.map((propertyName) => `'${propertyName}'`),
+      'and'
+    )}`
+  }
+  if (errors !== null) {
+    message += ` (${errors.map((error) => error.message).join('; ')})`
+  }
+  return message
 }

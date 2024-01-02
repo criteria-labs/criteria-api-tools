@@ -2,7 +2,7 @@ import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { InvalidOutput, Output } from '../../../../validation/Output'
+import { InvalidVerboseOutput, Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function itemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
@@ -14,25 +14,29 @@ export function itemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer
   const validator = context.validatorForSchema(items, [...schemaPath, '/items'])
 
   const prefixItems = schema['prefixItems'] ?? []
+
+  const outputFormat = context.outputFormat
+  const failFast = context.failFast
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     if (!isJSONArray(instance)) {
       return { valid: true, schemaLocation, instanceLocation }
     }
 
-    const outputs = []
     const invalidIndices = []
+    const errors = []
     for (let i = prefixItems.length ?? 0; i < instance.length; i++) {
       const output = validator(instance[i], `${instanceLocation}/${i}`)
-      outputs.push(output)
       if (!output.valid) {
+        if (failFast) {
+          return output
+        }
         invalidIndices.push(i)
+        errors.push(output)
       }
     }
 
-    const invalidOutputs = outputs.filter((output) => !output.valid) as InvalidOutput[]
-    const valid = invalidOutputs.length === 0
-    if (valid) {
+    if (errors.length === 0) {
       return {
         valid: true,
         schemaLocation,
@@ -43,23 +47,34 @@ export function itemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer
         }
       }
     } else {
-      let message
-      if (invalidIndices.length === 1) {
-        message = `has invalid item (item at ${invalidIndices[0]} ${invalidOutputs[0].message})`
+      if (outputFormat === 'flag') {
+        return { valid: false }
       } else {
-        message = `has invalid items (${formatList(
-          invalidIndices.map((i, offset) => `item at ${i} ${invalidOutputs[offset].message}`),
-          'and'
-        )})`
-      }
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'items',
-        instanceLocation,
-        message,
-        errors: invalidOutputs
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'items',
+          instanceLocation,
+          message: formatMessage(errors, invalidIndices),
+          errors
+        }
       }
     }
   }
+}
+
+export function formatMessage(errors: InvalidVerboseOutput[] | null, invalidIndices: number[]) {
+  let message
+  if (invalidIndices.length === 1) {
+    message = `has an invalid item at position ${invalidIndices[0]}`
+  } else {
+    message = `has invalid items at positions ${formatList(
+      invalidIndices.map((invalidIndex) => `${invalidIndex}`),
+      'and'
+    )}`
+  }
+  if (errors !== null) {
+    message += ` (${errors.map((error) => error.message).join('; ')})`
+  }
+  return message
 }

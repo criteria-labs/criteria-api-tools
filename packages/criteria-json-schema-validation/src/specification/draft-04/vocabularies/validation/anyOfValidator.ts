@@ -1,8 +1,9 @@
 import { JSONSchema } from '@criteria/json-schema/draft-04'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { InvalidOutput, Output, ValidOutput } from '../../../../validation/Output'
+import { InvalidVerboseOutput, Output, ValidOutput, ValidVerboseOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 import { reduceAnnotationResults } from '../reduceAnnotationResults'
+import { formatList } from '../../../../util/formatList'
 
 export function anyOfValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('anyOf' in schema)) {
@@ -11,6 +12,8 @@ export function anyOfValidator(schema: JSONSchema, schemaPath: JSONPointer[], co
 
   const anyOf = schema['anyOf']
   const validators = anyOf.map((subschema, i) => context.validatorForSchema(subschema, [...schemaPath, `/anyOf/${i}`]))
+
+  const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
   return (instance: any, instanceLocation: JSONPointer, annotationResults: Record<string, any>): Output => {
     const outputs = validators.map((validator) => validator(instance, instanceLocation))
@@ -22,18 +25,29 @@ export function anyOfValidator(schema: JSONSchema, schemaPath: JSONPointer[], co
         schemaKeyword: 'anyOf',
         instanceLocation,
         annotationResults: validOutputs
-          .map((output) => output.annotationResults ?? {})
+          .map((output) => (output as ValidVerboseOutput).annotationResults ?? {})
           .reduce(reduceAnnotationResults, {})
       }
     } else {
-      return {
-        valid: false,
-        schemaLocation,
-        schemaKeyword: 'anyOf',
-        instanceLocation,
-        message: 'should validate against any subschema',
-        errors: outputs as InvalidOutput[]
+      if (outputFormat === 'flag') {
+        return { valid: false }
+      } else {
+        return {
+          valid: false,
+          schemaLocation,
+          schemaKeyword: 'anyOf',
+          instanceLocation,
+          message: formatMessage(outputs as InvalidVerboseOutput[]),
+          errors: outputs as InvalidVerboseOutput[]
+        }
       }
     }
   }
+}
+
+export function formatMessage(errors: InvalidVerboseOutput[]) {
+  return formatList(
+    errors.map((error) => error.message),
+    'or'
+  )
 }

@@ -1,4 +1,5 @@
-import { SchemaIndex, SchemaIndexConfiguration } from '../schema-index/SchemaIndex'
+import { SchemaIndex } from '../schema-index/SchemaIndex'
+import { MaybePromise, chain } from '../util/promises'
 import { URI } from '../util/uri'
 import { dereferenceReferences } from './dereferenceReferences'
 import { ReferenceMergePolicy, mergeReference } from './mergeReference'
@@ -6,30 +7,41 @@ import { ReferenceMergePolicy, mergeReference } from './mergeReference'
 // default options
 export const defaultReferenceMergePolicy = 'by_keyword'
 
-export type DereferenceOptions = SchemaIndexConfiguration & {
+export type DereferenceOptions = {
+  defaultMetaSchemaURI: URI
+  cloned?: boolean
+  retrieve?: (uri: URI) => any
   baseURI?: URI
   referenceMergePolicy?: ReferenceMergePolicy
 }
 
-export function dereferenceJSONSchema(rootSchema: any, options: DereferenceOptions) {
+export type AsyncDereferenceOptions = Omit<DereferenceOptions, 'retrieve'> & {
+  retrieve?: (uri: URI) => Promise<any>
+}
+
+export function dereferenceJSONSchema(
+  rootSchema: any,
+  options: DereferenceOptions | AsyncDereferenceOptions
+): MaybePromise<any> {
   // Index root schema
   const index = new SchemaIndex({
     cloned: true,
     retrieve: options?.retrieve,
     defaultMetaSchemaURI: options.defaultMetaSchemaURI
   })
-  index.addRootSchema(rootSchema, options.baseURI ?? '')
+  const addRootSchemaResult = index.addRootSchema(rootSchema, options.baseURI ?? '')
+  return chain(addRootSchemaResult, () => {
+    rootSchema = index.root()
 
-  rootSchema = index.root()
+    const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
+    dereferenceReferences(rootSchema, index.references, index, (reference, info, dereferencedValue) => {
+      return mergeReference(reference, info, dereferencedValue, referenceMergePolicy)
+    })
 
-  const referenceMergePolicy = options?.referenceMergePolicy ?? defaultReferenceMergePolicy
-  dereferenceReferences(rootSchema, index.references, index, (reference, info, dereferencedValue) => {
-    return mergeReference(reference, info, dereferencedValue, referenceMergePolicy)
+    const root = index.root()
+    if (typeof root === 'object' && '$ref' in root && Object.keys(root).length === 1) {
+      return root.$ref
+    }
+    return root
   })
-
-  const root = index.root()
-  if (typeof root === 'object' && '$ref' in root && Object.keys(root).length === 1) {
-    return root.$ref
-  }
-  return root
 }

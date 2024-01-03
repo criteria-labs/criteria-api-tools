@@ -1,5 +1,8 @@
-import { DereferenceOptions, SchemaIndex } from '@criteria/json-schema'
-import { FlagOutput, Output, OutputFormat, VerboseOutput } from './Output'
+import { SchemaIndex } from '@criteria/json-schema'
+import { metaSchemaURI as draft2020_12URI } from '../draft-2020-12'
+import { ValidationError } from '../errors/ValidationError'
+import { MaybePromise, chain } from '../util/promises'
+import { FlagOutput, OutputFormat, VerboseOutput } from './Output'
 import { booleanValidator } from './booleanValidator'
 import { keywordValidatorsForMetaSchemaURIFactory } from './keywordValidators'
 import { validatorBinder } from './validatorBinder'
@@ -8,20 +11,37 @@ import { validatorBinder } from './validatorBinder'
 export const defaultOutputFormat = 'flag'
 export const defaultFailFast = false
 export const defaultAssertFormat = false
+export const defaultDefaultMetaSchemaURI = draft2020_12URI
 
-export type ValidateOptions = DereferenceOptions & {
+export type Retrieve = (uri: string) => any | Promise<any>
+
+export type ValidateOptions = {
   outputFormat?: OutputFormat
   failFast?: boolean
   assertFormat?: boolean
+  baseURI?: string
+  retrieve?: (uri: string) => any
+  defaultMetaSchemaURI?: string
 }
+
+export type AsyncValidateOptions = Omit<ValidateOptions, 'retrieve'> & {
+  retrieve?: (uri: string) => Promise<any>
+}
+
+export type JSONValidator = (instance: unknown) => FlagOutput | VerboseOutput
+
+export function jsonValidator(schema: object | boolean, options?: Omit<ValidateOptions, 'retrieve'>): JSONValidator
+export function jsonValidator(schema: object | boolean, options?: AsyncValidateOptions): Promise<JSONValidator>
+export function jsonValidator(schema: object | boolean, options?: ValidateOptions): JSONValidator
 
 export function jsonValidator(
   schema: object | boolean,
-  options?: ValidateOptions
-): (instance: unknown) => FlagOutput | VerboseOutput {
-  const outputFormat = options.outputFormat ?? defaultOutputFormat
-  const failFast = outputFormat === 'flag' ? true : options.failFast ?? defaultFailFast // flag output format is effectively the same as fail fast
-  const assertFormat = options.assertFormat ?? defaultAssertFormat
+  options?: ValidateOptions | AsyncValidateOptions
+): MaybePromise<JSONValidator> {
+  const outputFormat = options?.outputFormat ?? defaultOutputFormat
+  const failFast = outputFormat === 'flag' ? true : options?.failFast ?? defaultFailFast // flag output format is effectively the same as fail fast
+  const assertFormat = options?.assertFormat ?? defaultAssertFormat
+  const defaultMetaSchemaURI = options?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
 
   if (typeof schema === 'boolean') {
     const validator = booleanValidator(schema, [''], { outputFormat })
@@ -34,22 +54,74 @@ export function jsonValidator(
   const index = new SchemaIndex({
     cloned: false,
     retrieve: options?.retrieve,
-    defaultMetaSchemaURI: options.defaultMetaSchemaURI
+    defaultMetaSchemaURI: defaultMetaSchemaURI
   })
-  index.addRootSchema(schema, options?.baseURI ?? '')
+  const addRootSchemaResult = index.addRootSchema(schema, options?.baseURI ?? '')
+  return chain(addRootSchemaResult, () => {
+    const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory({
+      assertFormat,
+      retrieve: index.retrieve
+    })
+    const boundValidatorForSchema = validatorBinder(index, {
+      outputFormat,
+      failFast,
+      validatorsForMetaSchemaURI
+    })
 
-  const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory({
-    assertFormat,
-    retrieve: index.retrieve
+    const boundValidator = boundValidatorForSchema(schema, [''])
+    return function validateInstance(instance: unknown) {
+      return boundValidator(instance, '')
+    }
   })
-  const boundValidatorForSchema = validatorBinder(index, {
-    outputFormat,
-    failFast,
-    validatorsForMetaSchemaURI
-  })
+}
 
-  const boundValidator = boundValidatorForSchema(schema, [''])
-  return function validateInstance(instance: unknown) {
-    return boundValidator(instance, '')
-  }
+export function validateJSON(
+  instance: unknown,
+  schema: object | boolean,
+  options?: Omit<ValidateOptions, 'retrieve'>
+): void
+export function validateJSON(instance: unknown, schema: object | boolean, options?: AsyncValidateOptions): Promise<void>
+export function validateJSON(instance: unknown, schema: object | boolean, options?: ValidateOptions): void
+
+export function validateJSON(
+  instance: unknown,
+  schema: object | boolean,
+  options?: ValidateOptions | AsyncValidateOptions
+): MaybePromise<void> {
+  const validator = jsonValidator(schema, options)
+  return chain(validator, (validator) => {
+    const output = validator(instance)
+    if (!output.valid) {
+      const message = 'message' in output ? output.message : 'is invalid'
+      throw new ValidationError(`The value ${message}`, { output })
+    }
+  })
+}
+
+export function isJSONValid(
+  instance: unknown,
+  schema: object | boolean,
+  options?: Omit<ValidateOptions, 'failFast' | 'retrieve'>
+): boolean
+export function isJSONValid(
+  instance: unknown,
+  schema: object | boolean,
+  options?: Omit<AsyncValidateOptions, 'failFast'>
+): Promise<boolean>
+export function isJSONValid(
+  instance: unknown,
+  schema: object | boolean,
+  options?: Omit<ValidateOptions, 'failFast'>
+): boolean
+
+export function isJSONValid(
+  instance: unknown,
+  schema: object | boolean,
+  options?: Omit<ValidateOptions | AsyncValidateOptions, 'failFast'>
+): MaybePromise<boolean> {
+  const validator = jsonValidator(schema, { ...options, failFast: true })
+  return chain(validator, (validator) => {
+    const { valid } = validator(instance)
+    return valid
+  })
 }

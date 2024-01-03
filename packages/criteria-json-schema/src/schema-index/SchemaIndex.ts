@@ -4,6 +4,7 @@ import { JSONReferenceContentIndex } from '../schema-index/JSONReferenceContentI
 import { SchemaContentIndex } from '../schema-index/SchemaContentIndex'
 import { ReferenceInfo } from '../schema-index/types'
 import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
+import { MaybePromise, chain, chainForEach } from '../util/promises'
 import { URI, resolveURIReference, splitFragment } from '../util/uri'
 
 export interface Metadata {
@@ -13,7 +14,7 @@ export interface Metadata {
 export interface SchemaIndexConfiguration {
   defaultMetaSchemaURI: URI
   cloned?: boolean
-  retrieve?: (uri: URI) => any
+  retrieve?: (uri: URI) => MaybePromise<any>
 }
 
 export class SchemaIndex extends DocumentIndex {
@@ -131,80 +132,90 @@ export class SchemaIndex extends DocumentIndex {
     return dereferencedSchema
   }
 
-  addRootSchema(rootSchema: object, baseURI: URI) {
+  addRootSchema(rootSchema: object, baseURI: URI): MaybePromise<void> {
     rootSchema = this.addDocument(rootSchema, baseURI)
 
     const rootSchemaMetadata = {
       metaSchemaURI: this.defaultMetaSchemaURI
     }
 
-    this.addSchemas(rootSchema, baseURI, rootSchemaMetadata)
-    this.addJSONReferences(rootSchema, baseURI, rootSchemaMetadata)
+    const addSchemasResult = this.addSchemas(rootSchema, baseURI, rootSchemaMetadata)
+    return chain(addSchemasResult, () => {
+      return this.addJSONReferences(rootSchema, baseURI, rootSchemaMetadata)
+    })
   }
 
-  addSchemas(rootSchema: any, baseURI: URI, metadata: Metadata) {
+  addSchemas(rootSchema: any, baseURI: URI, metadata: Metadata): MaybePromise<void> {
     const foundSchemaReferences = this.schemaContentIndex.addContentFromRoot(rootSchema, baseURI, metadata)
     foundSchemaReferences.forEach((info, reference) => {
       this.references.set(reference, info)
     })
 
-    foundSchemaReferences.forEach((info, reference) => {
+    return chainForEach(foundSchemaReferences.values(), (info: ReferenceInfo<Metadata>) => {
       if (this.isURIIndexed(info.resolvedURI)) {
         return
       }
 
       const { absoluteURI, fragment } = splitFragment(info.resolvedURI)
 
-      let document
+      let documentOrPromise
       if (this.isURIIndexed(absoluteURI)) {
-        document = this.indexedObjectWithURI(absoluteURI)
+        documentOrPromise = this.indexedObjectWithURI(absoluteURI)
       } else {
-        document = this.addDocumentWithURI(absoluteURI)
+        documentOrPromise = this.addDocumentWithURI(absoluteURI)
       }
 
-      if (document) {
-        if (fragment && isJSONPointer(fragment)) {
-          const rootObject = evaluateJSONPointer(fragment, document)
-          if (rootObject) {
-            this.addSchemas(rootObject, info.resolvedURI, info.metadata)
-            this.addJSONReferences(rootObject, info.resolvedURI, info.metadata)
+      return chain(documentOrPromise, (document) => {
+        if (document) {
+          if (fragment && isJSONPointer(fragment)) {
+            const rootObject = evaluateJSONPointer(fragment, document)
+            if (rootObject) {
+              const addSchemasResult = this.addSchemas(rootObject, info.resolvedURI, info.metadata)
+              return chain(addSchemasResult, () => {
+                return this.addJSONReferences(rootObject, info.resolvedURI, info.metadata)
+              })
+            }
+          } else {
+            const addSchemasResult = this.addSchemas(document, absoluteURI, info.metadata)
+            return chain(addSchemasResult, () => {
+              return this.addJSONReferences(document, absoluteURI, info.metadata)
+            })
           }
-        } else {
-          this.addSchemas(document, absoluteURI, info.metadata)
-          this.addJSONReferences(document, absoluteURI, info.metadata)
         }
-      }
+      })
     })
   }
 
-  addJSONReferences(rootObject: any, baseURI: URI, metadata: Metadata) {
+  addJSONReferences(rootObject: any, baseURI: URI, metadata: Metadata): MaybePromise<void> {
     const foundJSONReferences = this.jsonReferenceContentIndex.addContentFromRoot(rootObject, baseURI, metadata)
     foundJSONReferences.forEach((info, reference) => {
       this.references.set(reference, info)
     })
 
-    foundJSONReferences.forEach((info, reference) => {
+    return chainForEach(foundJSONReferences.values(), (info: ReferenceInfo<Metadata>) => {
       if (this.isURIIndexed(info.resolvedURI)) {
         return
       }
 
       const { absoluteURI, fragment } = splitFragment(info.resolvedURI)
 
-      let document
+      let documentOrPromise
       if (!this.isURIIndexed(absoluteURI)) {
-        document = this.addDocumentWithURI(absoluteURI)
+        documentOrPromise = this.addDocumentWithURI(absoluteURI)
       }
 
-      if (document) {
-        if (fragment && isJSONPointer(fragment)) {
-          const rootObject = evaluateJSONPointer(fragment, document)
-          if (rootObject) {
-            this.addJSONReferences(rootObject, info.resolvedURI, info.metadata)
+      return chain(documentOrPromise, (document) => {
+        if (document) {
+          if (fragment && isJSONPointer(fragment)) {
+            const rootObject = evaluateJSONPointer(fragment, document)
+            if (rootObject) {
+              return this.addJSONReferences(rootObject, info.resolvedURI, info.metadata)
+            }
+          } else {
+            return this.addJSONReferences(document, absoluteURI, info.metadata)
           }
-        } else {
-          this.addJSONReferences(document, absoluteURI, info.metadata)
         }
-      }
+      })
     })
   }
 }

@@ -13,63 +13,127 @@ import indirectAncestorOpenAPI from './indirect-ancestor/openapi.json'
 
 describe('OpenAPI with circular $refs that extend each other', () => {
   describe('$ref to self', () => {
-    it('dereferenceOpenAPI()', async () => {
-      const output = dereferenceOpenAPI(selfOpenAPI as any, {
-        baseURI: resolve(__dirname, 'self/openapi.json'),
-        retrieve: retrieveFromFilesystem
-      }) as any
-      expect(output).toEqual(selfDereferenced)
+    describe('dereferenceOpenAPI()', () => {
+      test('synchronous', () => {
+        const output = dereferenceOpenAPI(selfOpenAPI as any, {
+          baseURI: resolve(__dirname, 'self/openapi.json'),
+          retrieve: retrieveFromFilesystem
+        }) as any
+        expect(output).toEqual(selfDereferenced)
+      })
+      test('asynchronous', async () => {
+        const output = (await dereferenceOpenAPI(selfOpenAPI as any, {
+          baseURI: resolve(__dirname, 'self/openapi.json'),
+          retrieve: async (uri) => await retrieveFromFilesystem(uri)
+        })) as any
+        expect(output).toEqual(selfDereferenced)
+      })
     })
   })
   describe('$ref to ancestor', () => {
-    it('dereferenceOpenAPI()', async () => {
-      const output = dereferenceOpenAPI(ancestorOpenAPI as any, {
-        baseURI: resolve(__dirname, 'ancestor/openapi.json'),
-        retrieve: retrieveFromFilesystem
-      }) as any
-      expect(output).toCircularEqual(ancestorDereferenced)
+    describe('dereferenceOpenAPI()', () => {
+      test('synchronous', () => {
+        const output = dereferenceOpenAPI(ancestorOpenAPI as any, {
+          baseURI: resolve(__dirname, 'ancestor/openapi.json'),
+          retrieve: retrieveFromFilesystem
+        }) as any
+        expect(output).toCircularEqual(ancestorDereferenced)
 
-      // Reference equality
-      expect(output.components.schemas.person.properties.spouse.properties).toBe(
-        output.components.schemas.person.properties
-      )
-      expect(output.components.schemas.person.properties.pet.properties).toBe(output.components.schemas.pet.properties)
+        // Reference equality
+        expect(output.components.schemas.person.properties.spouse.properties).toBe(
+          output.components.schemas.person.properties
+        )
+        expect(output.components.schemas.person.properties.pet.properties).toBe(
+          output.components.schemas.pet.properties
+        )
+      })
+      test('synchronous', async () => {
+        const output = (await dereferenceOpenAPI(ancestorOpenAPI as any, {
+          baseURI: resolve(__dirname, 'ancestor/openapi.json'),
+          retrieve: async (uri) => await retrieveFromFilesystem(uri)
+        })) as any
+        expect(output).toCircularEqual(ancestorDereferenced)
+
+        // Reference equality
+        expect(output.components.schemas.person.properties.spouse.properties).toBe(
+          output.components.schemas.person.properties
+        )
+        expect(output.components.schemas.person.properties.pet.properties).toBe(
+          output.components.schemas.pet.properties
+        )
+      })
     })
   })
   describe('indirect circular $refs', () => {
-    it('dereferenceOpenAPI()', async () => {
-      const output = dereferenceOpenAPI(indirectOpenAPI as any, {
-        baseURI: resolve(__dirname, 'indirect/openapi.json'),
-        retrieve: retrieveFromFilesystem
-      }) as any
-      expect(output).toCircularEqual(indirectDereferenced)
+    describe('dereferenceOpenAPI()', () => {
+      test('synchronous', () => {
+        const output = dereferenceOpenAPI(indirectOpenAPI as any, {
+          baseURI: resolve(__dirname, 'indirect/openapi.json'),
+          retrieve: retrieveFromFilesystem
+        }) as any
+        expect(output).toCircularEqual(indirectDereferenced)
 
-      // Reference equality
-      expect(output.components.schemas.parent.properties.children.items.properties).toBe(
-        output.components.schemas.child.properties
-      )
-      expect(output.components.schemas.child.properties.parents.items.properties).toBe(
-        output.components.schemas.parent.properties
-      )
-      expect(output.components.schemas.child.properties.pet.properties).toBe(output.components.schemas.pet.properties)
+        // Reference equality
+        expect(output.components.schemas.parent.properties.children.items.properties).toBe(
+          output.components.schemas.child.properties
+        )
+        expect(output.components.schemas.child.properties.parents.items.properties).toBe(
+          output.components.schemas.parent.properties
+        )
+        expect(output.components.schemas.child.properties.pet.properties).toBe(output.components.schemas.pet.properties)
+      })
+      test('asynchronous', async () => {
+        const output = (await dereferenceOpenAPI(indirectOpenAPI as any, {
+          baseURI: resolve(__dirname, 'indirect/openapi.json'),
+          retrieve: async (uri) => await retrieveFromFilesystem(uri)
+        })) as any
+        expect(output).toCircularEqual(indirectDereferenced)
+
+        // Reference equality
+        expect(output.components.schemas.parent.properties.children.items.properties).toBe(
+          output.components.schemas.child.properties
+        )
+        expect(output.components.schemas.child.properties.parents.items.properties).toBe(
+          output.components.schemas.parent.properties
+        )
+        expect(output.components.schemas.child.properties.pet.properties).toBe(output.components.schemas.pet.properties)
+      })
     })
   })
   describe('indirect circular and ancestor $refs', () => {
-    it('dereferenceOpenAPI()', async () => {
-      const output = dereferenceOpenAPI(indirectAncestorOpenAPI as any, {
-        baseURI: resolve(__dirname, 'indirect-ancestor/openapi.json'),
-        retrieve: retrieveFromFilesystem
-      }) as any
-      expect(output).toCircularEqual(indirectAncestorDereferenced)
+    describe('dereferenceOpenAPI()', () => {
+      test('synchronous', () => {
+        const output = dereferenceOpenAPI(indirectAncestorOpenAPI as any, {
+          baseURI: resolve(__dirname, 'indirect-ancestor/openapi.json'),
+          retrieve: retrieveFromFilesystem
+        }) as any
+        expect(output).toCircularEqual(indirectAncestorDereferenced)
 
-      // Reference equality
-      expect(output.components.schemas.parent.properties.child.properties).toBe(
-        output.components.schemas.child.properties
-      )
-      expect(output.components.schemas.child.properties.children.items.properties).toBe(
-        output.components.schemas.child.properties
-      )
-      expect(output.components.schemas.pet.properties).toBe(output.components.schemas.child.properties.pet.properties)
+        // Reference equality
+        expect(output.components.schemas.parent.properties.child.properties).toBe(
+          output.components.schemas.child.properties
+        )
+        expect(output.components.schemas.child.properties.children.items.properties).toBe(
+          output.components.schemas.child.properties
+        )
+        expect(output.components.schemas.pet.properties).toBe(output.components.schemas.child.properties.pet.properties)
+      })
+      test('asynchronous', async () => {
+        const output = (await dereferenceOpenAPI(indirectAncestorOpenAPI as any, {
+          baseURI: resolve(__dirname, 'indirect-ancestor/openapi.json'),
+          retrieve: async (uri) => await retrieveFromFilesystem(uri)
+        })) as any
+        expect(output).toCircularEqual(indirectAncestorDereferenced)
+
+        // Reference equality
+        expect(output.components.schemas.parent.properties.child.properties).toBe(
+          output.components.schemas.child.properties
+        )
+        expect(output.components.schemas.child.properties.children.items.properties).toBe(
+          output.components.schemas.child.properties
+        )
+        expect(output.components.schemas.pet.properties).toBe(output.components.schemas.child.properties.pet.properties)
+      })
     })
   })
 })

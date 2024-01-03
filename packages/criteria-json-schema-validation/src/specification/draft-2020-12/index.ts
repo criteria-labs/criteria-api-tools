@@ -1,30 +1,80 @@
 import { JSONSchema, metaSchemaURI } from '@criteria/json-schema/draft-2020-12'
-import { ValidationError } from '../../errors/ValidationError'
-import { ValidateOptions, jsonValidator as jsonValidatorWithDefaultMetaSchemaURI } from '../../validation/jsonValidator'
+import { MaybePromise } from '../../util/promises'
+import {
+  AsyncValidateOptions,
+  JSONValidator,
+  ValidateOptions,
+  isJSONValid as isJSONValidWithDefaultMetaSchemaURI,
+  jsonValidator as jsonValidatorWithDefaultMetaSchemaURI,
+  validateJSON as validateJSONWithDefaultMetaSchemaURI
+} from '../../validation/jsonValidator'
 
-export function jsonValidator(schema: JSONSchema, options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>) {
+export { metaSchemaURI }
+
+export function jsonValidator(
+  schema: JSONSchema,
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI' | 'retrieve'>
+): JSONValidator
+export function jsonValidator(
+  schema: JSONSchema,
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+): Promise<JSONValidator>
+export function jsonValidator(
+  schema: JSONSchema,
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>
+): JSONValidator
+
+export function jsonValidator(
+  schema: JSONSchema,
+  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaURI'>
+): MaybePromise<JSONValidator> {
   return jsonValidatorWithDefaultMetaSchemaURI(schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
 }
 
 export function validateJSON(
   instance: unknown,
   schema: JSONSchema,
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI' | 'retrieve'>
+): void
+export function validateJSON(
+  instance: unknown,
+  schema: JSONSchema,
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+): Promise<void>
+export function validateJSON(
+  instance: unknown,
+  schema: JSONSchema,
   options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>
-) {
-  const validator = jsonValidator(schema, options)
-  const output = validator(instance)
-  if (!output.valid) {
-    const message = 'message' in output ? output.message : 'is invalid'
-    throw new ValidationError(`The value ${message}`, { output })
-  }
+): void
+
+export function validateJSON(
+  instance: unknown,
+  schema: JSONSchema,
+  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaURI'>
+): MaybePromise<void> {
+  return validateJSONWithDefaultMetaSchemaURI(instance, schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
 }
 
 export function isJSONValid(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI' | 'failFast'>
-) {
-  const validator = jsonValidator(schema, { ...options, failFast: true })
-  const { valid } = validator(instance)
-  return valid
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI' | 'retrieve'>
+): boolean
+export function isJSONValid(
+  instance: unknown,
+  schema: JSONSchema,
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+): Promise<boolean>
+export function isJSONValid(
+  instance: unknown,
+  schema: JSONSchema,
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>
+): boolean
+
+export function isJSONValid(
+  instance: unknown,
+  schema: JSONSchema,
+  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaURI'>
+): MaybePromise<boolean> {
+  return isJSONValidWithDefaultMetaSchemaURI(instance, schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
 }

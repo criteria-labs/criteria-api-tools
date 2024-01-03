@@ -4,6 +4,7 @@ import { OpenAPIContentIndex } from '../openapi-index/OpenAPIContentIndex'
 import { OpenAPIObjectType } from '../specification/v3.1/visitOpenAPIObjects'
 import { isJSONPointer } from '../util/JSONPointer'
 import { URI, splitFragment } from '../util/uri'
+import { MaybePromise, chain, chainForEach } from '../util/promises'
 
 // default configuration
 const defaultDefaultJSONSchemaDialect = metaSchemaURIDraft2020_12
@@ -17,7 +18,7 @@ export interface Metadata {
 export interface OpenAPIIndexConfiguration {
   defaultJSONSchemaDialect?: URI
   cloned?: boolean
-  retrieve?: (uri: URI) => any
+  retrieve?: (uri: URI) => MaybePromise<any>
 }
 
 export class OpenAPIIndex extends DocumentIndex {
@@ -62,7 +63,7 @@ export class OpenAPIIndex extends DocumentIndex {
     return super.infoForIndexedObject(object)
   }
 
-  addRootOpenAPI(rootOpenAPI: object, baseURI: URI) {
+  addRootOpenAPI(rootOpenAPI: object, baseURI: URI): MaybePromise<void> {
     rootOpenAPI = this.addDocument(rootOpenAPI, baseURI)
 
     const rootOpenAPIMetadata = {
@@ -71,39 +72,41 @@ export class OpenAPIIndex extends DocumentIndex {
       metaSchemaURI: (rootOpenAPI as any).jsonSchemaDialect ?? this.defaultJSONSchemaDialect
     }
 
-    this.addOpenAPIObjects(rootOpenAPI, baseURI, rootOpenAPIMetadata)
+    return this.addOpenAPIObjects(rootOpenAPI, baseURI, rootOpenAPIMetadata)
   }
 
-  addOpenAPIObjects(rootObject: object, baseURI: URI, metadata: Metadata) {
+  addOpenAPIObjects(rootObject: object, baseURI: URI, metadata: Metadata): MaybePromise<void> {
     const foundReferences = this.openAPIContentIndex.addContentFromRoot(rootObject, baseURI, metadata)
     foundReferences.forEach((info, reference) => {
       this.references.set(reference, info)
     })
 
-    foundReferences.forEach((info, reference) => {
+    return chainForEach(foundReferences.values(), (info: ReferenceInfo<Metadata>) => {
       if (this.isURIIndexed(info.resolvedURI)) {
         return
       }
 
       const { absoluteURI, fragment } = splitFragment(info.resolvedURI)
 
-      let document
+      let documentOrPromise
       if (this.isURIIndexed(absoluteURI)) {
-        // document = this.indexedObjectWithURI(absoluteURI)
+        // documentOrPromise = this.indexedObjectWithURI(absoluteURI)
       } else {
-        document = this.addDocumentWithURI(absoluteURI)
+        documentOrPromise = this.addDocumentWithURI(absoluteURI)
       }
 
-      if (document) {
-        if (fragment && isJSONPointer(fragment)) {
-          const rootObject = evaluateJSONPointer(fragment, document)
-          if (rootObject) {
-            this.addOpenAPIObjects(rootObject, info.resolvedURI, info.metadata)
+      return chain(documentOrPromise, (document) => {
+        if (document) {
+          if (fragment && isJSONPointer(fragment)) {
+            const rootObject = evaluateJSONPointer(fragment, document)
+            if (rootObject) {
+              return this.addOpenAPIObjects(rootObject, info.resolvedURI, info.metadata)
+            }
+          } else {
+            return this.addOpenAPIObjects(document, absoluteURI, info.metadata)
           }
-        } else {
-          this.addOpenAPIObjects(document, absoluteURI, info.metadata)
         }
-      }
+      })
     })
   }
 }

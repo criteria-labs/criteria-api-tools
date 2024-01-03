@@ -1,9 +1,11 @@
 import { evaluateJSONPointer } from '@criteria/json-pointer'
 import { memoize, retrieveBuiltin } from '../retrievers'
 import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
+import { chain } from '../util/promises'
 import { URI, hasFragment, resolveURIReference, splitFragment } from '../util/uri'
 import { isJSONReference } from '../util/visitJSONReferences'
 import { Index } from './types'
+import { MaybePromise } from '../util/promises'
 
 // default configuration
 const defaultCloned = false
@@ -17,20 +19,22 @@ export interface DocumentInfo {
 
 export interface DocumentIndexConfiguration {
   cloned?: boolean
-  retrieve?: (uri: URI) => any
+  retrieve?: (uri: URI) => MaybePromise<any>
 }
 
 export abstract class DocumentIndex implements Index<never> {
   readonly cloned: boolean
-  readonly retrieve: (uri: URI) => any
+  readonly retrieve: (uri: URI) => MaybePromise<any>
   constructor(configuration: DocumentIndexConfiguration) {
     this.cloned = configuration.cloned ?? defaultCloned
     this.retrieve = memoize((uri: string) => {
-      const document = retrieveBuiltin(uri) ?? configuration?.retrieve(uri) ?? defaultRetrieve(uri)
-      if (!document) {
-        throw new Error(`Invalid document retrieved at uri '${uri}'`)
-      }
-      return document
+      const documentOrPromise = retrieveBuiltin(uri) ?? configuration?.retrieve(uri) ?? defaultRetrieve(uri)
+      return chain(documentOrPromise, (document) => {
+        if (!document) {
+          throw new Error(`Invalid document retrieved at uri '${uri}'`)
+        }
+        return document
+      })
     })
   }
 
@@ -137,7 +141,7 @@ export abstract class DocumentIndex implements Index<never> {
     return undefined
   }
 
-  addDocument(document: object, baseURI: URI) {
+  addDocument(document: any, baseURI: URI) {
     // TODO: assert baseURI is absolute..
 
     if (this.cloned) {
@@ -156,7 +160,7 @@ export abstract class DocumentIndex implements Index<never> {
     return document
   }
 
-  addDocumentWithURI(uri: URI) {
+  addDocumentWithURI(uri: URI): MaybePromise<any> {
     if (hasFragment(uri)) {
       throw new Error(`Document URI is not absolute: ${uri}`)
     }
@@ -165,13 +169,21 @@ export abstract class DocumentIndex implements Index<never> {
       return
     }
 
-    let document
+    let documentOrPromise
     try {
-      document = this.retrieve(uri)
+      documentOrPromise = this.retrieve(uri)
     } catch (error) {
       throw new Error(`Failed to retrieve document at uri '${uri}'`)
     }
 
-    return this.addDocument(document, uri)
+    return chain(
+      documentOrPromise,
+      (document) => {
+        return this.addDocument(document, uri)
+      },
+      (error) => {
+        throw new Error(`Failed to retrieve document at uri '${uri}'`)
+      }
+    )
   }
 }

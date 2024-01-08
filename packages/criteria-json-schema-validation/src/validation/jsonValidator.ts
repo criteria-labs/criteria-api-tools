@@ -31,7 +31,7 @@ export type AsyncValidateOptions = Omit<ValidateOptions, 'retrieve'> & {
 export type JSONValidator = (instance: unknown) => FlagOutput | VerboseOutput
 
 export function jsonValidator(schema: object | boolean, options?: Omit<ValidateOptions, 'retrieve'>): JSONValidator
-export function jsonValidator(schema: object | boolean, options?: AsyncValidateOptions): Promise<JSONValidator>
+export function jsonValidator(schema: object | boolean, options?: AsyncValidateOptions): MaybePromise<JSONValidator>
 export function jsonValidator(schema: object | boolean, options?: ValidateOptions): JSONValidator
 
 export function jsonValidator(
@@ -75,12 +75,23 @@ export function jsonValidator(
   })
 }
 
+export async function jsonValidatorAsync(
+  schema: object | boolean,
+  options?: AsyncValidateOptions
+): Promise<JSONValidator> {
+  return await jsonValidator(schema, options)
+}
+
 export function validateJSON(
   instance: unknown,
   schema: object | boolean,
   options?: Omit<ValidateOptions, 'retrieve'>
 ): void
-export function validateJSON(instance: unknown, schema: object | boolean, options?: AsyncValidateOptions): Promise<void>
+export function validateJSON(
+  instance: unknown,
+  schema: object | boolean,
+  options?: AsyncValidateOptions
+): MaybePromise<void>
 export function validateJSON(instance: unknown, schema: object | boolean, options?: ValidateOptions): void
 
 export function validateJSON(
@@ -98,6 +109,14 @@ export function validateJSON(
   })
 }
 
+export async function validateJSONAsync(
+  instance: unknown,
+  schema: object | boolean,
+  options?: AsyncValidateOptions
+): Promise<void> {
+  await validateJSON(instance, schema, options)
+}
+
 export function isJSONValid(
   instance: unknown,
   schema: object | boolean,
@@ -107,7 +126,7 @@ export function isJSONValid(
   instance: unknown,
   schema: object | boolean,
   options?: Omit<AsyncValidateOptions, 'failFast'>
-): Promise<boolean>
+): MaybePromise<boolean>
 export function isJSONValid(
   instance: unknown,
   schema: object | boolean,
@@ -124,4 +143,12 @@ export function isJSONValid(
     const { valid } = validator(instance)
     return valid
   })
+}
+
+export async function isJSONValidAsync(
+  instance: unknown,
+  schema: object | boolean,
+  options?: Omit<AsyncValidateOptions, 'failFast'>
+): Promise<boolean> {
+  return await isJSONValid(instance, schema, options)
 }

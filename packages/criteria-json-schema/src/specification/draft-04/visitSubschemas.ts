@@ -1,25 +1,6 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { JSONPointer } from '../../util/JSONPointer'
 import { JSONSchema } from './JSONSchema'
-import { visitObjects } from '../../util/visitObjects'
-
-export function isSubschema(jsonPointer: JSONPointer) {
-  return (
-    jsonPointer === '' ||
-    jsonPointer === '/additionalItems' ||
-    jsonPointer === '/items' ||
-    Boolean(jsonPointer.match(/^\/items\/[\d]+$/)) ||
-    Boolean(jsonPointer.match(/^\/properties\/[^/]*$/)) ||
-    Boolean(jsonPointer.match(/^\/patternProperties\/[^/]*$/)) ||
-    jsonPointer === '/additionalProperties' ||
-    Boolean(jsonPointer.match(/^\/dependencies\/[^/]*$/)) ||
-    Boolean(jsonPointer.match(/^\/allOf\/[\d]+$/)) ||
-    Boolean(jsonPointer.match(/^\/anyOf\/[\d]+$/)) ||
-    Boolean(jsonPointer.match(/^\/oneOf\/[\d]+$/)) ||
-    jsonPointer === '/not' ||
-    Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/))
-  )
-}
 
 function appendJSONPointer(path: JSONPointer[], jsonPointer: JSONPointer): JSONPointer[] {
   return [...path.slice(0, -1), `${path[path.length - 1]}${jsonPointer}`]
@@ -140,56 +121,4 @@ export function visitSubschemas<State extends object = {}>(
   }
 
   visitSubschema(document, [''], [initialState])
-}
-
-export function visitReferences(object: object, visitor: (parent, key) => void) {
-  // detects circular references
-  const seen = new WeakSet()
-  const visitObject = (parent: any, key: string | number, object: object, location: JSONPointer) => {
-    if (seen.has(object)) {
-      return
-    }
-    seen.add(object)
-    if ('$ref' in object && typeof object['$ref'] === 'string' && Object.keys(object).length === 1) {
-      visitor(object['$ref'], location)
-    } else {
-      for (const [key, value] of Object.entries(object)) {
-        visitValue(object, key, value, `${location}/${escapeReferenceToken(key)}`)
-      }
-    }
-  }
-  const visitValue = (parent: any, key: string | number, value: any, location: JSONPointer) => {
-    if (typeof value === 'object' && value !== null && !ArrayBuffer.isView(value)) {
-      if (Array.isArray(value)) {
-        value.forEach((element, index) => visitValue(value, index, element, `${location}/${index}`))
-      } else {
-        visitObject(parent, key, value, location)
-      }
-    }
-  }
-  visitValue(object, null, object, '')
-}
-
-export function isPlainKeyword(keyword: string) {
-  if (keyword.startsWith('$')) {
-    return false
-  }
-  if (
-    [
-      'id',
-      'additionalItems',
-      'items',
-      'properties',
-      'patternProperties',
-      'additionalProperties',
-      'dependencies',
-      'allOf',
-      'oneOf',
-      'not',
-      'definitions'
-    ].includes(keyword)
-  ) {
-    return false
-  }
-  return true
 }

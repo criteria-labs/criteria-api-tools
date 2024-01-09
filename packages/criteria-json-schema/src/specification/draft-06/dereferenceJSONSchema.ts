@@ -4,7 +4,8 @@ import {
   dereferenceJSONSchema as dereferenceJSONSchemaWithDefaultMetaSchemaURI
 } from '../../dereferencing/dereferenceJSONSchema'
 import { MaybePromise } from '../../util/promises'
-import { DereferencedJSONSchema, JSONSchema, metaSchemaURI } from './JSONSchema'
+import { DereferencedJSONSchema, JSONSchema } from './JSONSchema'
+import metaSchema from './meta-schema'
 
 export function dereferenceJSONSchema(
   schema: JSONSchema,
@@ -25,6 +26,6 @@ export function dereferenceJSONSchema(
 ): MaybePromise<DereferencedJSONSchema> {
   return dereferenceJSONSchemaWithDefaultMetaSchemaURI(schema, {
     ...options,
-    defaultMetaSchemaURI: metaSchemaURI
+    defaultMetaSchemaURI: metaSchema.$id
   })
 }

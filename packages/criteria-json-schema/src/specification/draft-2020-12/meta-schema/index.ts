@@ -8,6 +8,8 @@ import unevaluatedSchemaJSON from './meta/unevaluated.json'
 import validationSchemaJSON from './meta/validation.json'
 import schemaJSON from './schema.json'
 
+export default schemaJSON
+
 const schemas = [
   schemaJSON,
   coreSchemaJSON,

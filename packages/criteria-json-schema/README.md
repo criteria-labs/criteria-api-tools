@@ -23,8 +23,9 @@ This package also contains functions to dereference JSON Schema documents into p
 
 The following drafts are currently supported:
 
-- [Draft 04](https://json-schema.org/specification-links.html#draft-4)
-- [Draft 2020-12](https://json-schema.org/specification-links.html#2020-12)
+- [Draft 04](https://json-schema.org/specification-links#draft-4)
+- [Draft 06](https://json-schema.org/specification-links#draft-6)
+- [Draft 2020-12](https://json-schema.org/specification-links#2020-12)
 
 ## Getting Started
 

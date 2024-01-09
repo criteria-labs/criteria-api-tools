@@ -3,7 +3,7 @@ import { JSONSchema } from './JSONSchema'
 import { visitSubschemas } from './visitSubschemas'
 
 describe('visitSubschemas()', () => {
-  describe('draft-04', () => {
+  describe('draft-06', () => {
     const schema: JSONSchema = {
       items: [
         {

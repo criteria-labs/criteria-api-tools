@@ -10,6 +10,8 @@
     "draft04",
     "draft-06",
     "draft06",
+    "draft-07",
+    "draft07",
     "draft-2020-12",
     "draft202012"
   ],
@@ -28,6 +30,7 @@
     ".": "./dist/index.js",
     "./draft-04": "./dist/draft-04.js",
     "./draft-06": "./dist/draft-06.js",
+    "./draft-07": "./dist/draft-07.js",
     "./draft-2020-12": "./dist/draft-2020-12.js"
   },
   "main": "dist/index.js",

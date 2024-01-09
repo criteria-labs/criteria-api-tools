@@ -25,6 +25,7 @@ The following drafts are currently supported:
 
 - [Draft 04](https://json-schema.org/specification-links#draft-4)
 - [Draft 06](https://json-schema.org/specification-links#draft-6)
+- [Draft 07](https://json-schema.org/specification-links#draft-7)
 - [Draft 2020-12](https://json-schema.org/specification-links#2020-12)
 
 ## Getting Started

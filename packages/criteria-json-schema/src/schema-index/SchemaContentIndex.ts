@@ -3,6 +3,8 @@ import { resolveID as resolveIDDraft04 } from '../specification/draft-04/resolve
 import { visitSubschemas as visitSubschemasDraft04 } from '../specification/draft-04/visitSubschemas'
 import { resolveID as resolveIDDraft06 } from '../specification/draft-06/resolveID'
 import { visitSubschemas as visitSubschemasDraft06 } from '../specification/draft-06/visitSubschemas'
+import { resolveID as resolveIDDraft07 } from '../specification/draft-07/resolveID'
+import { visitSubschemas as visitSubschemasDraft07 } from '../specification/draft-07/visitSubschemas'
 import { resolveID as resolveIDDraft2020_12 } from '../specification/draft-2020-12/resolveID'
 import { visitSubschemas as visitSubschemasDraft2020_12 } from '../specification/draft-2020-12/visitSubschemas'
 import { JSONPointer } from '../util/JSONPointer'
@@ -82,6 +84,8 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
           return visitSubschemasDraft04
         case 'http://json-schema.org/draft-06/schema#':
           return visitSubschemasDraft06
+        case 'http://json-schema.org/draft-07/schema#':
+          return visitSubschemasDraft07
         case 'https://json-schema.org/draft/2020-12/schema':
           return visitSubschemasDraft2020_12
         default:
@@ -124,6 +128,13 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
           }
           case 'http://json-schema.org/draft-06/schema#': {
             $id = resolveIDDraft06(subschema, baseURI)
+            if ($id) {
+              this.schemasByURI.set($id, subschema)
+            }
+            break
+          }
+          case 'http://json-schema.org/draft-07/schema#': {
+            $id = resolveIDDraft07(subschema, baseURI)
             if ($id) {
               this.schemasByURI.set($id, subschema)
             }

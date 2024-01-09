@@ -1,6 +1,7 @@
 import { ReferenceInfo } from '../schema-index/types'
 import { mergeReferenceInto as mergeReferenceIntoDraft04 } from '../specification/draft-04/mergeReferenceInto'
 import { mergeReferenceInto as mergeReferenceIntoDraft06 } from '../specification/draft-06/mergeReferenceInto'
+import { mergeReferenceInto as mergeReferenceIntoDraft07 } from '../specification/draft-07/mergeReferenceInto'
 import { mergeReferenceInto as mergeReferenceIntoDraft2020_12 } from '../specification/draft-2020-12/mergeReferenceInto'
 import { URI } from '../util/uri'
 
@@ -12,6 +13,8 @@ const mergeReferenceInto = (metaSchemaURI: string) => {
       return mergeReferenceIntoDraft04
     case 'http://json-schema.org/draft-06/schema#':
       return mergeReferenceIntoDraft06
+    case 'http://json-schema.org/draft-07/schema#':
+      return mergeReferenceIntoDraft07
     case 'https://json-schema.org/draft/2020-12/schema':
       return mergeReferenceIntoDraft2020_12
     default:

@@ -18,6 +18,14 @@ export {
   metaSchemaURI as metaSchemaURIDraft06
 } from './draft-06'
 export {
+  DereferencedJSONSchema as DereferencedJSONSchemaDraft07,
+  JSONSchema as JSONSchemaDraft07,
+  JSONSchemaPrimitiveType as JSONSchemaDraft07PrimitiveType,
+  JSONSchemaValue as JSONSchemaDraft07Value,
+  dereferenceJSONSchema as dereferenceJSONSchemaDraft07,
+  metaSchemaURI as metaSchemaURIDraft07
+} from './draft-07'
+export {
   DereferencedJSONSchema as DereferencedJSONSchemaDraft2020_12,
   DereferencedJSONSchemaObject as DereferencedJSONSchemaObjectDraft2020_12,
   JSONSchema as JSONSchemaDraft2020_12,

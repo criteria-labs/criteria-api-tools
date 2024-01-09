@@ -1,8 +1,6 @@
 // JSON Schema Specification Wright Draft 00
 // https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00
 
-export const metaSchemaURI = 'http://json-schema.org/draft-04/schema#'
-
 /**
  * @see https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.21
  */

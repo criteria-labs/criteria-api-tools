@@ -11,8 +11,6 @@ import {
   JSONSchemaValidationVocabulary
 } from './vocabularies'
 
-export const metaSchemaURI = 'https://json-schema.org/draft/2020-12/schema'
-
 export type JSONSchemaPrimitiveType = 'null' | 'boolean' | 'object' | 'array' | 'number' | 'integer' | 'string'
 
 export type JSONSchemaValue = null | boolean | { [key: string]: JSONSchemaValue } | JSONSchemaValue[] | number | string

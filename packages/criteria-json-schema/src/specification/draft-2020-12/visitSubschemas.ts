@@ -1,36 +1,6 @@
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { JSONPointer } from '../../util/JSONPointer'
 import { JSONSchema } from './JSONSchema'
-import { visitObjects } from '../../util/visitObjects'
-
-export function isSubschema(jsonPointer: JSONPointer) {
-  return (
-    jsonPointer === '' ||
-    Boolean(jsonPointer.match(/^\/\$defs\/[^/]*$/)) ||
-    Boolean(jsonPointer.match(/^\/allOf\/[\d]+$/)) ||
-    Boolean(jsonPointer.match(/^\/anyOf\/[\d]+$/)) ||
-    Boolean(jsonPointer.match(/^\/oneOf\/[\d]+$/)) ||
-    jsonPointer === '/not' ||
-    jsonPointer === '/if' ||
-    jsonPointer === '/then' ||
-    jsonPointer === '/else' ||
-    Boolean(jsonPointer.match(/^\/dependentSchemas\/[^/]*$/)) ||
-    Boolean(jsonPointer.match(/^\/prefixItems\/[\d]+$/)) ||
-    jsonPointer === '/items' ||
-    jsonPointer === '/contains' ||
-    Boolean(jsonPointer.match(/^\/properties\/[^/]*$/)) ||
-    Boolean(jsonPointer.match(/^\/patternProperties\/[^/]*$/)) ||
-    jsonPointer === '/additionalProperties' ||
-    jsonPointer === '/propertyNames' ||
-    jsonPointer === '/unevaluatedItems' ||
-    jsonPointer === '/unevaluatedProperties' ||
-    jsonPointer === '/contentSchema' ||
-    // deprecated but still supported, TODO: verify
-    jsonPointer === '/additionalItems' ||
-    Boolean(jsonPointer.match(/^\/definitions\/[^/]*$/)) ||
-    Boolean(jsonPointer.match(/^\/dependencies\/[^/]*$/))
-  )
-}
 
 function appendJSONPointer(path: JSONPointer[], jsonPointer: JSONPointer): JSONPointer[] {
   return [...path.slice(0, -1), `${path[path.length - 1]}${jsonPointer}`]
@@ -189,35 +159,4 @@ export function visitSubschemas<State extends object = {}>(
   }
 
   visitSubschema(document, [''], [initialState])
-}
-
-export function isPlainKeyword(keyword: string) {
-  if (keyword.startsWith('$')) {
-    return false
-  }
-  if (
-    [
-      'allOf',
-      'anyOf',
-      'oneOf',
-      'not',
-      'if',
-      'then',
-      'else',
-      'dependentSchemas',
-      'prefixItems',
-      'items',
-      'contains',
-      'properties',
-      'patternProperties',
-      'additionalProperties',
-      'propertyNames',
-      'unevaluatedItems',
-      'unevaluatedProperties',
-      'contentSchema'
-    ].includes(keyword)
-  ) {
-    return false
-  }
-  return true
 }

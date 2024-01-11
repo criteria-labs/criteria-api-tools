@@ -27,6 +27,14 @@ export {
   validateJSON as validateJSONDraft06
 } from './specification/draft-06'
 export {
+  isJSONValidAsync as isJSONValidAsyncDraft07,
+  isJSONValid as isJSONValidDraft07,
+  jsonValidatorAsync as jsonValidatorAsyncDraft07,
+  jsonValidator as jsonValidatorDraft07,
+  validateJSONAsync as validateJSONAsyncDraft07,
+  validateJSON as validateJSONDraft07
+} from './specification/draft-07'
+export {
   isJSONValidAsync as isJSONValidAsyncDraft2020_12,
   isJSONValid as isJSONValidDraft2020_12,
   jsonValidatorAsync as jsonValidatorAsyncDraft2020_12,

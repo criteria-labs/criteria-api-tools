@@ -1,6 +1,5 @@
-import { SchemaIndex, metaSchemaURIDraft04, metaSchemaURIDraft06 } from '@criteria/json-schema'
+import { SchemaIndex, metaSchemaURIDraft04, metaSchemaURIDraft06, metaSchemaURIDraft07 } from '@criteria/json-schema'
 import { JSONPointer } from '../util/JSONPointer'
-import { formatList } from '../util/formatList'
 import { BoundValidator, BoundValidatorWithAnnotationResults } from './BoundValidator'
 import { FlagOutput, InvalidVerboseOutput, Output, OutputFormat, VerboseOutput } from './Output'
 import { annotationResultsReducerForMetaSchemaURI } from './annotationResultsReducerForMetaSchemaURI'
@@ -65,9 +64,12 @@ export function validatorBinder(
       return validator
     }
 
-    // draft 04/06: ref overrides any sibling keywords
+    // draft 04/06/07: ref overrides any sibling keywords
     const keywordsFilter =
-      (metaSchemaURI === metaSchemaURIDraft04 || metaSchemaURI === metaSchemaURIDraft06) && '$ref' in schema
+      (metaSchemaURI === metaSchemaURIDraft04 ||
+        metaSchemaURI === metaSchemaURIDraft06 ||
+        metaSchemaURI === metaSchemaURIDraft07) &&
+      '$ref' in schema
         ? (keyword: string) => keyword === '$ref'
         : (keyword: string) => true
 
@@ -98,7 +100,7 @@ export function validatorBinder(
           if ('annotationResults' in output) {
             accumulatedAnnotationResults = annotationResultsReducer(
               accumulatedAnnotationResults,
-              output.annotationResults
+              output.annotationResults ?? {}
             )
           }
         }
@@ -119,7 +121,7 @@ export function validatorBinder(
           if ('annotationResults' in output) {
             accumulatedAnnotationResults = annotationResultsReducer(
               accumulatedAnnotationResults,
-              output.annotationResults
+              output.annotationResults ?? {}
             )
           }
         }

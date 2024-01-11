@@ -1,9 +1,9 @@
-import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
+import { JSONSchemaObject } from '@criteria/json-schema/draft-07'
 import { JSONPointer } from '../../../../util/JSONPointer'
-import { BoundValidator } from '../../../../validation/BoundValidator'
 import { Output, ValidVerboseOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 import { reduceAnnotationResults } from '../reduceAnnotationResults'
+import { BoundValidator } from '../../../../validation/BoundValidator'
 
 export function ifValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('if' in schema)) {
@@ -13,34 +13,30 @@ export function ifValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[],
   const outputFormat = context.outputFormat
   const schemaLocation = schemaPath.join('') as JSONPointer
 
-  const trueValidator = (instance: unknown, instanceLocation: JSONPointer): Output => {
-    return { valid: true, schemaLocation, instanceLocation }
-  }
-
   const ifSchema = schema['if']
   const ifValidator = context.validatorForSchema(ifSchema, [...schemaPath, '/if'])
 
   const thenSchema = schema['then']
   const thenValidator: BoundValidator | null =
-    thenSchema !== undefined ? context.validatorForSchema(thenSchema, [...schemaPath, '/then']) : trueValidator
+    thenSchema !== undefined ? context.validatorForSchema(thenSchema, [...schemaPath, '/then']) : null
 
   const elseSchema = schema['else']
   const elseValidator: BoundValidator | null =
-    elseSchema !== undefined ? context.validatorForSchema(elseSchema, [...schemaPath, '/else']) : trueValidator
+    elseSchema !== undefined ? context.validatorForSchema(elseSchema, [...schemaPath, '/else']) : null
 
   return (instance: unknown, instanceLocation: JSONPointer): Output => {
     const ifOutput = ifValidator(instance, instanceLocation)
     if (ifOutput.valid) {
+      if (thenValidator === null) {
+        return {
+          valid: true,
+          schemaLocation,
+          instanceLocation,
+          annotationResults: (ifOutput as ValidVerboseOutput).annotationResults
+        }
+      }
       const thenOutput = thenValidator(instance, instanceLocation)
       if (thenOutput.valid) {
-        if (thenValidator === null) {
-          return {
-            valid: true,
-            schemaLocation,
-            instanceLocation,
-            annotationResults: (ifOutput as ValidVerboseOutput).annotationResults
-          }
-        }
         return {
           valid: true,
           schemaLocation,

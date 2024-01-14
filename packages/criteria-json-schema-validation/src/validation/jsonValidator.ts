@@ -5,6 +5,7 @@ import { MaybePromise, chain } from '../util/promises'
 import { FlagOutput, OutputFormat, VerboseOutput } from './Output'
 import { booleanValidator } from './booleanValidator'
 import { keywordValidatorsForMetaSchemaURIFactory } from './keywordValidators'
+import { normalizedMetaSchemaURI } from './normalizedMetaSchemaURI'
 import { validatorBinder } from './validatorBinder'
 
 // default options
@@ -41,7 +42,7 @@ export function jsonValidator(
   const outputFormat = options?.outputFormat ?? defaultOutputFormat
   const failFast = outputFormat === 'flag' ? true : options?.failFast ?? defaultFailFast // flag output format is effectively the same as fail fast
   const assertFormat = options?.assertFormat ?? defaultAssertFormat
-  const defaultMetaSchemaURI = options?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI
+  const defaultMetaSchemaURI = normalizedMetaSchemaURI(options?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI)
 
   if (typeof schema === 'boolean') {
     const validator = booleanValidator(schema, [''], { outputFormat })

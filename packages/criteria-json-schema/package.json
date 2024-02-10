@@ -58,6 +58,6 @@
     "node": ">=18.12.1"
   },
   "dependencies": {
-    "uri-js": "^4.4.1"
+    "toad-uri-js": "^5.0.1"
   }
 }

@@ -1,7 +1,7 @@
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
 import { toASCII } from 'punycode'
 import { parse as parseSMTPAddress } from 'smtp-address-parser'
-import { parse as parseURI } from 'uri-js'
+import { parse as parseURI } from 'toad-uri-js'
 import { JSONPointer } from '../../../../util/JSONPointer'
 import { format as formatInstance } from '../../../../util/format'
 import { Output } from '../../../../validation/Output'

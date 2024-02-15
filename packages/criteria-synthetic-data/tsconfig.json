@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["es2021"],
+    "esModuleInterop": true,
+    "moduleResolution": "node16",
+    "noEmit": false,
+    "declaration": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*.ts", "test/util/jest.d.ts"]
+}

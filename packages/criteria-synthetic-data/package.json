@@ -1,0 +1,48 @@
+{
+  "name": "@criteria/synthetic-data",
+  "version": "0.1.0",
+  "description": "Synthesize data that conforms to a schema.",
+  "keywords": [
+    "synthetic data",
+    "example data",
+    "sample data"
+  ],
+  "homepage": "https://github.com/criteria-labs/criteria-api-tools",
+  "bugs": {
+    "url": "https://github.com/criteria-labs/criteria-api-tools/issues",
+    "email": "support@criteria.sh"
+  },
+  "license": "MIT",
+  "author": "Criteria Labs Pty Ltd",
+  "files": [
+    "dist/*",
+    "!dist/**/*.test.{js,d.ts}"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./v3.0": "./dist/v3.0.js",
+    "./v3.1": "./dist/v3.1.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/criteria-labs/criteria-api-tools.git",
+    "directory": "packages/synthetic-data"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "test": "jest .",
+    "clean": "rimraf tsconfig.build.tsbuildinfo ./dist"
+  },
+  "dependencies": {
+    "@criteria/json-schema": "^0.9.0",
+    "seedrandom": "^3.0.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.4",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3",
+    "typescript": "^4.9.4"
+  }
+}

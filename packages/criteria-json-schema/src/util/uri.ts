@@ -1,4 +1,4 @@
-import { normalize, parse, resolve, serialize } from 'uri-js'
+import { normalize, parse, resolve, serialize } from 'toad-uri-js'
 
 export type URI = string
 export type URIReference = string

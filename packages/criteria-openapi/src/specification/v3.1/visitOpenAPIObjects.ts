@@ -48,6 +48,14 @@ export type OpenAPIObject<ReferenceType extends Reference | never> =
   | PathItem<ReferenceType>
   | ReferenceType
 
+function isObject(value: any): value is object {
+  return typeof value === 'object' && value !== null
+}
+
+function isArray(value: any): value is object {
+  return typeof value === 'object' && value !== null && Array.isArray(value)
+}
+
 function appendJSONPointer(path: JSONPointer[], jsonPointer: JSONPointer): JSONPointer[] {
   return [...path.slice(0, -1), `${path[path.length - 1]}${jsonPointer}`]
 }
@@ -80,6 +88,9 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     states: State[],
     visitor: (element: T, path: JSONPointer[], states: State[]) => void
   ) => {
+    if (!isObject(map)) {
+      return false
+    }
     for (const [key, value] of Object.entries(map)) {
       const stop = Boolean(visitor(value, appendJSONPointer(path, `/${escapeReferenceToken(key)}`), states))
       if (stop) {
@@ -95,6 +106,9 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     states: State[],
     visitor: (element: T, path: JSONPointer[], states: State[]) => void
   ) => {
+    if (!isArray(list)) {
+      return false
+    }
     for (let index = 0; index < list.length; index++) {
       const stop = Boolean(visitor(list[index], appendJSONPointer(path, `/${index}`), states))
       if (stop) {
@@ -105,6 +119,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitOpenAPI = (openapi: OpenAPI<ReferenceType>, path: JSONPointer[], states: State[]) => {
+    if (!isObject(openapi)) {
+      return false
+    }
+
     let stop = false
 
     if (!stop && openapi.paths) {
@@ -121,6 +139,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitPaths = (paths: Paths<ReferenceType>, states: State[]) => {
+    if (!isObject(paths)) {
+      return false
+    }
+
     let stop = false
 
     for (const [key, pathItem] of Object.entries(paths)) {
@@ -136,6 +158,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitPathItem = (pathItem: PathItem<ReferenceType> | ReferenceType, path: JSONPointer[], states: State[]) => {
+    if (!isObject(pathItem)) {
+      return false
+    }
+
     if (seen.has(pathItem)) {
       return false
     }
@@ -194,6 +220,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     path: JSONPointer[],
     states: State[]
   ) => {
+    if (!isObject(operation)) {
+      return false
+    }
+
     if (seen.has(operation)) {
       return false
     }
@@ -228,6 +258,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitSchema = (schema: Schema<ReferenceType> | ReferenceType, path: JSONPointer[], states: State[]) => {
+    if (!isObject(schema) && typeof schema !== 'boolean') {
+      return false
+    }
+
     const newState = { ...states[states.length - 1] }
     states = [...states, newState]
 
@@ -255,6 +289,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitResponse = (response: Response<ReferenceType> | ReferenceType, path: JSONPointer[], states: State[]) => {
+    if (!isObject(response)) {
+      return false
+    }
+
     if (seen.has(response)) {
       return false
     }
@@ -290,6 +328,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     path: JSONPointer[],
     states: State[]
   ) => {
+    if (!isObject(parameter)) {
+      return false
+    }
+
     if (seen.has(parameter)) {
       return false
     }
@@ -307,7 +349,7 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
       return false
     }
 
-    if (!stop && parameter.schema) {
+    if (!stop && parameter.schema !== undefined) {
       stop = visitSchema(parameter.schema, [...path, '/schema'], states)
     }
     if (!stop && parameter.examples) {
@@ -321,6 +363,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitExample = (example: Example | ReferenceType, path: JSONPointer[], states: State[]) => {
+    if (!isObject(example)) {
+      return false
+    }
+
     if (seen.has(example)) {
       return false
     }
@@ -342,6 +388,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     path: JSONPointer[],
     states: State[]
   ) => {
+    if (!isObject(requestBody)) {
+      return false
+    }
+
     if (seen.has(requestBody)) {
       return false
     }
@@ -367,6 +417,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitHeader = (header: Header<ReferenceType> | ReferenceType, path: JSONPointer[], states: State[]) => {
+    if (!isObject(header)) {
+      return false
+    }
+
     if (seen.has(header)) {
       return false
     }
@@ -384,7 +438,7 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
       return false
     }
 
-    if (!stop && header.schema) {
+    if (!stop && header.schema !== undefined) {
       stop = visitSchema(header.schema, [...path, '/schema'], states)
     }
     if (!stop && header.examples) {
@@ -402,6 +456,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     path: JSONPointer[],
     states: State[]
   ) => {
+    if (!isObject(securityScheme)) {
+      return false
+    }
+
     if (seen.has(securityScheme)) {
       return false
     }
@@ -419,6 +477,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitLink = (link: Link | ReferenceType, path: JSONPointer[], states: State[]) => {
+    if (!isObject(link)) {
+      return false
+    }
+
     if (seen.has(link)) {
       return false
     }
@@ -436,6 +498,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitCallback = (callback: Callback<ReferenceType> | ReferenceType, path: JSONPointer[], states: State[]) => {
+    if (!isObject(callback)) {
+      return false
+    }
+
     if (seen.has(callback)) {
       return false
     }
@@ -463,6 +529,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitComponents = (components: Components<ReferenceType>, path: JSONPointer[], states: State[]) => {
+    if (!isObject(components)) {
+      return false
+    }
+
     let stop = false
     if (!stop && components.schemas) {
       stop = visitMap(components.schemas, [...path, '/schemas'], states, visitSchema)
@@ -498,6 +568,10 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
   }
 
   const visitMediaType = (mediaType: MediaType<ReferenceType>, path: JSONPointer[], states: State[]) => {
+    if (!isObject(mediaType)) {
+      return false
+    }
+
     let stop = false
     if (!stop && mediaType.encoding) {
       stop = visitMap(mediaType.encoding, [...path, '/encoding'], states, visitEncoding)
@@ -505,13 +579,17 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     if (!stop && mediaType.examples) {
       stop = visitMap(mediaType.examples, [...path, '/examples'], states, visitExample)
     }
-    if (!stop && mediaType.schema) {
+    if (!stop && mediaType.schema !== undefined) {
       stop = visitSchema(mediaType.schema, [...path, '/schema'], states)
     }
     return stop
   }
 
   const visitEncoding = (encoding: Encoding<ReferenceType>, path: JSONPointer[], states: State[]) => {
+    if (!isObject(encoding)) {
+      return false
+    }
+
     let stop = false
     if (!stop && encoding.headers) {
       stop = visitMap(encoding.headers, [...path, '/headers'], states, visitHeader)

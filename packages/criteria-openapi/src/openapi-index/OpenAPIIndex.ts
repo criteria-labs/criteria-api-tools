@@ -81,7 +81,16 @@ export class OpenAPIIndex extends DocumentIndex {
       this.references.set(reference, info)
     })
 
-    return chainForEach(foundReferences.values(), (info: ReferenceInfo<Metadata>) => {
+    // Help prevent Maximum call stack size exceeded errors
+    const unindexedReferences = [...foundReferences.values()].filter((info) => {
+      if (this.isURIIndexed(info.resolvedURI)) {
+        return false
+      }
+      const { absoluteURI, fragment } = splitFragment(info.resolvedURI)
+      return !this.isURIIndexed(absoluteURI)
+    })
+
+    return chainForEach(unindexedReferences.values(), (info: ReferenceInfo<Metadata>) => {
       if (this.isURIIndexed(info.resolvedURI)) {
         return
       }

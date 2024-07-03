@@ -21,6 +21,9 @@ describe('validateJSONPointer()', () => {
   })
 
   describe('failure', () => {
+    test('fails to validate a value that is not a string', () => {
+      expect(() => validateJSONPointer({})).toThrow()
+    })
     test("fails to validate object property that does not start with '\\'", () => {
       expect(() => validateJSONPointer('foo')).toThrow()
     })

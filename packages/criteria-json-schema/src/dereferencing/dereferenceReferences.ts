@@ -3,7 +3,7 @@ import { DocumentIndex } from '../schema-index/DocumentIndex'
 import { ReferenceInfo } from '../schema-index/types'
 import { URI, resolveURIReference } from '../util/uri'
 
-export function dereferenceReferences<Metadata extends { metaSchemaURI: URI }>(
+export function dereferenceReferences<Metadata extends { metaSchemaID: URI }>(
   rootObject: any,
   references: Map<object, ReferenceInfo<Metadata>>,
   index: DocumentIndex,
@@ -56,7 +56,7 @@ export function dereferenceReferences<Metadata extends { metaSchemaURI: URI }>(
     // const { $ref, ...siblings } = reference
     const target = merge(reference, info, dereferencedValue)
     // const target = {}
-    // mergeReferenceInto(info.metadata?.metaSchemaURI)(target, dereferencedValue, siblings, options.referenceMergePolicy)
+    // mergeReferenceInto(info.metadata?.metaSchemaID)(target, dereferencedValue, siblings, options.referenceMergePolicy)
     parent[key] = target
 
     dereferencedValues.set(reference, target)

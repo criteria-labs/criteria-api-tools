@@ -7,11 +7,11 @@ import { MaybePromise, chain, chainForEach } from '../util/promises'
 import { URI, resolveURIReference, splitFragment } from '../util/uri'
 
 export interface Metadata {
-  metaSchemaURI: URI
+  metaSchemaID: URI
 }
 
 export interface SchemaIndexConfiguration {
-  defaultMetaSchemaURI: URI
+  defaultMetaSchemaID: URI
   cloned?: boolean
   retrieve?: (uri: URI) => MaybePromise<any>
 }
@@ -19,7 +19,7 @@ export interface SchemaIndexConfiguration {
 export class SchemaIndex extends DocumentIndex {
   readonly schemaContentIndex: SchemaContentIndex
   readonly jsonReferenceContentIndex: JSONReferenceContentIndex<Metadata>
-  readonly defaultMetaSchemaURI: string
+  readonly defaultMetaSchemaID: string
   constructor(configuration: SchemaIndexConfiguration) {
     super({
       cloned: configuration.cloned,
@@ -32,7 +32,7 @@ export class SchemaIndex extends DocumentIndex {
         return !this.isObjectIndexed(object)
       }
     })
-    this.defaultMetaSchemaURI = configuration.defaultMetaSchemaURI
+    this.defaultMetaSchemaID = configuration.defaultMetaSchemaID
   }
 
   readonly references = new Map<object, ReferenceInfo<Metadata>>()
@@ -135,7 +135,7 @@ export class SchemaIndex extends DocumentIndex {
     rootSchema = this.addDocument(rootSchema, baseURI)
 
     const rootSchemaMetadata = {
-      metaSchemaURI: this.defaultMetaSchemaURI
+      metaSchemaID: this.defaultMetaSchemaID
     }
 
     const addSchemasResult = this.addSchemas(rootSchema, baseURI, rootSchemaMetadata)

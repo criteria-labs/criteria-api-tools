@@ -49,7 +49,7 @@ describe('SchemaIndex', () => {
         const index = new SchemaIndex({
           cloned: false,
           retrieve: retrieveUsingLookup(documents),
-          defaultMetaSchemaURI: metaSchemaDraft04.id
+          defaultMetaSchemaID: metaSchemaDraft04.id
         })
         index.addRootSchema(documents[''], '')
 
@@ -66,7 +66,7 @@ describe('SchemaIndex', () => {
     describe('draft-04', () => {
       const index = new SchemaIndex({
         cloned: true,
-        defaultMetaSchemaURI: metaSchemaDraft04.id
+        defaultMetaSchemaID: metaSchemaDraft04.id
       })
       index.addRootSchema(schema, '')
 

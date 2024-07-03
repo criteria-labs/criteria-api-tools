@@ -8,7 +8,7 @@ import { ReferenceMergePolicy, mergeReference } from './mergeReference'
 export const defaultReferenceMergePolicy = 'by_keyword'
 
 export type DereferenceOptions = {
-  defaultMetaSchemaURI: URI
+  defaultMetaSchemaID: URI
   cloned?: boolean
   retrieve?: (uri: URI) => any
   baseURI?: URI
@@ -27,7 +27,7 @@ export function dereferenceJSONSchema(
   const index = new SchemaIndex({
     cloned: true,
     retrieve: options?.retrieve,
-    defaultMetaSchemaURI: options.defaultMetaSchemaURI
+    defaultMetaSchemaID: options.defaultMetaSchemaID
   })
   const addRootSchemaResult = index.addRootSchema(rootSchema, options.baseURI ?? '')
   return chain(addRootSchemaResult, () => {

@@ -1,4 +1,8 @@
 import { evaluateJSONPointer, unescapeReferenceToken, type JSONPointer } from '@criteria/json-pointer'
+import { metaSchemaID as metaSchemaIDDraft04 } from '../draft-04'
+import { metaSchemaID as metaSchemaIDDraft06 } from '../draft-06'
+import { metaSchemaID as metaSchemaIDDraft07 } from '../draft-07'
+import { metaSchemaID as metaSchemaIDDraft2020_12 } from '../draft-2020-12'
 import { resolveID as resolveIDDraft04 } from '../specification/draft-04/resolveID'
 import { visitSubschemas as visitSubschemasDraft04 } from '../specification/draft-04/visitSubschemas'
 import { resolveID as resolveIDDraft06 } from '../specification/draft-06/resolveID'
@@ -11,7 +15,7 @@ import { URI, resolveURIReference } from '../util/uri'
 import { ContentIndex, ReferenceInfo } from './types'
 
 export interface SchemaMetadata {
-  metaSchemaURI: URI
+  metaSchemaID: URI
 }
 
 export interface SchemaInfo {
@@ -77,27 +81,27 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
   addContentFromRoot(root: any, baseURI: URI, rootMetadata: SchemaMetadata) {
     let foundReferences = new Map<object, ReferenceInfo<SchemaMetadata>>()
 
-    const visitSubschemas = (metaSchemaURI: string) => {
-      switch (metaSchemaURI) {
-        case 'http://json-schema.org/draft-04/schema#':
+    const visitSubschemas = (metaSchemaID: string) => {
+      switch (metaSchemaID) {
+        case metaSchemaIDDraft04:
           return visitSubschemasDraft04
-        case 'http://json-schema.org/draft-06/schema#':
+        case metaSchemaIDDraft06:
           return visitSubschemasDraft06
-        case 'http://json-schema.org/draft-07/schema#':
+        case metaSchemaIDDraft07:
           return visitSubschemasDraft07
-        case 'https://json-schema.org/draft/2020-12/schema':
+        case metaSchemaIDDraft2020_12:
           return visitSubschemasDraft2020_12
         default:
-          return visitSubschemas(rootMetadata.metaSchemaURI)
+          return visitSubschemas(rootMetadata.metaSchemaID)
       }
     }
 
-    visitSubschemas(typeof root === 'object' && '$schema' in root ? root.$schema : rootMetadata.metaSchemaURI)(
+    visitSubschemas(typeof root === 'object' && '$schema' in root ? root.$schema : rootMetadata.metaSchemaID)(
       root,
       {
         baseURI,
         metadata: {
-          metaSchemaURI: rootMetadata.metaSchemaURI
+          metaSchemaID: rootMetadata.metaSchemaID
         }
       },
       (subschema, path, state) => {
@@ -111,35 +115,35 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
 
         const {
           baseURI,
-          metadata: { metaSchemaURI }
+          metadata: { metaSchemaID }
         } = state
 
-        const $schema = '$schema' in subschema ? subschema.$schema : metaSchemaURI
+        const $schema = '$schema' in subschema ? subschema.$schema : metaSchemaID
 
         let $id: string | undefined
         switch ($schema) {
-          case 'http://json-schema.org/draft-04/schema#': {
+          case metaSchemaIDDraft04: {
             $id = resolveIDDraft04(subschema, baseURI)
             if ($id) {
               this.schemasByURI.set($id, subschema)
             }
             break
           }
-          case 'http://json-schema.org/draft-06/schema#': {
+          case metaSchemaIDDraft06: {
             $id = resolveIDDraft06(subschema, baseURI)
             if ($id) {
               this.schemasByURI.set($id, subschema)
             }
             break
           }
-          case 'http://json-schema.org/draft-07/schema#': {
+          case metaSchemaIDDraft07: {
             $id = resolveIDDraft07(subschema, baseURI)
             if ($id) {
               this.schemasByURI.set($id, subschema)
             }
             break
           }
-          case 'https://json-schema.org/draft/2020-12/schema': {
+          case metaSchemaIDDraft2020_12: {
             $id = resolveIDDraft2020_12(subschema, baseURI)
             if ($id) {
               this.schemasByURI.set($id, subschema)
@@ -151,13 +155,13 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
         this.infosBySchema.set(subschema, {
           baseURI: $id ?? baseURI,
           metadata: {
-            metaSchemaURI: $schema
+            metaSchemaID: $schema
           }
         })
 
         state.baseURI = $id ?? baseURI
         state.metadata = {
-          metaSchemaURI: $schema
+          metaSchemaID: $schema
         }
 
         let $anchor: string | undefined

@@ -11,7 +11,7 @@ export function evaluateJSONPointer(jsonPointer: JSONPointer, document: any): an
   const referenceTokens = jsonPointer.slice(1).split('/')
   let value = document
   for (const referenceToken of referenceTokens) {
-    value = value && value[unescapeReferenceToken(referenceToken)]
+    value = typeof value === 'object' && value !== null ? value[unescapeReferenceToken(referenceToken)] : undefined
   }
   return value
 }

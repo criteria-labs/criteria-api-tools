@@ -1,8 +1,8 @@
-import type { JSONPointer } from './types'
+import { isJSONPointer, type JSONPointer } from './types'
 
 export function validateJSONPointer(value: unknown): value is JSONPointer {
-  if (typeof value !== 'string' || (value !== '' && !value.startsWith('/'))) {
-    throw new Error('Invalid JSON pointer')
+  if (isJSONPointer(value)) {
+    return true
   }
-  return true
+  throw new Error('Invalid JSON pointer')
 }

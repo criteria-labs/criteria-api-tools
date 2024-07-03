@@ -1,11 +1,9 @@
-import { evaluateJSONPointer } from '@criteria/json-pointer'
+import { evaluateJSONPointer, isJSONPointer, type JSONPointer } from '@criteria/json-pointer'
 import { memoize, retrieveBuiltin } from '../retrievers'
-import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
-import { chain } from '../util/promises'
+import { MaybePromise, chain } from '../util/promises'
 import { URI, hasFragment, resolveURIReference, splitFragment } from '../util/uri'
 import { isJSONReference } from '../util/visitJSONReferences'
 import { Index } from './types'
-import { MaybePromise } from '../util/promises'
 
 // default configuration
 const defaultCloned = false

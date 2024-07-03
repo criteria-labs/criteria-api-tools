@@ -1,4 +1,4 @@
-import { evaluateJSONPointer, unescapeReferenceToken } from '@criteria/json-pointer'
+import { evaluateJSONPointer, unescapeReferenceToken, type JSONPointer } from '@criteria/json-pointer'
 import { resolveID as resolveIDDraft04 } from '../specification/draft-04/resolveID'
 import { visitSubschemas as visitSubschemasDraft04 } from '../specification/draft-04/visitSubschemas'
 import { resolveID as resolveIDDraft06 } from '../specification/draft-06/resolveID'
@@ -7,7 +7,6 @@ import { resolveID as resolveIDDraft07 } from '../specification/draft-07/resolve
 import { visitSubschemas as visitSubschemasDraft07 } from '../specification/draft-07/visitSubschemas'
 import { resolveID as resolveIDDraft2020_12 } from '../specification/draft-2020-12/resolveID'
 import { visitSubschemas as visitSubschemasDraft2020_12 } from '../specification/draft-2020-12/visitSubschemas'
-import { JSONPointer } from '../util/JSONPointer'
 import { URI, resolveURIReference } from '../util/uri'
 import { ContentIndex, ReferenceInfo } from './types'
 

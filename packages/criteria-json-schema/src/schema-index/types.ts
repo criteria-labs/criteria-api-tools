@@ -1,4 +1,4 @@
-import { JSONPointer } from '../util/JSONPointer'
+import type { JSONPointer } from '@criteria/json-pointer'
 import { URI } from '../util/uri'
 
 export type IndexedObjectInfo<Metadata> = [Metadata] extends [never]

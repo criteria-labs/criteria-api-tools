@@ -1,5 +1,4 @@
-import { evaluateJSONPointer, unescapeReferenceToken } from '@criteria/json-pointer'
-import { JSONPointer } from '../util/JSONPointer'
+import { evaluateJSONPointer, unescapeReferenceToken, type JSONPointer } from '@criteria/json-pointer'
 import { URI, resolveURIReference } from '../util/uri'
 import { visitJSONReferences } from '../util/visitJSONReferences'
 import { ContentIndex, ReferenceInfo } from './types'

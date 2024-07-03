@@ -1,5 +1,4 @@
-import { escapeReferenceToken } from '@criteria/json-pointer'
-import { JSONPointer } from './JSONPointer'
+import { escapeReferenceToken, type JSONPointer } from '@criteria/json-pointer'
 
 export function visitObjects(
   value: any,

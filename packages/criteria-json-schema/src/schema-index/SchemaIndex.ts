@@ -1,9 +1,8 @@
-import { evaluateJSONPointer } from '@criteria/json-pointer'
+import { evaluateJSONPointer, isJSONPointer, type JSONPointer } from '@criteria/json-pointer'
 import { DocumentIndex } from '../schema-index/DocumentIndex'
 import { JSONReferenceContentIndex } from '../schema-index/JSONReferenceContentIndex'
 import { SchemaContentIndex } from '../schema-index/SchemaContentIndex'
 import { ReferenceInfo } from '../schema-index/types'
-import { JSONPointer, isJSONPointer } from '../util/JSONPointer'
 import { MaybePromise, chain, chainForEach } from '../util/promises'
 import { URI, resolveURIReference, splitFragment } from '../util/uri'
 

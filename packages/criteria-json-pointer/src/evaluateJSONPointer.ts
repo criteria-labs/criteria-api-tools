@@ -1,7 +1,8 @@
 import { unescapeReferenceToken } from './escaping'
+import type { JSONPointer } from './types'
 import { validateJSONPointer } from './validateJSONPointer'
 
-export function evaluateJSONPointer(jsonPointer: string, document: any): any {
+export function evaluateJSONPointer(jsonPointer: JSONPointer, document: any): any {
   validateJSONPointer(jsonPointer)
 
   if (jsonPointer === '') {

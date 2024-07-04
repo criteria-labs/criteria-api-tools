@@ -35,8 +35,8 @@
     "clean": "rimraf tsconfig.build.tsbuildinfo ./dist"
   },
   "dependencies": {
-    "@criteria/json-schema": "^0.9.1",
     "@criteria/json-pointer": "^0.2.0",
+    "@criteria/json-schema": "^0.10.0",
     "toad-uri-js": "^5.0.1"
   },
   "devDependencies": {

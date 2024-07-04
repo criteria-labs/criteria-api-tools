@@ -1,6 +1,6 @@
 {
   "name": "@criteria/json-schema-validation",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "Validate JSON instances using JSON Schema.",
   "keywords": [
     "json",

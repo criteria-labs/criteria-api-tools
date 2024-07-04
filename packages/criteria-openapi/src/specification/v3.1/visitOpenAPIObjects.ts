@@ -1,5 +1,4 @@
-import { escapeReferenceToken } from '@criteria/json-pointer'
-import { JSONPointer } from '../../util/JSONPointer'
+import { escapeReferenceToken, type JSONPointer } from '@criteria/json-pointer'
 import {
   Callback,
   Components,

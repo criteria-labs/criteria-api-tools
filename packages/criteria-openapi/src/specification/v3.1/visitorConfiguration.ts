@@ -1,3 +1,4 @@
+import { metaSchemaIDDraft04, metaSchemaIDDraft2020_12 } from '@criteria/json-schema'
 import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context, ObjectType } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
@@ -11,7 +12,7 @@ export interface Options {
 // What happens if a schema with a $schema references one without, does it default to the referring schema's dialect,
 // or the jsonSchemaDialect value of the overall OpenAPI document?
 const jsonSchemaDraft04VisitorConfiguration = (options: Options): VisitorConfiguration => ({
-  jsonSchemaDialect: 'http://json-schema.org/draft-04/schema#',
+  jsonSchemaDialect: metaSchemaIDDraft04,
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
     if (
@@ -48,10 +49,10 @@ const jsonSchemaDraft04VisitorConfiguration = (options: Options): VisitorConfigu
         case 'https://spec.openapis.org/oas/3.1/dialect/base':
           resolvedConfiguration = configuration(options)
           break
-        case 'http://json-schema.org/draft-04/schema#':
+        case metaSchemaIDDraft04:
           resolvedConfiguration = jsonSchemaDraft04VisitorConfiguration(options)
           break
-        case 'https://json-schema.org/draft/2020-12/schema':
+        case metaSchemaIDDraft2020_12:
           resolvedConfiguration = jsonSchemaDraft2020_12VisitorConfiguration(options)
           break
         default:
@@ -102,7 +103,7 @@ const jsonSchemaDraft04VisitorConfiguration = (options: Options): VisitorConfigu
 })
 
 const jsonSchemaDraft2020_12VisitorConfiguration = (options: Options): VisitorConfiguration => ({
-  jsonSchemaDialect: 'https://json-schema.org/draft/2020-12/schema',
+  jsonSchemaDialect: metaSchemaIDDraft2020_12,
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
     if (
@@ -150,10 +151,10 @@ const jsonSchemaDraft2020_12VisitorConfiguration = (options: Options): VisitorCo
         case 'https://spec.openapis.org/oas/3.1/dialect/base':
           resolvedConfiguration = configuration(options)
           break
-        case 'http://json-schema.org/draft-04/schema#':
+        case metaSchemaIDDraft04:
           resolvedConfiguration = jsonSchemaDraft04VisitorConfiguration(options)
           break
-        case 'https://json-schema.org/draft/2020-12/schema':
+        case metaSchemaIDDraft2020_12:
           resolvedConfiguration = jsonSchemaDraft2020_12VisitorConfiguration(options)
           break
         default:
@@ -239,7 +240,7 @@ const jsonSchemaDraft2020_12VisitorConfiguration = (options: Options): VisitorCo
 })
 
 const configuration = (options: Options): VisitorConfiguration => ({
-  jsonSchemaDialect: 'http://json-schema.org/draft-04/schema#',
+  jsonSchemaDialect: metaSchemaIDDraft04,
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
 

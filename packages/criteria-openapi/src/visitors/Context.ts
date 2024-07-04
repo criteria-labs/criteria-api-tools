@@ -1,4 +1,4 @@
-import { JSONPointer } from '../util/JSONPointer'
+import type { JSONPointer } from '@criteria/json-pointer'
 import { encodeURIFragment, URI } from '../util/uri'
 import { uriFragmentIsJSONPointer } from '../util/uriFragmentIsJSONPointer'
 import { VisitorConfiguration } from './visitValues'

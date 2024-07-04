@@ -1,18 +1,17 @@
-import { evaluateJSONPointer } from '@criteria/json-pointer'
-import { DocumentIndex, ReferenceInfo, metaSchemaURIDraft2020_12 } from '@criteria/json-schema'
+import { evaluateJSONPointer, isJSONPointer } from '@criteria/json-pointer'
+import { DocumentIndex, ReferenceInfo, metaSchemaIDDraft2020_12 } from '@criteria/json-schema'
 import { OpenAPIContentIndex } from '../openapi-index/OpenAPIContentIndex'
 import { OpenAPIObjectType } from '../specification/v3.1/visitOpenAPIObjects'
-import { isJSONPointer } from '../util/JSONPointer'
-import { URI, splitFragment } from '../util/uri'
 import { MaybePromise, chain, chainForEach } from '../util/promises'
+import { URI, splitFragment } from '../util/uri'
 
 // default configuration
-const defaultDefaultJSONSchemaDialect = metaSchemaURIDraft2020_12
+const defaultDefaultJSONSchemaDialect = metaSchemaIDDraft2020_12
 
 export interface Metadata {
   type: OpenAPIObjectType | null
   openAPIVersion: string
-  metaSchemaURI: string // jsonSchemaDialect
+  metaSchemaID: string // jsonSchemaDialect
 }
 
 export interface OpenAPIIndexConfiguration {
@@ -69,7 +68,7 @@ export class OpenAPIIndex extends DocumentIndex {
     const rootOpenAPIMetadata = {
       type: 'openapi' as OpenAPIObjectType,
       openAPIVersion: (rootOpenAPI as any).openapi,
-      metaSchemaURI: (rootOpenAPI as any).jsonSchemaDialect ?? this.defaultJSONSchemaDialect
+      metaSchemaID: (rootOpenAPI as any).jsonSchemaDialect ?? this.defaultJSONSchemaDialect
     }
 
     return this.addOpenAPIObjects(rootOpenAPI, baseURI, rootOpenAPIMetadata)

@@ -1,9 +1,10 @@
+import { metaSchemaIDDraft04 } from '@criteria/json-schema'
 import { hasFragment, resolveURIReference } from '../../util/uri'
 import { Context, ObjectType } from '../../visitors/Context'
 import { VisitorConfiguration } from '../../visitors/visitValues'
 
 export default {
-  jsonSchemaDialect: 'http://json-schema.org/draft-04/schema#',
+  jsonSchemaDialect: metaSchemaIDDraft04,
   objectType: (context: Context): ObjectType | null => {
     const jsonPointer = context.jsonPointerFromObject
 

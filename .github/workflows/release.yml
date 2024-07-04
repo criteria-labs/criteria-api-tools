@@ -60,7 +60,7 @@ jobs:
         with:
           tag-prefix: criteria-json-schema-v
           package-path: packages/criteria-json-schema/package.json
-      - run: npm run build -w packages/criteria-json-schema
+      - run: npm run build -w packages/criteria-json-pointer -w packages/criteria-json-schema
       - run: npm publish --access public -w packages/criteria-json-schema
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -83,7 +83,7 @@ jobs:
         with:
           tag-prefix: criteria-json-schema-validation-v
           package-path: packages/criteria-json-schema-validation/package.json
-      - run: npm run build -w packages/criteria-json-schema-validation
+      - run: npm run build -w packages/criteria-json-pointer -w packages/criteria-json-schema -w packages/criteria-json-schema-validation
       - run: npm publish --access public -w packages/criteria-json-schema-validation
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -106,7 +106,7 @@ jobs:
         with:
           tag-prefix: criteria-openapi-v
           package-path: packages/criteria-openapi/package.json
-      - run: npm run build -w packages/criteria-openapi
+      - run: npm run build -w packages/criteria-json-pointer -w packages/criteria-json-schema -w packages/criteria-openapi
       - run: npm publish --access public -w packages/criteria-openapi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -129,7 +129,7 @@ jobs:
         with:
           tag-prefix: criteria-synthetic-data-v
           package-path: packages/criteria-synthetic-data/package.json
-      - run: npm run build -w packages/criteria-synthetic-data
+      - run: npm run build -w packages/criteria-json-pointer -w packages/criteria-json-schema -w packages/criteria-synthetic-data
       - run: npm publish --access public -w packages/criteria-synthetic-data
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

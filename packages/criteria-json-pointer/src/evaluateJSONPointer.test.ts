@@ -66,4 +66,10 @@ describe('evaluateJSONPointer()', () => {
       expect(evaluateJSONPointer('/k\\"l', document)).toEqual(6)
     })
   })
+
+  describe('invalid values', () => {
+    test('evaluates to undefined for invalid property', () => {
+      expect(evaluateJSONPointer('/invalid/0', document)).toBeUndefined()
+    })
+  })
 })

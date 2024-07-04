@@ -1,6 +1,6 @@
 {
   "name": "@criteria/openapi",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "TypeScript implementation of the OpenAPI specification.",
   "keywords": [
     "openapi",
@@ -35,8 +35,8 @@
     "clean": "rimraf tsconfig.build.tsbuildinfo ./dist"
   },
   "dependencies": {
-    "@criteria/json-schema": "^0.9.1",
-    "@criteria/json-pointer": "^0.1.1",
+    "@criteria/json-pointer": "^0.2.1",
+    "@criteria/json-schema": "^0.10.0",
     "toad-uri-js": "^5.0.1"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { isJSONPointer } from './JSONPointer'
+import { isJSONPointer } from '@criteria/json-pointer'
 import { splitFragment, URI } from './uri'
 
 // filter out URIs that are a local identifier example.json#schema

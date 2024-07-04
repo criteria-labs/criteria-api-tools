@@ -1,7 +1,8 @@
 import { unescapeReferenceToken } from './escaping'
+import type { JSONPointer } from './types'
 import { validateJSONPointer } from './validateJSONPointer'
 
-export function evaluateJSONPointer(jsonPointer: string, document: any): any {
+export function evaluateJSONPointer(jsonPointer: JSONPointer, document: any): any {
   validateJSONPointer(jsonPointer)
 
   if (jsonPointer === '') {
@@ -10,7 +11,7 @@ export function evaluateJSONPointer(jsonPointer: string, document: any): any {
   const referenceTokens = jsonPointer.slice(1).split('/')
   let value = document
   for (const referenceToken of referenceTokens) {
-    value = value && value[unescapeReferenceToken(referenceToken)]
+    value = typeof value === 'object' && value !== null ? value[unescapeReferenceToken(referenceToken)] : undefined
   }
   return value
 }

@@ -10,7 +10,7 @@ describe('visitOpenAPIObjects()', () => {
         }
       }
       expect(() => {
-        visitOpenAPIObjects(openAPI, 'openapi', {}, () => {})
+        visitOpenAPIObjects(openAPI, 'OpenAPI', {}, () => {})
       }).not.toThrow()
     })
   })

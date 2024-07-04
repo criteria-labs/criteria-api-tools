@@ -1,10 +1,10 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
-import { JSONPointer } from '../../../../util/JSONPointer'
+import equal from 'fast-deep-equal'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { FlagOutput, VerboseOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
-import equal from 'fast-deep-equal'
 
 export function uniqueItemsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('uniqueItems' in schema)) {

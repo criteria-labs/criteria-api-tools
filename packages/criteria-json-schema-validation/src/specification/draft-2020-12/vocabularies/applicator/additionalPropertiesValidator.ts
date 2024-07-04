@@ -1,6 +1,6 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { escapeReferenceToken } from '@criteria/json-pointer'
 import { JSONSchemaObject } from '@criteria/json-schema/draft-2020-12'
-import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { InvalidVerboseOutput, Output } from '../../../../validation/Output'

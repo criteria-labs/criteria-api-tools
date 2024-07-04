@@ -1,10 +1,10 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchema } from '@criteria/json-schema/draft-04'
-import { JSONPointer } from '../../../../util/JSONPointer'
+import equal from 'fast-deep-equal'
 import { format } from '../../../../util/format'
 import { formatList } from '../../../../util/formatList'
 import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
-import equal from 'fast-deep-equal'
 
 export function enumValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('enum' in schema)) {

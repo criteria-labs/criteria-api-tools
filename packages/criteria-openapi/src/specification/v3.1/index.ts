@@ -1,3 +1,5 @@
-export * from './types'
-export * from './isOpenAPI'
 export * from './dereferenceOpenAPI'
+export * from './isOpenAPI'
+export * from './jsonSchemaDialect'
+export * from './types'
+export * from './visitOpenAPIObjects'

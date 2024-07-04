@@ -1,13 +1,12 @@
-import { evaluateJSONPointer, unescapeReferenceToken } from '@criteria/json-pointer'
-import { ContentIndex, ReferenceInfo, SchemaContentIndex, metaSchemaURIDraft2020_12 } from '@criteria/json-schema'
+import { evaluateJSONPointer, unescapeReferenceToken, type JSONPointer } from '@criteria/json-pointer'
+import { ContentIndex, ReferenceInfo, SchemaContentIndex } from '@criteria/json-schema'
 import { OpenAPIObjectType, visitOpenAPIObjects } from '../specification/v3.1/visitOpenAPIObjects'
-import { JSONPointer } from '../util/JSONPointer'
 import { URI, resolveURIReference } from '../util/uri'
 
 export interface OpenAPIMetadata {
   type: OpenAPIObjectType
   openAPIVersion: string
-  metaSchemaURI: string // jsonSchemaDialect
+  metaSchemaID: string // jsonSchemaDialect
 }
 
 export interface OpenAPIInfo {
@@ -52,9 +51,9 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
       return {
         baseURI: info.baseURI,
         metadata: {
-          type: 'schema' as OpenAPIObjectType,
+          type: 'Schema' as OpenAPIObjectType,
           openAPIVersion: '',
-          metaSchemaURI: info.metadata.metaSchemaURI
+          metaSchemaID: info.metadata.metaSchemaID
         }
       }
     }
@@ -65,11 +64,11 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
     let foundReferences = new Map<object, ReferenceInfo<OpenAPIMetadata>>()
 
     // TODO: switch on version
-    // const visitOpenAPIObjects = (metaSchemaURI: string) => {
-    //   switch (metaSchemaURI) {
-    //     case 'https://json-schema.org/draft/2020-12/schema':
+    // const visitOpenAPIObjects = (metaSchemaID: string) => {
+    //   switch (metaSchemaID) {
+    //     case metaSchemaIDDraft2020_12:
     //       return visitSubschemasDraft2020_12
-    //     case 'http://json-schema.org/draft-04/schema#':
+    //     case metaSchemaIDDraft04:
     //       return visitSubschemasDraft04
     //     default:
     //       return visitOpenAPIObjects(rootMetadata.openAPIVersion)
@@ -83,7 +82,7 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
         baseURI,
         metadata: {
           openAPIVersion: rootMetadata.openAPIVersion,
-          metaSchemaURI: rootMetadata.metaSchemaURI
+          metaSchemaID: rootMetadata.metaSchemaID
         }
       },
       (type, object, path, state) => {
@@ -97,12 +96,12 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
 
         const {
           baseURI,
-          metadata: { openAPIVersion, metaSchemaURI }
+          metadata: { openAPIVersion, metaSchemaID }
         } = state
 
-        if (type === 'schema') {
+        if (type === 'Schema') {
           const schemaReferences = this.schemaContentIndex.addContentFromRoot(object, baseURI, {
-            metaSchemaURI
+            metaSchemaID
           })
 
           const location = path.join('')
@@ -116,9 +115,9 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
               parent: info.parent === null ? parent : info.parent,
               key: info.parent === null ? key : info.key,
               metadata: {
-                type: 'schema',
+                type: 'Schema',
                 openAPIVersion: rootMetadata.openAPIVersion,
-                metaSchemaURI: info.metadata.metaSchemaURI
+                metaSchemaID: info.metadata.metaSchemaID
               },
               isDynamic: info.isDynamic,
               path: [...path, ...info.path]
@@ -130,7 +129,7 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
             metadata: {
               type,
               openAPIVersion,
-              metaSchemaURI
+              metaSchemaID
             }
           })
 
@@ -150,7 +149,7 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
               metadata: {
                 type,
                 openAPIVersion,
-                metaSchemaURI
+                metaSchemaID
               },
               isDynamic: false,
               path

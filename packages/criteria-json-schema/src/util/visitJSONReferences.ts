@@ -1,4 +1,4 @@
-import { JSONPointer } from './JSONPointer'
+import type { JSONPointer } from '@criteria/json-pointer'
 import { visitObjects } from './visitObjects'
 
 export function isJSONReference(value: any): value is { $ref: string } {

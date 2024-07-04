@@ -2,8 +2,7 @@
 import { JSONSchemaDraft04 } from '@criteria/json-schema'
 import fs from 'fs'
 import path from 'path'
-import { OutputFormat } from '../../dist'
-import { jsonValidatorDraft04 } from '../../src'
+import { OutputFormat, jsonValidatorDraft04 } from '../../src'
 
 const testCasesDirectory = path.resolve(
   __dirname,

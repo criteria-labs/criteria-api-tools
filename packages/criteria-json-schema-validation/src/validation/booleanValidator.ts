@@ -1,5 +1,5 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { OutputFormat } from '..'
-import { JSONPointer } from '../util/JSONPointer'
 import { format } from '../util/format'
 import { BoundValidator } from './BoundValidator'
 

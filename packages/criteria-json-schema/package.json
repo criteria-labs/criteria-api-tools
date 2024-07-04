@@ -1,6 +1,6 @@
 {
   "name": "@criteria/json-schema",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "TypeScript implementation of the JSON Schema specification.",
   "keywords": [
     "json",
@@ -58,6 +58,7 @@
     "node": ">=18.12.1"
   },
   "dependencies": {
+    "@criteria/json-pointer": "^0.2.1",
     "toad-uri-js": "^5.0.1"
   }
 }

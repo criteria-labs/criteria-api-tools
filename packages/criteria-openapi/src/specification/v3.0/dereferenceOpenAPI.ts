@@ -1,4 +1,4 @@
-import { metaSchemaURI } from '@criteria/json-schema/draft-04'
+import { metaSchemaID } from '@criteria/json-schema/draft-04'
 import {
   AsyncDereferenceOptions,
   DereferenceOptions,
@@ -26,6 +26,6 @@ export function dereferenceOpenAPI(
 ): MaybePromise<DereferencedOpenAPI> {
   return dereferenceOpenAPIWithConfiguration(openAPI, {
     ...options,
-    defaultJSONSchemaDialect: metaSchemaURI
+    defaultJSONSchemaDialect: metaSchemaID
   })
 }

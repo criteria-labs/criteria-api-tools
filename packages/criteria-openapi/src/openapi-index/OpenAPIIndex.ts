@@ -1,18 +1,23 @@
-import { evaluateJSONPointer } from '@criteria/json-pointer'
-import { DocumentIndex, ReferenceInfo, metaSchemaURIDraft2020_12 } from '@criteria/json-schema'
+import { evaluateJSONPointer, isJSONPointer } from '@criteria/json-pointer'
+import { DocumentIndex, ReferenceInfo } from '@criteria/json-schema'
 import { OpenAPIContentIndex } from '../openapi-index/OpenAPIContentIndex'
+import { memoize } from '../retrievers'
+import { retrieveBuiltin } from '../retrievers/retrieveBuiltin'
 import { OpenAPIObjectType } from '../specification/v3.1/visitOpenAPIObjects'
-import { isJSONPointer } from '../util/JSONPointer'
-import { URI, splitFragment } from '../util/uri'
 import { MaybePromise, chain, chainForEach } from '../util/promises'
+import { URI, splitFragment } from '../util/uri'
+import { jsonSchemaDialect } from '../v3.1'
 
 // default configuration
-const defaultDefaultJSONSchemaDialect = metaSchemaURIDraft2020_12
+const defaultDefaultJSONSchemaDialect = jsonSchemaDialect
+const defaultRetrieve = (uri: URI): any => {
+  throw new Error(`Cannot retrieve URI '${uri}'`)
+}
 
 export interface Metadata {
   type: OpenAPIObjectType | null
   openAPIVersion: string
-  metaSchemaURI: string // jsonSchemaDialect
+  metaSchemaID: string // jsonSchemaDialect
 }
 
 export interface OpenAPIIndexConfiguration {
@@ -25,9 +30,18 @@ export class OpenAPIIndex extends DocumentIndex {
   readonly openAPIContentIndex: OpenAPIContentIndex
   readonly defaultJSONSchemaDialect: URI
   constructor(configuration: OpenAPIIndexConfiguration) {
+    const retrieve = memoize((uri: string) => {
+      const documentOrPromise = retrieveBuiltin(uri) ?? configuration?.retrieve(uri) ?? defaultRetrieve(uri)
+      return chain(documentOrPromise, (document) => {
+        if (!document) {
+          throw new Error(`Invalid document retrieved at uri '${uri}'`)
+        }
+        return document
+      })
+    })
     super({
       cloned: configuration.cloned,
-      retrieve: configuration.retrieve
+      retrieve
     })
     this.openAPIContentIndex = new OpenAPIContentIndex()
     this.defaultJSONSchemaDialect = configuration.defaultJSONSchemaDialect ?? defaultDefaultJSONSchemaDialect
@@ -67,9 +81,9 @@ export class OpenAPIIndex extends DocumentIndex {
     rootOpenAPI = this.addDocument(rootOpenAPI, baseURI)
 
     const rootOpenAPIMetadata = {
-      type: 'openapi' as OpenAPIObjectType,
+      type: 'OpenAPI' as OpenAPIObjectType,
       openAPIVersion: (rootOpenAPI as any).openapi,
-      metaSchemaURI: (rootOpenAPI as any).jsonSchemaDialect ?? this.defaultJSONSchemaDialect
+      metaSchemaID: (rootOpenAPI as any).jsonSchemaDialect ?? this.defaultJSONSchemaDialect
     }
 
     return this.addOpenAPIObjects(rootOpenAPI, baseURI, rootOpenAPIMetadata)

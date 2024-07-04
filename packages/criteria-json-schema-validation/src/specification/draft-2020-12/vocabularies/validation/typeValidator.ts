@@ -1,5 +1,5 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchemaObject, JSONSchemaPrimitiveType } from '@criteria/json-schema/draft-2020-12'
-import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONArray } from '../../../../util/isJSONArray'
 import { isJSONNumber } from '../../../../util/isJSONNumber'

@@ -1,8 +1,8 @@
-import { SchemaIndex, metaSchemaURIDraft04, metaSchemaURIDraft06, metaSchemaURIDraft07 } from '@criteria/json-schema'
-import { JSONPointer } from '../util/JSONPointer'
+import type { JSONPointer } from '@criteria/json-pointer'
+import { SchemaIndex, metaSchemaIDDraft04, metaSchemaIDDraft06, metaSchemaIDDraft07 } from '@criteria/json-schema'
 import { BoundValidator, BoundValidatorWithAnnotationResults } from './BoundValidator'
-import { FlagOutput, InvalidVerboseOutput, Output, OutputFormat, VerboseOutput } from './Output'
-import { annotationResultsReducerForMetaSchemaURI } from './annotationResultsReducerForMetaSchemaURI'
+import { FlagOutput, InvalidVerboseOutput, OutputFormat, VerboseOutput } from './Output'
+import { annotationResultsReducerForMetaSchemaID } from './annotationResultsReducerForMetaSchemaID'
 import { booleanValidator } from './booleanValidator'
 import { JSONSchemaKeyword, JSONSchemaKeywordValidator, ValidatorContext } from './keywordValidators'
 
@@ -20,11 +20,11 @@ export function validatorBinder(
   {
     outputFormat,
     failFast,
-    validatorsForMetaSchemaURI
+    validatorsForMetaSchemaID
   }: {
     outputFormat: OutputFormat
     failFast: boolean
-    validatorsForMetaSchemaURI: (uri: string) => { [Keyword in JSONSchemaKeyword]: JSONSchemaKeywordValidator }
+    validatorsForMetaSchemaID: (uri: string) => { [Keyword in JSONSchemaKeyword]: JSONSchemaKeywordValidator }
   }
 ): BoundValidatorForSchema {
   // TODO: ignore cache for dynamic
@@ -53,9 +53,9 @@ export function validatorBinder(
     }
     cache.set(schema, indirectValidator)
 
-    const metaSchemaURI = index.infoForIndexedObject(schema).metadata.metaSchemaURI
-    const vocabularyValidators = validatorsForMetaSchemaURI(metaSchemaURI)
-    const annotationResultsReducer = annotationResultsReducerForMetaSchemaURI(metaSchemaURI)
+    const metaSchemaID = index.infoForIndexedObject(schema).metadata.metaSchemaID
+    const vocabularyValidators = validatorsForMetaSchemaID(metaSchemaID)
+    const annotationResultsReducer = annotationResultsReducerForMetaSchemaID(metaSchemaID)
 
     let isChildDynamic = false
     const validatorForSchema = (schema: object | boolean, schemaPath: JSONPointer[]) => {
@@ -66,9 +66,9 @@ export function validatorBinder(
 
     // draft 04/06/07: ref overrides any sibling keywords
     const keywordsFilter =
-      (metaSchemaURI === metaSchemaURIDraft04 ||
-        metaSchemaURI === metaSchemaURIDraft06 ||
-        metaSchemaURI === metaSchemaURIDraft07) &&
+      (metaSchemaID === metaSchemaIDDraft04 ||
+        metaSchemaID === metaSchemaIDDraft06 ||
+        metaSchemaID === metaSchemaIDDraft07) &&
       '$ref' in schema
         ? (keyword: string) => keyword === '$ref'
         : (keyword: string) => true

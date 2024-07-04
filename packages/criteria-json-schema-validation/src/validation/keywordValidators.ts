@@ -1,11 +1,12 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import {
   JSONSchemaDraft04,
   JSONSchemaDraft06,
   JSONSchemaDraft2020_12,
   SchemaIndex,
-  metaSchemaURIDraft04,
-  metaSchemaURIDraft06,
-  metaSchemaURIDraft07
+  metaSchemaIDDraft04,
+  metaSchemaIDDraft06,
+  metaSchemaIDDraft07
 } from '@criteria/json-schema'
 import { SchemaError } from '../errors/SchemaError'
 import { coreValidators as coreValidatorsDraft04 } from '../specification/draft-04/vocabularies/core'
@@ -19,7 +20,6 @@ import { coreValidators as coreValidatorsDraft2020_12 } from '../specification/d
 import { formatAssertionValidators as formatAssertionValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/format-assertion'
 import { unevaluatedValidators as unevaluatedValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/unevaluated'
 import { validationValidators as validationValidatorsDraft2020_12 } from '../specification/draft-2020-12/vocabularies/validation'
-import { JSONPointer } from '../util/JSONPointer'
 import { BoundValidatorWithAnnotationResults } from './BoundValidator'
 import { OutputFormat } from './Output'
 import { BoundValidatorForSchema } from './validatorBinder'
@@ -43,45 +43,45 @@ export type JSONSchemaKeywordValidators = {
   [Keyword in JSONSchemaKeyword]: JSONSchemaKeywordValidator
 }
 
-export type KeywordValidatorsForMetaSchemaURI = (metaSchemaURI: string) => JSONSchemaKeywordValidators
+export type KeywordValidatorsForMetaSchemaID = (metaSchemaID: string) => JSONSchemaKeywordValidators
 
-export function keywordValidatorsForMetaSchemaURIFactory({
+export function keywordValidatorsForMetaSchemaIDFactory({
   assertFormat,
   retrieve
 }: {
   assertFormat: boolean
   retrieve: (uri: string) => { $vocabulary?: { [uri: string]: boolean } }
-}): KeywordValidatorsForMetaSchemaURI {
+}): KeywordValidatorsForMetaSchemaID {
   const cache = new Map<string, JSONSchemaKeywordValidators>()
-  return (metaSchemaURI: string) => {
-    if (cache.has(metaSchemaURI)) {
-      return cache.get(metaSchemaURI)
+  return (metaSchemaID: string) => {
+    if (cache.has(metaSchemaID)) {
+      return cache.get(metaSchemaID)
     }
 
-    if (metaSchemaURI === metaSchemaURIDraft04) {
+    if (metaSchemaID === metaSchemaIDDraft04) {
       const validators = {
         ...coreValidatorsDraft04,
         ...validationValidatorsDraft04
       }
-      cache.set(metaSchemaURI, validators)
+      cache.set(metaSchemaID, validators)
       return validators
     }
 
-    if (metaSchemaURI === metaSchemaURIDraft06) {
+    if (metaSchemaID === metaSchemaIDDraft06) {
       const validators = {
         ...coreValidatorsDraft06,
         ...validationValidatorsDraft06
       }
-      cache.set(metaSchemaURI, validators)
+      cache.set(metaSchemaID, validators)
       return validators
     }
 
-    if (metaSchemaURI === metaSchemaURIDraft07) {
+    if (metaSchemaID === metaSchemaIDDraft07) {
       const validators = {
         ...coreValidatorsDraft07,
         ...validationValidatorsDraft07
       }
-      cache.set(metaSchemaURI, validators)
+      cache.set(metaSchemaID, validators)
       return validators
     }
 
@@ -103,7 +103,7 @@ export function keywordValidatorsForMetaSchemaURIFactory({
       'https://json-schema.org/draft/2020-12/vocab/unevaluated': unevaluatedValidatorsDraft2020_12
     }
 
-    const metaSchema = retrieve(metaSchemaURI)
+    const metaSchema = retrieve(metaSchemaID)
     const vocabularies = Object.keys(metaSchema.$vocabulary ?? {})
 
     for (const [vocabulary, vocabularyValidators] of Object.entries(draft2020_12Validators)) {
@@ -124,7 +124,7 @@ export function keywordValidatorsForMetaSchemaURIFactory({
       }
     }
 
-    cache.set(metaSchemaURI, validators)
+    cache.set(metaSchemaID, validators)
     return validators
   }
 }

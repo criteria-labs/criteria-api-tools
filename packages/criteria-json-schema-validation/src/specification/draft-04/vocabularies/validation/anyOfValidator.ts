@@ -1,9 +1,9 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchema } from '@criteria/json-schema/draft-04'
-import { JSONPointer } from '../../../../util/JSONPointer'
+import { formatList } from '../../../../util/formatList'
 import { InvalidVerboseOutput, Output, ValidOutput, ValidVerboseOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 import { reduceAnnotationResults } from '../reduceAnnotationResults'
-import { formatList } from '../../../../util/formatList'
 
 export function anyOfValidator(schema: JSONSchema, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('anyOf' in schema)) {

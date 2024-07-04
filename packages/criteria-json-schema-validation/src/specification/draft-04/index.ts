@@ -1,39 +1,36 @@
-import { JSONSchema, metaSchemaURI } from '@criteria/json-schema/draft-04'
+import { JSONSchema, metaSchemaID } from '@criteria/json-schema/draft-04'
 import { MaybePromise } from '../../util/promises'
 import {
   AsyncValidateOptions,
   JSONValidator,
   ValidateOptions,
-  isJSONValid as isJSONValidWithDefaultMetaSchemaURI,
-  jsonValidator as jsonValidatorWithDefaultMetaSchemaURI,
-  validateJSON as validateJSONWithDefaultMetaSchemaURI
+  isJSONValid as isJSONValidWithDefaultMetaSchemaID,
+  jsonValidator as jsonValidatorWithDefaultMetaSchemaID,
+  validateJSON as validateJSONWithDefaultMetaSchemaID
 } from '../../validation/jsonValidator'
 
-export { metaSchemaURI }
+export { metaSchemaID }
 
 export function jsonValidator(
   schema: JSONSchema,
-  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI' | 'retrieve'>
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaID' | 'retrieve'>
 ): JSONValidator
 export function jsonValidator(
   schema: JSONSchema,
-  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): MaybePromise<JSONValidator>
-export function jsonValidator(
-  schema: JSONSchema,
-  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>
-): JSONValidator
+export function jsonValidator(schema: JSONSchema, options?: Omit<ValidateOptions, 'defaultMetaSchemaID'>): JSONValidator
 
 export function jsonValidator(
   schema: JSONSchema,
-  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): MaybePromise<JSONValidator> {
-  return jsonValidatorWithDefaultMetaSchemaURI(schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
+  return jsonValidatorWithDefaultMetaSchemaID(schema, { ...options, defaultMetaSchemaID: metaSchemaID })
 }
 
 export async function jsonValidatorAsync(
   schema: JSONSchema,
-  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): Promise<JSONValidator> {
   return await jsonValidator(schema, options)
 }
@@ -41,31 +38,31 @@ export async function jsonValidatorAsync(
 export function validateJSON(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI' | 'retrieve'>
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaID' | 'retrieve'>
 ): void
 export function validateJSON(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): MaybePromise<void>
 export function validateJSON(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaID'>
 ): void
 
 export function validateJSON(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): MaybePromise<void> {
-  return validateJSONWithDefaultMetaSchemaURI(instance, schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
+  return validateJSONWithDefaultMetaSchemaID(instance, schema, { ...options, defaultMetaSchemaID: metaSchemaID })
 }
 
 export async function validateJSONAsync(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): Promise<void> {
   await validateJSON(instance, schema, options)
 }
@@ -73,31 +70,31 @@ export async function validateJSONAsync(
 export function isJSONValid(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI' | 'retrieve'>
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaID' | 'retrieve'>
 ): boolean
 export function isJSONValid(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): MaybePromise<boolean>
 export function isJSONValid(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<ValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<ValidateOptions, 'defaultMetaSchemaID'>
 ): boolean
 
 export function isJSONValid(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<ValidateOptions | AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): MaybePromise<boolean> {
-  return isJSONValidWithDefaultMetaSchemaURI(instance, schema, { ...options, defaultMetaSchemaURI: metaSchemaURI })
+  return isJSONValidWithDefaultMetaSchemaID(instance, schema, { ...options, defaultMetaSchemaID: metaSchemaID })
 }
 
 export async function isJSONValidAsync(
   instance: unknown,
   schema: JSONSchema,
-  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<AsyncValidateOptions, 'defaultMetaSchemaID'>
 ): Promise<boolean> {
   return await isJSONValid(instance, schema, options)
 }

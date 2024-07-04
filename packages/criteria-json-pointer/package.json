@@ -1,6 +1,6 @@
 {
   "name": "@criteria/json-pointer",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Implementation of JSON Pointer (RFC 6901).",
   "keywords": [
     "json",

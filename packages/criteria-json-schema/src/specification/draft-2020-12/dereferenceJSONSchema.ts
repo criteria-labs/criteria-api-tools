@@ -1,7 +1,7 @@
 import {
   AsyncDereferenceOptions,
   DereferenceOptions,
-  dereferenceJSONSchema as dereferenceJSONSchemaWithDefaultMetaSchemaURI
+  dereferenceJSONSchema as dereferenceJSONSchemaWithDefaultMetaSchemaID
 } from '../../dereferencing/dereferenceJSONSchema'
 import { MaybePromise } from '../../util/promises'
 import { DereferencedJSONSchemaObject, JSONSchema, JSONSchemaBooleanSchema } from './JSONSchema'
@@ -13,23 +13,23 @@ export type Dereferenced<T extends JSONSchema> = T extends JSONSchemaBooleanSche
 
 export function dereferenceJSONSchema<T extends JSONSchema>(
   schema: T,
-  options?: Omit<DereferenceOptions, 'defaultMetaSchemaURI' | 'retrieve'>
+  options?: Omit<DereferenceOptions, 'defaultMetaSchemaID' | 'retrieve'>
 ): Dereferenced<T>
 export function dereferenceJSONSchema<T extends JSONSchema>(
   schema: T,
-  options?: Omit<AsyncDereferenceOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<AsyncDereferenceOptions, 'defaultMetaSchemaID'>
 ): Promise<Dereferenced<T>>
 export function dereferenceJSONSchema<T extends JSONSchema>(
   schema: T,
-  options?: Omit<DereferenceOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<DereferenceOptions, 'defaultMetaSchemaID'>
 ): Dereferenced<T>
 
 export function dereferenceJSONSchema<T extends JSONSchema>(
   schema: T,
-  options?: Omit<DereferenceOptions | AsyncDereferenceOptions, 'defaultMetaSchemaURI'>
+  options?: Omit<DereferenceOptions | AsyncDereferenceOptions, 'defaultMetaSchemaID'>
 ): MaybePromise<Dereferenced<T>> {
-  return dereferenceJSONSchemaWithDefaultMetaSchemaURI(schema, {
+  return dereferenceJSONSchemaWithDefaultMetaSchemaID(schema, {
     ...options,
-    defaultMetaSchemaURI: metaSchema.$id
+    defaultMetaSchemaID: metaSchema.$id
   })
 }

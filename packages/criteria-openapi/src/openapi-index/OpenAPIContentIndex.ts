@@ -51,7 +51,7 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
       return {
         baseURI: info.baseURI,
         metadata: {
-          type: 'schema' as OpenAPIObjectType,
+          type: 'Schema' as OpenAPIObjectType,
           openAPIVersion: '',
           metaSchemaID: info.metadata.metaSchemaID
         }
@@ -99,7 +99,7 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
           metadata: { openAPIVersion, metaSchemaID }
         } = state
 
-        if (type === 'schema') {
+        if (type === 'Schema') {
           const schemaReferences = this.schemaContentIndex.addContentFromRoot(object, baseURI, {
             metaSchemaID
           })
@@ -115,7 +115,7 @@ export class OpenAPIContentIndex implements ContentIndex<OpenAPIMetadata> {
               parent: info.parent === null ? parent : info.parent,
               key: info.parent === null ? key : info.key,
               metadata: {
-                type: 'schema',
+                type: 'Schema',
                 openAPIVersion: rootMetadata.openAPIVersion,
                 metaSchemaID: info.metadata.metaSchemaID
               },

@@ -188,9 +188,6 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     if (!stop && openapi.paths) {
       stop = visitPaths(openapi.paths, [...path, '/paths'], states)
     }
-    if (!stop && openapi.webhooks) {
-      stop = visitMap(openapi.webhooks, [...path, '/webhooks'], states, visitPathItem)
-    }
     if (!stop && openapi.components) {
       stop = visitComponents(openapi.components, [...path, '/components'], states)
     }
@@ -322,9 +319,6 @@ export function visitOpenAPIObjects<ReferenceType extends Reference | never, Sta
     }
     if (!stop && components.callbacks) {
       stop = visitMap(components.callbacks, [...path, '/callbacks'], states, visitCallback)
-    }
-    if (!stop && components.pathItems) {
-      stop = visitMap(components.pathItems, [...path, '/pathItems'], states, visitPathItem)
     }
     return stop
   }

@@ -66,7 +66,7 @@ export class OpenAPIIndex extends DocumentIndex {
     rootOpenAPI = this.addDocument(rootOpenAPI, baseURI)
 
     const rootOpenAPIMetadata = {
-      type: 'openapi' as OpenAPIObjectType,
+      type: 'OpenAPI' as OpenAPIObjectType,
       openAPIVersion: (rootOpenAPI as any).openapi,
       metaSchemaID: (rootOpenAPI as any).jsonSchemaDialect ?? this.defaultJSONSchemaDialect
     }

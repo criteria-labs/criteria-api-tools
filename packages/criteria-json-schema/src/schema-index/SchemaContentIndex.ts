@@ -92,11 +92,15 @@ export class SchemaContentIndex implements ContentIndex<SchemaMetadata> {
         case metaSchemaIDDraft2020_12:
           return visitSubschemasDraft2020_12
         default:
-          return visitSubschemas(rootMetadata.metaSchemaID)
+          return visitSubschemasDraft2020_12
       }
     }
 
-    visitSubschemas(typeof root === 'object' && '$schema' in root ? root.$schema : rootMetadata.metaSchemaID)(
+    visitSubschemas(
+      typeof root === 'object' && '$schema' in root
+        ? root.$schema ?? rootMetadata.metaSchemaID
+        : rootMetadata.metaSchemaID
+    )(
       root,
       {
         baseURI,

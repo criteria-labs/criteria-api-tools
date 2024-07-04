@@ -1,5 +1,5 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchemaObject } from '@criteria/json-schema/draft-06'
-import { JSONPointer } from '../../../../util/JSONPointer'
 import { formatList } from '../../../../util/formatList'
 import { isJSONObject } from '../../../../util/isJSONObject'
 import { InvalidOutput, InvalidVerboseOutput, Output, ValidOutput } from '../../../../validation/Output'

@@ -1,9 +1,9 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchemaObject } from '@criteria/json-schema/draft-07'
-import { JSONPointer } from '../../../../util/JSONPointer'
+import { BoundValidator } from '../../../../validation/BoundValidator'
 import { Output, ValidVerboseOutput } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 import { reduceAnnotationResults } from '../reduceAnnotationResults'
-import { BoundValidator } from '../../../../validation/BoundValidator'
 
 export function ifValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {
   if (!('if' in schema)) {

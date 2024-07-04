@@ -1,7 +1,7 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchemaObject } from '@criteria/json-schema/draft-06'
-import { JSONPointer } from '../../../../util/JSONPointer'
 import { isJSONArray } from '../../../../util/isJSONArray'
-import { InvalidOutput, InvalidVerboseOutput, Output } from '../../../../validation/Output'
+import { InvalidVerboseOutput, Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'
 
 export function containsValidator(schema: JSONSchemaObject, schemaPath: JSONPointer[], context: ValidatorContext) {

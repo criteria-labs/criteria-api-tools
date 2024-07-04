@@ -1,6 +1,6 @@
+import type { JSONPointer } from '@criteria/json-pointer'
 import { JSONSchema } from '@criteria/json-schema/draft-04'
 import equal from 'fast-deep-equal'
-import { JSONPointer } from '../../../../util/JSONPointer'
 import { format } from '../../../../util/format'
 import { Output } from '../../../../validation/Output'
 import { ValidatorContext } from '../../../../validation/keywordValidators'

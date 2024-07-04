@@ -1,18 +1,18 @@
 import { SchemaIndex } from '@criteria/json-schema'
-import { metaSchemaURI as draft2020_12URI } from '../draft-2020-12'
+import { metaSchemaID as draft2020_12URI } from '../draft-2020-12'
 import { ValidationError } from '../errors/ValidationError'
 import { MaybePromise, chain } from '../util/promises'
 import { FlagOutput, OutputFormat, VerboseOutput } from './Output'
 import { booleanValidator } from './booleanValidator'
-import { keywordValidatorsForMetaSchemaURIFactory } from './keywordValidators'
-import { normalizedMetaSchemaURI } from './normalizedMetaSchemaURI'
+import { keywordValidatorsForMetaSchemaIDFactory } from './keywordValidators'
+import { normalizedMetaSchemaID } from './normalizedMetaSchemaID'
 import { validatorBinder } from './validatorBinder'
 
 // default options
 export const defaultOutputFormat = 'flag'
 export const defaultFailFast = false
 export const defaultAssertFormat = false
-export const defaultDefaultMetaSchemaURI = draft2020_12URI
+export const defaultDefaultMetaSchemaID = draft2020_12URI
 
 export type Retrieve = (uri: string) => any | Promise<any>
 
@@ -22,7 +22,7 @@ export type ValidateOptions = {
   assertFormat?: boolean
   baseURI?: string
   retrieve?: (uri: string) => any
-  defaultMetaSchemaURI?: string
+  defaultMetaSchemaID?: string
 }
 
 export type AsyncValidateOptions = Omit<ValidateOptions, 'retrieve'> & {
@@ -42,7 +42,7 @@ export function jsonValidator(
   const outputFormat = options?.outputFormat ?? defaultOutputFormat
   const failFast = outputFormat === 'flag' ? true : options?.failFast ?? defaultFailFast // flag output format is effectively the same as fail fast
   const assertFormat = options?.assertFormat ?? defaultAssertFormat
-  const defaultMetaSchemaURI = normalizedMetaSchemaURI(options?.defaultMetaSchemaURI ?? defaultDefaultMetaSchemaURI)
+  const defaultMetaSchemaID = normalizedMetaSchemaID(options?.defaultMetaSchemaID ?? defaultDefaultMetaSchemaID)
 
   if (typeof schema === 'boolean') {
     const validator = booleanValidator(schema, [''], { outputFormat })
@@ -55,18 +55,18 @@ export function jsonValidator(
   const index = new SchemaIndex({
     cloned: false,
     retrieve: options?.retrieve,
-    defaultMetaSchemaURI: defaultMetaSchemaURI
+    defaultMetaSchemaID: defaultMetaSchemaID
   })
   const addRootSchemaResult = index.addRootSchema(schema, options?.baseURI ?? '')
   return chain(addRootSchemaResult, () => {
-    const validatorsForMetaSchemaURI = keywordValidatorsForMetaSchemaURIFactory({
+    const validatorsForMetaSchemaID = keywordValidatorsForMetaSchemaIDFactory({
       assertFormat,
       retrieve: index.retrieve
     })
     const boundValidatorForSchema = validatorBinder(index, {
       outputFormat,
       failFast,
-      validatorsForMetaSchemaURI
+      validatorsForMetaSchemaID
     })
 
     const boundValidator = boundValidatorForSchema(schema, [''])

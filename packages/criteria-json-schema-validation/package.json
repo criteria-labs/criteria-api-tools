@@ -57,7 +57,7 @@
     "node": ">=18.12.1"
   },
   "dependencies": {
-    "@criteria/json-pointer": "^0.2.0",
+    "@criteria/json-pointer": "^0.2.1",
     "@criteria/json-schema": "^0.10.0",
     "fast-deep-equal": "^3.1.3",
     "punycode": "^2.3.1",

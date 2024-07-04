@@ -1,0 +1,21 @@
+name: Check Package Version
+description: Checks that the package.json version matches the Git tag.
+runs:
+  using: node20
+  main: index.js
+branding:
+  icon: tag
+  color: yellow
+inputs:
+  tag-prefix:
+    description: Tag prefix used in git (eg. v)
+    required: false
+  package-path:
+    description: Path to the package.json file. Defaults to 'package.json'.
+    required: true
+    default: package.json
+outputs:
+  package-version:
+    description: Version of the package (in package.json)
+  tag-version:
+    description: Version of the package in Git.
